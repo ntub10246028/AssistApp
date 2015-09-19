@@ -2,8 +2,16 @@ package com.example.apple.assistapp;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends Activity {
 
@@ -11,7 +19,24 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
+        TextView t=(TextView)findViewById(R.id.mytextview);
+
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                JsonReaderPost j = new JsonReaderPost(getApplicationContext());
+                try {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("query","SELECT+AlertId+FROM+Orion.Alerts"));
+                    j.Reader(params);
+                    Log.d("DEBUG", "reader");
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     @Override
