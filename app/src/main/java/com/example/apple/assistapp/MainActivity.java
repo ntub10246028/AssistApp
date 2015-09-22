@@ -1,6 +1,7 @@
 package com.example.apple.assistapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,6 +11,10 @@ import android.widget.TextView;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +26,11 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         TextView t=(TextView)findViewById(R.id.mytextview);
-
+        SignatureApp sa = new SignatureApp(this.getApplicationContext(), R.raw.sign);
+        while (!sa.isSuccess()){
+            sa.postSignature();
+        }
+/*
         new Thread(new Runnable(){
             @Override
             public void run() {
@@ -36,7 +45,7 @@ public class MainActivity extends Activity {
                 }
             }
         }).start();
-
+*/
     }
 
     @Override
@@ -61,3 +70,4 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 }
+

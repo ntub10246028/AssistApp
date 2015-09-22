@@ -27,11 +27,11 @@ import android.util.Log;
 public class JsonReaderPost {
     private Context mContext;
 
-
     public JsonReaderPost(Context mContext) {
         this.mContext = mContext;
     }
-    public void Reader(List<NameValuePair> params) throws IOException, JSONException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException, UnrecoverableKeyException {
+
+    public JSONObject Reader(List<NameValuePair> params,String dir) throws IOException, JSONException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException, UnrecoverableKeyException {
         String ints = "";
         //List<NameValuePair> params = new ArrayList<NameValuePair>();
         //params.add(new BasicNameValuePair("query","SELECT+AlertId+FROM+Orion.Alerts"));
@@ -40,7 +40,7 @@ public class JsonReaderPost {
         HttpClient client =new MyHttpClient(mContext);
 
         HttpPost httpPost = new
-                HttpPost("https://192.168.11.112/edit");
+                HttpPost("https://192.168.11.112/"+dir);
         //httpPost.addHeader("content-type", "application/json");
         //httpPost.addHeader("Authorization", "Basic YWRtaW46");
         httpPost.setEntity(new UrlEncodedFormEntity(params));
@@ -58,8 +58,7 @@ public class JsonReaderPost {
         // Converting the String result into JSONObject jsonObj and then into
         // JSONArray to get data
         JSONObject jsonObj = new JSONObject(result);
-        String json = jsonObj.getString("data");
-        Log.d("json",json);
+        return jsonObj;
 
     }
 
