@@ -3,20 +3,17 @@ package com.example.apple.assistapp;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 
 public class MainActivity extends Activity {
 
@@ -26,10 +23,37 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         TextView t=(TextView)findViewById(R.id.mytextview);
-        SignatureApp sa = new SignatureApp(this.getApplicationContext(), R.raw.sign);
-        while (!sa.isSuccess()){
-            sa.postSignature();
-        }
+
+
+        TelephonyManager tM=(TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
+
+        final String imei = tM.getDeviceId();
+        final Context ctx=this.getApplicationContext();
+        final MyHttpClient client=new MyHttpClient(ctx);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SignatureApp sa = new SignatureApp(ctx, R.raw.sign);
+                String session=null;
+
+                while (!sa.isSuccess()) {
+                    session=sa.postSignature(imei,client);
+                }
+
+                try {
+                    //HttpClient client =new MyHttpClient(ctx);
+                    HttpGet hg = new HttpGet("https://app.lambda.tw/session");
+                    hg.setHeader("lack.session",session);
+                    Log.d(session, hg.getFirstHeader("lack.session").toString());
+                    HttpResponse response = client.execute(hg);
+                    HttpEntity entity = response.getEntity();
+                    Log.d("xxxxxxxxxxxxxx", EntityUtils.toString(entity));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                //Log.d("over",imei);
+            }
+        }).start();
 /*
         new Thread(new Runnable(){
             @Override

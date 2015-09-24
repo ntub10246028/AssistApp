@@ -5,6 +5,7 @@ import android.util.Log;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class SignatureApp {
         String line;
         try
         {
-            boolean lineOne = false;
+            boolean lineOne = true;
             while (( line = bufferedreader.readLine()) != null)
             {
                 if(lineOne){
@@ -54,22 +55,37 @@ public class SignatureApp {
         }
     }
 
-    public void postSignature(){
+    public String postSignature(String imei,MyHttpClient client){
         Random rand= new Random();
-        String randomNum = String.valueOf(rand.nextInt((10 - 0) + 1) + 0);
-        Log.d("postNum",randomNum);
 
-        BigInteger m2 = new BigInteger(randomNum).modPow(this.d, this.N);
-        Log.d("postNum",m2.toString());
+        BigInteger m2 = new BigInteger(imei).modPow(this.d, this.N);
 
         JsonReaderPost jp= new JsonReaderPost(this.ctx);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("sign",randomNum));
+        params.add(new BasicNameValuePair("sign",m2.toString()));
         try {
-            jp.Reader(params,this.url).getJSONObject("sign");
+            String re = jsonData(jp.Reader(params, this.url,client).toString(), "status");
+            //Log.d("!!!!!!!!!!!!!!1",re);
+            if(re.equals("\"T\""))
+                this.setSuccess(true);
+
         }catch (Exception e){
             e.printStackTrace();
         }
+        return jp.getCookie();
+    }
+
+    private String jsonData(String origin,String key){
+        String subString;
+        try{
+            subString=origin.substring(origin.indexOf(key),origin.indexOf(","));
+        }catch (Exception e){
+
+        }finally {
+            subString=origin.substring(origin.indexOf(key),origin.indexOf("}"));
+        }
+
+        return subString.substring(subString.indexOf(":")+1);
     }
 
     public BigInteger getN() {
