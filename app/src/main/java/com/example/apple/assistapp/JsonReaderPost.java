@@ -13,12 +13,9 @@ import java.util.List;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,6 +54,7 @@ public class JsonReaderPost {
         //Log.d("response", EntityUtils.toString(entity));
         result=EntityUtils.toString(entity);
         Log.d("DEBUG",result);
+        response.getEntity().consumeContent();
 
 
         //String Strresult = EntityUtils.toString(entity, HTTP.UTF_8);

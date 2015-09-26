@@ -15,11 +15,11 @@ import java.io.InputStream;
 public class ImageConverter {
     private String convertSting;
 
-    public ImageConverter(String convertSting){
+    public ImageConverter(String convertSting) {
         this.setConvertSting(convertSting);
     }
 
-    public Bitmap stringToBitmap(){
+    public Bitmap stringToBitmap() {
         byte[] decodedString = Base64.decode(this.getConvertSting(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
