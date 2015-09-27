@@ -42,5 +42,6 @@
         android:text="我的資料"
         android:id="@+id/button3"
         android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/button2" />
+        android:layout_toStartOf="@+id/button2"
+        android:onClick="clickFunction"/>
 </RelativeLayout>

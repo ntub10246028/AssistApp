@@ -1,11 +1,19 @@
 package com.example.apple.assistapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 public class MainActivity extends Activity {
+    private static final int START_CAMERA = 0;
+    private static final int START_RECORD = 1;
+    private static final int START_LOCATION = 2;
+    private static final int START_ALARM = 3;
+    private static final int START_COLOR = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,5 +41,32 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void clickFunction(View view) {
+        Intent intentMap = new Intent(this, MapsActivity.class);
+        // 設定儲存的座標
+        intentMap.putExtra("lat", 25);
+        intentMap.putExtra("lng", 121);
+        intentMap.putExtra("title", "title");
+        intentMap.putExtra("datetime", "some data");
+
+        // 啟動地圖元件
+        startActivityForResult(intentMap, START_LOCATION);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case START_LOCATION:
+                    // 讀取與設定座標
+                    double lat = data.getDoubleExtra("lat", 0.0);
+                    double lng = data.getDoubleExtra("lng", 0.0);
+                    Log.d(String.valueOf(lat),String.valueOf(lng));
+                    break;
+            }
+        }
     }
 }
