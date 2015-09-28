@@ -173,12 +173,14 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         markerOptions.position(place)
                 .title(title)
                 .snippet(snippet)
-                .icon(icon);
+                .icon(icon)
+                .draggable(true);
 
         //mMap.addMarker(markerOptions);
 
         // 加入並設定記事儲存的位置標記
         itemMarker = mMap.addMarker(markerOptions);
+
     }
 
 
@@ -244,7 +246,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         // 設定目前位置的標記
         if (currentMarker == null) {
-            currentMarker = mMap.addMarker(new MarkerOptions().position(latLng));
+            currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).draggable(true));
         } else {
             currentMarker.setPosition(latLng);
         }
@@ -254,6 +256,39 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     }
 
     private void processController() {
+
+        //seting dragable marker drag Listener
+        mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                // TODO Auto-generated method stub
+
+                BitmapDescriptor icon =
+                        BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher);
+
+                marker.remove();
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(marker.getPosition())
+                        .title(marker.getTitle())
+                        .snippet(marker.getSnippet())
+                        .icon(icon)
+                        .draggable(true);
+
+                itemMarker = mMap.addMarker(markerOptions);
+            }
+
+            @Override
+            public void onMarkerDrag(Marker marker) {
+                // TODO Auto-generated method stub
+
+            }
+        });
         // 對話框按鈕事件
         final DialogInterface.OnClickListener listener =
                 new DialogInterface.OnClickListener() {
@@ -290,7 +325,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                 if (marker.equals(itemMarker)) {
                     AlertDialog.Builder ab = new AlertDialog.Builder(MapsActivity.this);
 
-                    ab.setTitle("title_update_location")
+                    ab.setTitle(itemMarker.getPosition().toString()) //"title_update_location"
                             .setMessage("message_update_location")
                             .setCancelable(true);
 
@@ -311,7 +346,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                 if (marker.equals(currentMarker)) {
                     AlertDialog.Builder ab = new AlertDialog.Builder(MapsActivity.this);
 
-                    ab.setTitle("title_current_location")
+                    ab.setTitle(itemMarker.getPosition().toString()) //"title_update_location"
                             .setMessage("message_current_location")
                             .setCancelable(true);
 

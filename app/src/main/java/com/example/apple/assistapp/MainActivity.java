@@ -46,10 +46,12 @@ public class MainActivity extends Activity {
     public void clickFunction(View view) {
         Intent intentMap = new Intent(this, MapsActivity.class);
         // 設定儲存的座標
-        intentMap.putExtra("lat", 25);
-        intentMap.putExtra("lng", 121);
+        /*
+        intentMap.putExtra("lat", 25.0);
+        intentMap.putExtra("lng", 121.0);
         intentMap.putExtra("title", "title");
         intentMap.putExtra("datetime", "some data");
+        */
 
         // 啟動地圖元件
         startActivityForResult(intentMap, START_LOCATION);
