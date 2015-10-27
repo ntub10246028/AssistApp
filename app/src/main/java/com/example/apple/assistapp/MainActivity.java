@@ -29,6 +29,8 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,6 +46,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.user.assist.R;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends ActionBarActivity {
@@ -87,6 +94,38 @@ public class MainActivity extends ActionBarActivity {
         InitialToolBar();
         InitialTabView();
         InitialViews();
+
+
+
+        TelephonyManager tM=(TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
+
+        final String imei = tM.getDeviceId();
+        final Context ctx=this.getApplicationContext();
+        final MyHttpClient client=new MyHttpClient(ctx);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SignatureApp sa = new SignatureApp(ctx, R.raw.sign);
+                String session=null;
+
+                while (!sa.isSuccess()) {
+                    session=sa.postSignature(imei,client);
+                }
+
+                try {
+                    //HttpClient client =new MyHttpClient(ctx);
+                    HttpGet hg = new HttpGet("https://app.lambda.tw/session");
+                    hg.setHeader("lack.session",session);
+                    Log.d(session, hg.getFirstHeader("lack.session").toString());
+                    HttpResponse response = client.execute(hg);
+                    HttpEntity entity = response.getEntity();
+                    Log.d("xxxxxxxxxxxxxx", EntityUtils.toString(entity));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                //Log.d("over",imei);
+            }
+        }).start();
     }
 
     private void InitialWindowInfo() {

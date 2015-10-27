@@ -1,6 +1,8 @@
 package com.example.apple.assistapp;
 import android.content.Context;
 
+import com.example.user.assist.R;
+
 import java.io.InputStream;
 import java.security.KeyStore;
 
