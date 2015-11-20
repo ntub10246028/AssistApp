@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".Act_Main"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Act_SignAuth"

@@ -76,6 +76,9 @@ public class Act_Login extends Activity {
 
             } else {
                 Toast.makeText(ctx, phone + "\n" + imei, Toast.LENGTH_SHORT).show();
+                Intent it = new Intent(ctx, Act_Main.class);
+                startActivity(it);
+                finish();
                 //Toast.makeText(ctx, Integer.toString(result), Toast.LENGTH_SHORT).show();
             }
         }
