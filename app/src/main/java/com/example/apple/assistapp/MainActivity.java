@@ -21,8 +21,10 @@ import android.support.v7.app.ActionBarActivity;
 
 
 import android.os.Bundle;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.GravityCompat;
@@ -43,6 +45,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.apple.assistapp.com.ui.SlidingTabLayout;
 import com.example.user.assist.R;
 
 @SuppressWarnings("deprecation")
@@ -146,9 +149,9 @@ public class MainActivity extends ActionBarActivity {
         imgbt_drawer_search = (ImageButton) v
                 .findViewById(R.id.imgbt_drawer_search);
         lv_drawer_datas = (ListView) v.findViewById(R.id.lv_drawer_datas);
-        String[] datas = { "Data1", "Data2", "Data3", "Data4", "Data5",
+        String[] datas = {"Data1", "Data2", "Data3", "Data4", "Data5",
                 "Data6", "Data7", "Data8", "Data9", "Data10", "Data11",
-                "Data12", "Data13", "Data14", "Data15" };
+                "Data12", "Data13", "Data14", "Data15"};
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, datas);
         lv_drawer_datas.setAdapter(adapter2);
@@ -156,14 +159,14 @@ public class MainActivity extends ActionBarActivity {
         imgbt_drawer_search.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 String text = et_drawer_input.getText().toString();
-                Toast.makeText(ctxt, text,  Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctxt, text, Toast.LENGTH_SHORT).show();
             }
         });
         lv_drawer_datas.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 String text = ((TextView) v).getText().toString();
-                Toast.makeText(ctxt, text,  Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctxt, text, Toast.LENGTH_SHORT).show();
             }
         });
         return v;
@@ -174,10 +177,10 @@ public class MainActivity extends ActionBarActivity {
         img_drawer_icon = (ImageView) v.findViewById(R.id.img_drawer_icon);
         tv_drawer_id = (TextView) v.findViewById(R.id.tv_drawer_id);
         lv_drawer_setting = (ListView) v.findViewById(R.id.lv_drawer_setting);
-        String[] settings = { "Section1", "Section2", "Section3", "Section4",
+        String[] settings = {"Section1", "Section2", "Section3", "Section4",
                 "Section5", "Section6", "Section7", "Section8", "Section9",
                 "Section10", "Section11", "Section12", "Section13",
-                "Section14", "Section15" };
+                "Section14", "Section15"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, settings);
         lv_drawer_setting.setAdapter(adapter);

@@ -26,11 +26,11 @@
                     android:layout_height="wrap_content" >
                 </android.support.v7.widget.Toolbar>
 
-                <com.example.apple.assistapp.SlidingTabLayout
+                <com.example.apple.assistapp.com.ui.SlidingTabLayout
                     android:id="@+id/slidingtab"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
-                </com.example.apple.assistapp.SlidingTabLayout>
+                </com.example.apple.assistapp.com.ui.SlidingTabLayout>
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/viewpager"
