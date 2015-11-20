@@ -45,8 +45,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.apple.assistapp.com.ui.SlidingTabLayout;
-import com.example.user.assist.R;
+import com.example.apple.assistapp.ui.SlidingTabLayout;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends ActionBarActivity {

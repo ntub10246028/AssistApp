@@ -21,7 +21,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.user.assist.R;
 
 public class Fragment2 extends Fragment {
 

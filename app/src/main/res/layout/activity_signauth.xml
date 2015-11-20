@@ -3,49 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/et_countrynum"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxEms="4"
-                android:maxLength="4"
-                android:text="+886"
-                android:textSize="24sp" />
-
-            <EditText
-                android:id="@+id/et_phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="ex:0911444777"
-                android:inputType="phone"
-                android:maxLength="10"
-                android:textSize="24sp" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/bt_commit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="15dp"
-            android:text="Commit"
-            android:textAllCaps="false"
-            android:textSize="24sp" />
-
-        <TextView
-            android:id="@+id/tv_content"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SMS Content"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-    </LinearLayout>
+        android:text="SMS Content"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 </RelativeLayout>

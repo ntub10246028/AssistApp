@@ -1,4 +1,4 @@
-package com.example.apple.assistapp.com.ui;
+package com.example.apple.assistapp.ui;
 
       //  import com.example.main.MyFragmentAdapter;
 

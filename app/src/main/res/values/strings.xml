@@ -1,8 +1,9 @@
-
-
 <resources>
     <string name="app_name">assist</string>
 
     <string name="Content1">Title</string>
 
+    <!-- Msg Err-->
+    <string name="msg_err_network">無法取得網路</string>
+    <string name="msg_err_format">格式錯誤</string>
 </resources>
