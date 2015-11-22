@@ -1,27 +1,36 @@
 package com.example.apple.assistapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.apple.assistapp.other.Net;
 
+import java.util.HashMap;
 
-public class Act_Login extends Activity {
+
+public class Act_AuthSign extends Activity {
     // Obj
-    private Context ctx = Act_Login.this;
+    private Context ctx = Act_AuthSign.this;
     private Resources res;
+    // Http
+    private HttpConnection conn;
+    private static final int SUCCESS = 1;
+    private static final int FAIL = 0;
     // StartActivity
     private static final int SignAuth = 111;
     // SharedPreferences
@@ -30,16 +39,18 @@ public class Act_Login extends Activity {
     private static final String phoneField = "phone";
     // UI
     private LinearLayout ll_inputphone;
+    private Spinner sp_countryNum;
+    private EditText et_phone;
     private Button bt_commit;
-    private EditText et_countrynum, et_phone;
     // other
+    private String[] countryNum = null;
     private String mImei;
     private String mPhone;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        res = getResources();
+        setContentView(R.layout.activity_authsign);
+        InitResources();
         findView();
         readData();
 
@@ -47,7 +58,6 @@ public class Act_Login extends Activity {
             CheckTask();
         } else {
             ll_inputphone.setVisibility(View.VISIBLE);
-            Toast.makeText(ctx, "Please input your phone number to sign up ", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -67,27 +77,58 @@ public class Act_Login extends Activity {
             Integer result = -1;
             phone = mPhone;
             imei = getImei();
+//            conn = new HttpConnection();
+//            String url = "urlll";
+//            HashMap<String, String> map = new HashMap<String, String>();
+//            map.put("PHONE", phone);
+//            map.put("IMEI", imei);
+//            conn.performPost(url,map);
 
+            //result = SUCCESS;
+            result = FAIL;
             return result;
         }
 
         protected void onPostExecute(Integer result) {
-            if (result > 0) {
 
-            } else {
-                Toast.makeText(ctx, phone + "\n" + imei, Toast.LENGTH_SHORT).show();
-                Intent it = new Intent(ctx, Act_Main.class);
-                startActivity(it);
-                finish();
-                //Toast.makeText(ctx, Integer.toString(result), Toast.LENGTH_SHORT).show();
+            switch (result) {
+                case SUCCESS: // ok
+                    ToMainActivity();
+                    break;
+                case FAIL: // err : database no you
+                    SMS_dialog();
+                    break;
+                default:
+                    Toast.makeText(ctx, phone + "\n" + imei, Toast.LENGTH_SHORT).show();
+                    ToMainActivity();
             }
         }
     }
 
+    private void ToMainActivity() {
+        finish();
+        Intent it = new Intent(ctx, Act_Main.class);
+        startActivity(it);
+        finish();
+    }
+
+    private void ToAuthSMSActivity() {
+        Intent it = new Intent(ctx, Act_AuthSMS.class);
+        startActivity(it);
+    }
+
+    private void SMS_dialog() {
+        new AlertDialog.Builder(ctx).setTitle(mPhone).setMessage("我們會將簡訊驗證碼傳到上面的號碼").setPositiveButton("確認", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                ToAuthSMSActivity();
+            }
+        }).setNegativeButton("取消", null).show();
+    }
+
     private boolean formatIsVaild() {
-        String countryNum = et_countrynum.getText().toString();
+        String countryN = countryNum[sp_countryNum.getSelectedItemPosition()];
         String phone = et_phone.getText().toString();
-        if (countryNum.length() * phone.length() == 0) {
+        if (countryN.length() * phone.length() == 0) {
             return false; // 有個位置是空的 X
         }
         if (phone.length() == 10) {
@@ -113,28 +154,38 @@ public class Act_Login extends Activity {
         return tM.getDeviceId();
     }
 
+    private void InitResources() {
+        res = getResources();
+        countryNum = res.getStringArray(R.array.country_number);
+    }
+
     private void findView() {
         ll_inputphone = (LinearLayout) findViewById(R.id.ll_inputphone);
-        et_countrynum = (EditText) findViewById(R.id.et_countrynum);
+        sp_countryNum = (Spinner) findViewById(R.id.sp_countrynum);
         et_phone = (EditText) findViewById(R.id.et_phone);
         bt_commit = (Button) findViewById(R.id.bt_commit);
+        // button
         bt_commit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (formatIsVaild()) {
                     saveData();
                     readData();
                     ll_inputphone.setVisibility(View.INVISIBLE);
+                    Toast.makeText(ctx, countryNum[sp_countryNum.getSelectedItemPosition()] + et_phone.getText().toString(), Toast.LENGTH_SHORT).show();
                     CheckTask();
                 } else {
                     Toast.makeText(ctx, res.getString(R.string.msg_err_format), Toast.LENGTH_SHORT).show();
                 }
             }
         });
+        //spinner
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(ctx, android.R.layout.simple_spinner_dropdown_item, countryNum);
+        sp_countryNum.setAdapter(adapter);
     }
 
     private void saveData() {
         settings = getSharedPreferences(DATA, 0);
-        settings.edit().putString(phoneField, et_countrynum.getText().toString() + et_phone.getText().toString()).commit();
+        settings.edit().putString(phoneField, countryNum[sp_countryNum.getSelectedItemPosition()] + et_phone.getText().toString()).commit();
     }
 
     private void readData() {
