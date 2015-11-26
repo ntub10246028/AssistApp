@@ -1,7 +1,38 @@
 package com.example.apple.assistapp;
 
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.apple.assistapp.ui.SlidingTabLayout;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Copyright 2012 The Android Open Source Project
@@ -19,47 +50,10 @@ import android.support.v7.app.ActionBarActivity;
  * limitations under the License.
  */
 
-
-import android.os.Bundle;
-import java.util.ArrayList;
-import java.util.List;
-import android.content.Context;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.DrawerLayout.DrawerListener;
-import android.support.v7.widget.Toolbar;
-<<<<<<< HEAD:app/src/main/java/com/example/apple/assistapp/Act_Main.java
-=======
-import android.telephony.TelephonyManager;
-import android.util.Log;
->>>>>>> t_n_security:app/src/main/java/com/example/apple/assistapp/MainActivity.java
-import android.view.Gravity;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-
-import com.example.user.assist.R;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
-
 @SuppressWarnings("deprecation")
-public class MainActivity extends ActionBarActivity {
+public class Act_Main extends ActionBarActivity {
 
-    private Context ctxt = MainActivity.this;
+    private Context ctxt = Act_Main.this;
     private MyFragmentAdapter fragmentAdapter;
     private List<String> Titles;
     private List<Integer> Icons;
@@ -98,26 +92,26 @@ public class MainActivity extends ActionBarActivity {
         InitialToolBar();
         InitialTabView();
         InitialViews();
-		
-        TelephonyManager tM=(TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
+
+        TelephonyManager tM = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
 
         final String imei = tM.getDeviceId();
-        final Context ctx=this.getApplicationContext();
-        final MyHttpClient client=new MyHttpClient(ctx);
+        final Context ctx = this.getApplicationContext();
+        final MyHttpClient client = new MyHttpClient(ctx);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 SignatureApp sa = new SignatureApp(ctx, R.raw.sign);
-                String session=null;
+                String session = null;
 
                 while (!sa.isSuccess()) {
-                    session=sa.postSignature(imei,client);
+                    session = sa.postSignature(imei, client);
                 }
 
                 try {
                     //HttpClient client =new MyHttpClient(ctx);
                     HttpGet hg = new HttpGet("https://app.lambda.tw/session");
-                    hg.setHeader("lack.session",session);
+                    hg.setHeader("lack.session", session);
                     Log.d(session, hg.getFirstHeader("lack.session").toString());
                     HttpResponse response = client.execute(hg);
                     HttpEntity entity = response.getEntity();
@@ -206,7 +200,7 @@ public class MainActivity extends ActionBarActivity {
                                     int position, long id) {
                 String text = ((TextView) v).getText().toString();
 
-                Toast.makeText(ctxt, text,  Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctxt, text, Toast.LENGTH_SHORT).show();
             }
         });
         return v;
@@ -218,10 +212,10 @@ public class MainActivity extends ActionBarActivity {
         tv_drawer_id = (TextView) v.findViewById(R.id.tv_drawer_id);
         lv_drawer_setting = (ListView) v.findViewById(R.id.lv_drawer_setting);
 
-        String[] settings = { "Section1", "Section2", "Section3", "Section4",
+        String[] settings = {"Section1", "Section2", "Section3", "Section4",
                 "Section5", "Section6", "Section7", "Section8", "Section9",
                 "Section10", "Section11", "Section12", "Section13",
-                "Section14", "Section15" };
+                "Section14", "Section15"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, settings);
         lv_drawer_setting.setAdapter(adapter);

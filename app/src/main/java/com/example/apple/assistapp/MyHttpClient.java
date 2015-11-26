@@ -1,7 +1,7 @@
 package com.example.apple.assistapp;
+
 import android.content.Context;
 
-import com.example.user.assist.R;
 
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -18,6 +18,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class MyHttpClient extends DefaultHttpClient {
     final Context context;
+
     public MyHttpClient(Context context) {
         this.context = context;
     }

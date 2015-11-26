@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import com.example.apple.assistapp.other.Net;
 
-import java.util.HashMap;
 
 
 public class Act_AuthSign extends Activity {

@@ -3,11 +3,8 @@
 package com.example.apple.assistapp;
 
 
-//import com.example.android.effectivenavigation.R;
 import android.os.Bundle;
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
