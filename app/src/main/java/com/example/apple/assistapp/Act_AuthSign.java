@@ -2,6 +2,7 @@ package com.example.apple.assistapp;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,18 +22,21 @@ import android.widget.Toast;
 
 import com.example.apple.assistapp.other.Net;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 
 
 public class Act_AuthSign extends Activity {
     // Obj
     private Context ctx = Act_AuthSign.this;
+    private MyHttpClient client = null;
     private Resources res;
     // Http
     private HttpConnection conn;
-    private static final int SUCCESS = 1;
-    private static final int FAIL = 0;
     // StartActivity
-    private static final int SignAuth = 111;
+    private static final int AuthSMSCode = 1;
     // SharedPreferences
     private SharedPreferences settings;
     private static final String DATA = "data";
@@ -54,42 +59,70 @@ public class Act_AuthSign extends Activity {
         readData();
 
         if (mPhone.length() > 0) {
-            CheckTask();
+            CheckUserExsitTask();
         } else {
             ll_inputphone.setVisibility(View.VISIBLE);
         }
     }
 
-    private void CheckTask() {
+    private void CheckUserExsitTask() {
         if (Net.isNetWork(ctx)) {
-            new CheckTask().execute();
+            new CheckUserExsitTask().execute();
         } else {
             Toast.makeText(ctx, res.getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
     }
 
-    class CheckTask extends AsyncTask<String, String, Integer> {
+    class CheckUserExsitTask extends AsyncTask<String, String, Integer> {
         private String phone;
         private String imei;
+        private String sResult = "";
+        private final int SUCCESS = 1;
+        private final int FAIL = 0;
+        private ProgressDialog pDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(ctx);
+            pDialog.setMessage("Loading...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
 
         protected Integer doInBackground(String... datas) {
-            Integer result = -1;
+            Integer result = FAIL;
             phone = mPhone;
             imei = getImei();
-//            conn = new HttpConnection();
-//            String url = "urlll";
-//            HashMap<String, String> map = new HashMap<String, String>();
-//            map.put("PHONE", phone);
-//            map.put("IMEI", imei);
-//            conn.performPost(url,map);
+            if (client == null) {
+                client = new MyHttpClient(ctx);
+            }
 
-            //result = SUCCESS;
-            result = FAIL;
+            SignatureApp sa = new SignatureApp(ctx, R.raw.sign);
+            String session = null;
+
+            while (!sa.isSuccess()) {
+                session = sa.postSignature(imei, client);
+            }
+            try {
+                //HttpClient client =new MyHttpClient(ctx);
+                sResult = session;
+                HttpGet hg = new HttpGet("https://app.lambda.tw/session");
+                hg.setHeader("lack.session", session);
+                Log.d(session, hg.getFirstHeader("lack.session").toString());
+                HttpResponse response = client.execute(hg);
+                HttpEntity entity = response.getEntity();
+                Log.d("xxxxxxxxxxxxxx", EntityUtils.toString(entity));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             return result;
         }
 
         protected void onPostExecute(Integer result) {
-
+            pDialog.dismiss();
             switch (result) {
                 case SUCCESS: // ok
                     ToMainActivity();
@@ -98,14 +131,70 @@ public class Act_AuthSign extends Activity {
                     SMS_dialog();
                     break;
                 default:
-                    Toast.makeText(ctx, phone + "\n" + imei, Toast.LENGTH_SHORT).show();
-                    ToMainActivity();
+                    Toast.makeText(ctx, result + "\n" + sResult, Toast.LENGTH_SHORT).show();
             }
         }
     }
 
+    private void AuthUserPWDTask() {
+        if (Net.isNetWork(ctx)) {
+            new AuthUserPWDTask().execute();
+        } else {
+            Toast.makeText(ctx, res.getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    class AuthUserPWDTask extends AsyncTask<String, String, Integer> {
+        private String phone;
+        private String imei;
+        private final int SUCCESS = 1;
+        private final int FAIL = 0;
+        private String sResult = "";
+
+        protected Integer doInBackground(String... datas) {
+            Integer result = -1;
+            phone = mPhone;
+            imei = getImei();
+
+//            SignatureApp sa = new SignatureApp(ctx, R.raw.sign);
+//            String session = null;
+//
+//            while (!sa.isSuccess()) {
+//                session = sa.postSignature(imei, client);
+//            }
+//            try {
+//                //HttpClient client =new MyHttpClient(ctx);
+//                sResult = session;
+//                HttpGet hg = new HttpGet("https://app.lambda.tw/session");
+//                hg.setHeader("lack.session", session);
+//                Log.d(session, hg.getFirstHeader("lack.session").toString());
+//                HttpResponse response = client.execute(hg);
+//                HttpEntity entity = response.getEntity();
+//                Log.d("xxxxxxxxxxxxxx", EntityUtils.toString(entity));
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+
+            result = FAIL;
+            return result;
+        }
+
+        protected void onPostExecute(Integer result) {
+            switch (result) {
+                case SUCCESS: // ok : pwd ok
+                    ToMainActivity();
+                    break;
+                case FAIL: // err : pwd error
+                    SMS_dialog();
+                    break;
+                default:
+                    Toast.makeText(ctx, sResult, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
     private void ToMainActivity() {
-        finish();
         Intent it = new Intent(ctx, Act_Main.class);
         startActivity(it);
         finish();
@@ -113,12 +202,13 @@ public class Act_AuthSign extends Activity {
 
     private void ToAuthSMSActivity() {
         Intent it = new Intent(ctx, Act_AuthSMS.class);
-        startActivity(it);
+        startActivityForResult(it, AuthSMSCode);
     }
 
     private void SMS_dialog() {
         new AlertDialog.Builder(ctx).setTitle(mPhone).setMessage("我們會將簡訊驗證碼傳到上面的號碼").setPositiveButton("確認", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+
                 ToAuthSMSActivity();
             }
         }).setNegativeButton("取消", null).show();
@@ -170,8 +260,8 @@ public class Act_AuthSign extends Activity {
                     saveData();
                     readData();
                     ll_inputphone.setVisibility(View.INVISIBLE);
-                    Toast.makeText(ctx, countryNum[sp_countryNum.getSelectedItemPosition()] + et_phone.getText().toString(), Toast.LENGTH_SHORT).show();
-                    CheckTask();
+                    //Toast.makeText(ctx, countryNum[sp_countryNum.getSelectedItemPosition()] + et_phone.getText().toString(), Toast.LENGTH_SHORT).show();
+                    CheckUserExsitTask();
                 } else {
                     Toast.makeText(ctx, res.getString(R.string.msg_err_format), Toast.LENGTH_SHORT).show();
                 }
@@ -201,14 +291,16 @@ public class Act_AuthSign extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case SignAuth:
+        if (resultCode == RESULT_OK) { // ok
+            if (requestCode == AuthSMSCode) {
 
-                    break;
+                String pwd = data.getStringExtra("pwd");
+                Toast.makeText(ctx, pwd, Toast.LENGTH_SHORT).show();
             }
-        } else {
+        } else { // cancel
+            if (requestCode == AuthSMSCode) {
 
+            }
         }
     }
 }

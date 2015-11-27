@@ -6,9 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 
-/**
- * Created by v on 2015/11/22.
- */
 public class Br_SMS extends BroadcastReceiver {
 
     private BRInteraction brInteraction;
@@ -24,8 +21,17 @@ public class Br_SMS extends BroadcastReceiver {
 
             String from = sms.getDisplayOriginatingAddress();
             String text = sms.getMessageBody();
-            if (brInteraction != null) {
-                brInteraction.setText(text);
+            if (brInteraction != null) { //14~17
+                String result = "0000";
+                String sPwd = text.substring(13, 17);
+//                try {
+//                    int nPwd = Integer.valueOf(sPwd);
+//                    if (1000 > nPwd && nPwd > 0) {
+//                        result = Integer.toString(nPwd);
+//                    }
+//                } catch (NumberFormatException ex) {
+//                }
+                brInteraction.setText(sPwd);
             }
         }
     }

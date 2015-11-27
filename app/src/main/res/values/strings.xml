@@ -7,8 +7,12 @@
     <string name="msg_err_network">無法取得網路</string>
     <string name="msg_err_format">格式錯誤</string>
 
+    <!-- AuthSign -->
     <string-array name="country_number">
         <item>+886</item>
         <item>+1</item>
     </string-array>
+
+    <!-- AuthSMS -->
+    <string name="sms_text">請將簡訊收到的驗證碼輸入至上方</string>
 </resources>

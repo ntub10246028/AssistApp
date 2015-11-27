@@ -2,8 +2,12 @@ package com.example.apple.assistapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class Act_AuthSMS extends Activity implements Br_SMS.BRInteraction {
@@ -11,7 +15,8 @@ public class Act_AuthSMS extends Activity implements Br_SMS.BRInteraction {
     private Context ctx = Act_AuthSMS.this;
 
     // UI
-    private TextView tv_content;
+    private EditText et_pwd;
+    private Button bt_ok;
     // SMS
     private Br_SMS receiver_sms;
     private static final String MSG_RECEIVED =
@@ -29,12 +34,17 @@ public class Act_AuthSMS extends Activity implements Br_SMS.BRInteraction {
 
 
     private void findView() {
-        tv_content = (TextView) findViewById(R.id.tv_content);
+        et_pwd = (EditText) findViewById(R.id.et_pwd);
+        bt_ok = (Button) findViewById(R.id.bt_sms_ok);
+        bt_ok.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+
+            }
+        });
     }
 
     @Override
     protected void onPause() {
-        unregisterReceiver(receiver_sms);
         super.onPause();
     }
 
@@ -45,7 +55,12 @@ public class Act_AuthSMS extends Activity implements Br_SMS.BRInteraction {
 
     public void setText(String content) {
         if (content != null) {
-            tv_content.setText(content);
+            unregisterReceiver(receiver_sms);
+            //et_pwd.setText(content);
+            Intent it = new Intent();
+            it.putExtra("pwd",content);
+            setResult(RESULT_OK, it);
+            finish();
         }
     }
 }
