@@ -92,7 +92,7 @@ public class Act_AuthSign extends Activity {
         }
 
         protected Integer doInBackground(String... datas) {
-            Integer result = FAIL;
+            Integer result = 111;
             phone = mPhone;
             imei = getImei();
             if (client == null) {
@@ -107,12 +107,12 @@ public class Act_AuthSign extends Activity {
             }
             try {
                 //HttpClient client =new MyHttpClient(ctx);
-                sResult = session;
                 HttpGet hg = new HttpGet("https://app.lambda.tw/session");
                 hg.setHeader("lack.session", session);
                 Log.d(session, hg.getFirstHeader("lack.session").toString());
                 HttpResponse response = client.execute(hg);
                 HttpEntity entity = response.getEntity();
+                sResult = EntityUtils.toString(entity);
                 Log.d("xxxxxxxxxxxxxx", EntityUtils.toString(entity));
             } catch (Exception e) {
                 e.printStackTrace();

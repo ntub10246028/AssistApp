@@ -62,7 +62,8 @@ public class SignatureApp {
 
         JsonReaderPost jp= new JsonReaderPost(this.ctx);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("sign",m2.toString()));
+        params.add(new BasicNameValuePair("imei",m2.toString()));
+        params.add(new BasicNameValuePair("phone",m2.toString()));
         try {
             String re = jsonData(jp.Reader(params, this.url,client).toString(), "status");
             //Log.d("!!!!!!!!!!!!!!1",re);
