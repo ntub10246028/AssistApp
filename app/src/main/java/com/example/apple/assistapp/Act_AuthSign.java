@@ -79,6 +79,7 @@ public class Act_AuthSign extends Activity {
         private String sResult = "";
         private final int SUCCESS = 1;
         private final int FAIL = 0;
+        private final int FAIL_NOEXSIT = 8;
         private ProgressDialog pDialog;
 
         @Override
@@ -106,16 +107,18 @@ public class Act_AuthSign extends Activity {
                 session = sa.postSignature(imei, client);
             }
             try {
+                result = Integer.valueOf(sa.getErrorNo());
                 //HttpClient client =new MyHttpClient(ctx);
                 HttpGet hg = new HttpGet("https://app.lambda.tw/session");
                 hg.setHeader("lack.session", session);
                 Log.d(session, hg.getFirstHeader("lack.session").toString());
                 HttpResponse response = client.execute(hg);
                 HttpEntity entity = response.getEntity();
-                sResult = EntityUtils.toString(entity);
                 Log.d("xxxxxxxxxxxxxx", EntityUtils.toString(entity));
             } catch (Exception e) {
                 e.printStackTrace();
+                sResult = e.toString();
+                result = FAIL;
             }
 
             return result;
@@ -127,11 +130,14 @@ public class Act_AuthSign extends Activity {
                 case SUCCESS: // ok
                     ToMainActivity();
                     break;
-                case FAIL: // err : database no you
+                case FAIL_NOEXSIT: // err : database no you
                     SMS_dialog();
                     break;
+                case FAIL:
+                    Toast.makeText(ctx, sResult, Toast.LENGTH_SHORT).show();
+                    break;
                 default:
-                    Toast.makeText(ctx, result + "\n" + sResult, Toast.LENGTH_SHORT).show();
+
             }
         }
     }

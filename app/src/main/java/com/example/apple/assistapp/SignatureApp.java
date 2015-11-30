@@ -25,10 +25,10 @@ public class SignatureApp {
     private BigInteger d;
     private boolean success;
     private Context ctx;
-    private static String url="sign";
+    private String errorNo;
+    private static String url = "sign";
 
-    public SignatureApp(Context ctx, int resId)
-    {
+    public SignatureApp(Context ctx, int resId) {
         this.setCtx(ctx);
 
         InputStream inputStream = ctx.getResources().openRawResource(resId);
@@ -36,57 +36,59 @@ public class SignatureApp {
         InputStreamReader inputreader = new InputStreamReader(inputStream);
         BufferedReader bufferedreader = new BufferedReader(inputreader);
         String line;
-        try
-        {
+        try {
             boolean lineOne = true;
-            while (( line = bufferedreader.readLine()) != null)
-            {
-                if(lineOne){
+            while ((line = bufferedreader.readLine()) != null) {
+                if (lineOne) {
                     this.setN(new BigInteger(line));
-                    lineOne=!lineOne;
-                }else{
+                    lineOne = !lineOne;
+                } else {
                     this.setD(new BigInteger(line));
                 }
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public String postSignature(String imei,MyHttpClient client){
-        Random rand= new Random();
+    public String postSignature(String imei, MyHttpClient client) {
+        Random rand = new Random();
 
         BigInteger m2 = new BigInteger(imei).modPow(this.d, this.N);
 
-        JsonReaderPost jp= new JsonReaderPost(this.ctx);
+        JsonReaderPost jp = new JsonReaderPost(this.ctx);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("imei",m2.toString()));
-        params.add(new BasicNameValuePair("phone",m2.toString()));
+        params.add(new BasicNameValuePair("imei", m2.toString()));
+        params.add(new BasicNameValuePair("phone", m2.toString()));
         try {
-            String re = jsonData(jp.Reader(params, this.url,client).toString(), "status");
+            //String re = jsonData(jp.Reader(params, this.url, client).toString(), "status");
+            String re = jsonData(jp.Reader(params, this.url, client).toString(), "error");
             //Log.d("!!!!!!!!!!!!!!1",re);
-            if(re.equals("\"T\""))
+            //if(re.equals("\"T\""))
+            if (re.length() < 2) {
+                errorNo = re;
                 this.setSuccess(true);
+            }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return jp.getCookie();
     }
 
-    private String jsonData(String origin,String key){
+    private String jsonData(String origin, String key) {
         String subString;
-        try{
-            subString=origin.substring(origin.indexOf(key),origin.indexOf(","));
-        }catch (Exception e){
+//        try {
+//            subString = origin.substring(origin.indexOf(key), origin.indexOf(","));
+//        } catch (Exception e) {
+//
+//        } finally {
+//            subString = origin.substring(origin.indexOf(key), origin.indexOf("}"));
+//        }
+        subString = origin.substring(origin.indexOf(key), origin.indexOf("}"));
 
-        }finally {
-            subString=origin.substring(origin.indexOf(key),origin.indexOf("}"));
-        }
 
-        return subString.substring(subString.indexOf(":")+1);
+        return subString.substring(subString.indexOf(":") + 1);
     }
 
     public BigInteger getN() {
@@ -127,5 +129,13 @@ public class SignatureApp {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getErrorNo() {
+        return errorNo;
+    }
+
+    public void setErrorNo(String errorNo) {
+        this.errorNo = errorNo;
     }
 }
