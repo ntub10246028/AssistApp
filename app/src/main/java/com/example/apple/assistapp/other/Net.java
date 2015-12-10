@@ -8,6 +8,9 @@ import android.net.NetworkInfo;
  * Created by asus on 2015/11/20.
  */
 public class Net {
+
+
+
     public static boolean isNetWork(Context ctx) {
         ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = cm.getActiveNetworkInfo();

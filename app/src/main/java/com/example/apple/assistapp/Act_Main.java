@@ -92,36 +92,6 @@ public class Act_Main extends ActionBarActivity {
         InitialToolBar();
         InitialTabView();
         InitialViews();
-
-        TelephonyManager tM = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-
-        final String imei = tM.getDeviceId();
-        final Context ctx = this.getApplicationContext();
-        final MyHttpClient client = new MyHttpClient(ctx);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SignatureApp sa = new SignatureApp(ctx, R.raw.sign);
-                String session = null;
-
-                while (!sa.isSuccess()) {
-                    session = sa.postSignature(imei, client);
-                }
-
-                try {
-                    //HttpClient client =new MyHttpClient(ctx);
-                    HttpGet hg = new HttpGet("https://app.lambda.tw/session");
-                    hg.setHeader("lack.session", session);
-                    Log.d(session, hg.getFirstHeader("lack.session").toString());
-                    HttpResponse response = client.execute(hg);
-                    HttpEntity entity = response.getEntity();
-                    Log.d("xxxxxxxxxxxxxx", EntityUtils.toString(entity));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                //Log.d("over",imei);
-            }
-        }).start();
     }
 
     private void InitialWindowInfo() {

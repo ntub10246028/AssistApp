@@ -1,7 +1,10 @@
-package com.example.apple.assistapp;
+package com.example.apple.assistapp.connectionApp;
 
 import android.content.Context;
 import android.util.Log;
+
+import com.example.apple.assistapp.JsonReaderPost;
+import com.example.apple.assistapp.MyHttpClient;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -25,8 +28,12 @@ public class SignatureApp {
     private BigInteger d;
     private boolean success;
     private Context ctx;
-    private String errorNo;
-    private static String url = "sign";
+    private int resultNo;
+    private int pass;
+
+
+    private static String url_sign = "sign";
+    private static String url_auth = "auth";
 
     public SignatureApp(Context ctx, int resId) {
         this.setCtx(ctx);
@@ -51,45 +58,57 @@ public class SignatureApp {
         }
     }
 
-    public String postSignature(String imei, MyHttpClient client) {
-        Random rand = new Random();
+    public String postSignature(String imei, String phone, MyHttpClient client) {
 
-        BigInteger m2 = new BigInteger(imei).modPow(this.d, this.N);
+        BigInteger m1 = new BigInteger(imei).modPow(this.d, this.N);
+        BigInteger m2 = new BigInteger(phone).modPow(this.d, this.N);
 
         JsonReaderPost jp = new JsonReaderPost(this.ctx);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("imei", m2.toString()));
+        params.add(new BasicNameValuePair("imei", m1.toString()));
         params.add(new BasicNameValuePair("phone", m2.toString()));
         try {
-            //String re = jsonData(jp.Reader(params, this.url, client).toString(), "status");
-            String re = jsonData(jp.Reader(params, this.url, client).toString(), "error");
-            //Log.d("!!!!!!!!!!!!!!1",re);
-            //if(re.equals("\"T\""))
-            if (re.length() < 2) {
-                errorNo = re;
+            JSONObject jobj = jp.Reader(params, this.url_sign, client);
+            if (jobj != null) {
+                setResultNo(jobj.getInt("result"));
+                if (getResultNo() == -8)
+                    setPass(jobj.getInt("pass"));
                 this.setSuccess(true);
+            } else {
+                setResultNo(0);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return jp.getCookie();
     }
 
-    private String jsonData(String origin, String key) {
-        String subString;
-//        try {
-//            subString = origin.substring(origin.indexOf(key), origin.indexOf(","));
-//        } catch (Exception e) {
-//
-//        } finally {
-//            subString = origin.substring(origin.indexOf(key), origin.indexOf("}"));
-//        }
-        subString = origin.substring(origin.indexOf(key), origin.indexOf("}"));
+    public String postauthorize(String imei, String phone, int pass, MyHttpClient client) {
+        Random rand = new Random();
+        String strPass = Integer.toString(pass);
+        BigInteger m1 = new BigInteger(imei).modPow(this.d, this.N);
+        BigInteger m2 = new BigInteger(phone).modPow(this.d, this.N);
+        BigInteger m3 = new BigInteger(strPass).modPow(this.d, this.N);
 
-
-        return subString.substring(subString.indexOf(":") + 1);
+        JsonReaderPost jp = new JsonReaderPost(this.ctx);
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("imei", m1.toString()));
+        params.add(new BasicNameValuePair("phone", m2.toString()));
+        params.add(new BasicNameValuePair("password", m3.toString()));
+        try {
+            JSONObject jobj = jp.Reader(params, this.url_auth, client);
+            if (jobj != null) {
+                setResultNo(jobj.getInt("result"));
+                this.setSuccess(true);
+            } else {
+                setResultNo(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jp.getCookie();
     }
+
 
     public BigInteger getN() {
         return N;
@@ -123,19 +142,19 @@ public class SignatureApp {
         this.ctx = ctx;
     }
 
-    public String getUrl() {
-        return url;
+    public int getResultNo() {
+        return resultNo;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setResultNo(int resultNo) {
+        this.resultNo = resultNo;
     }
 
-    public String getErrorNo() {
-        return errorNo;
+    public int getPass() {
+        return pass;
     }
 
-    public void setErrorNo(String errorNo) {
-        this.errorNo = errorNo;
+    public void setPass(int pass) {
+        this.pass = pass;
     }
 }

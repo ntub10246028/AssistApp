@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.apple.assistapp.connectionApp.SignatureApp;
 import com.example.apple.assistapp.other.Net;
 
 import org.apache.http.HttpEntity;
@@ -50,6 +51,7 @@ public class Act_AuthSign extends Activity {
     private String[] countryNum = null;
     private String mImei;
     private String mPhone;
+    private int mPassNo;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,8 +80,11 @@ public class Act_AuthSign extends Activity {
         private String imei;
         private String sResult = "";
         private final int SUCCESS = 1;
-        private final int FAIL = 0;
-        private final int FAIL_NOEXSIT = 8;
+        private final int ERROR_GETDATA = 0;
+        private final int ERROR_EXCEPTION = -1;
+        private final int ERROR_NODOING = 111;
+        private final int FAIL_NOEXSIT = -8;
+        // UI
         private ProgressDialog pDialog;
 
         @Override
@@ -93,7 +98,7 @@ public class Act_AuthSign extends Activity {
         }
 
         protected Integer doInBackground(String... datas) {
-            Integer result = 111;
+            Integer result = ERROR_NODOING;
             phone = mPhone;
             imei = getImei();
             if (client == null) {
@@ -104,21 +109,21 @@ public class Act_AuthSign extends Activity {
             String session = null;
 
             while (!sa.isSuccess()) {
-                session = sa.postSignature(imei, client);
+                session = sa.postSignature(imei, phone, client);
             }
             try {
-                result = Integer.valueOf(sa.getErrorNo());
-                //HttpClient client =new MyHttpClient(ctx);
+                result = sa.getResultNo();
+                mPassNo = sa.getPass();
                 HttpGet hg = new HttpGet("https://app.lambda.tw/session");
                 hg.setHeader("lack.session", session);
                 Log.d(session, hg.getFirstHeader("lack.session").toString());
                 HttpResponse response = client.execute(hg);
                 HttpEntity entity = response.getEntity();
-                Log.d("xxxxxxxxxxxxxx", EntityUtils.toString(entity));
+                Log.d("HttpEntity Result !!!", EntityUtils.toString(entity));
             } catch (Exception e) {
                 e.printStackTrace();
                 sResult = e.toString();
-                result = FAIL;
+                result = ERROR_EXCEPTION;
             }
 
             return result;
@@ -133,11 +138,15 @@ public class Act_AuthSign extends Activity {
                 case FAIL_NOEXSIT: // err : database no you
                     SMS_dialog();
                     break;
-                case FAIL:
+                case ERROR_GETDATA:
+                    Toast.makeText(ctx, res.getString(R.string.msg_err_getdata) + "(" + ERROR_GETDATA + ")", Toast.LENGTH_SHORT).show();
+                    break;
+                case ERROR_EXCEPTION:
                     Toast.makeText(ctx, sResult, Toast.LENGTH_SHORT).show();
                     break;
-                default:
-
+                case ERROR_NODOING:
+                    Toast.makeText(ctx, "No Doing", Toast.LENGTH_SHORT).show();
+                    break;
             }
         }
     }
@@ -153,48 +162,58 @@ public class Act_AuthSign extends Activity {
     class AuthUserPWDTask extends AsyncTask<String, String, Integer> {
         private String phone;
         private String imei;
+        private int passNo;
         private final int SUCCESS = 1;
-        private final int FAIL = 0;
+        private final int ERROR_GETDATA = 0;
+        private final int ERROR_EXCEPTION = -1;
+        private final int ERROR_NODOING = 111;
+        private final int FAIL_NOEXSIT = -8;
         private String sResult = "";
 
         protected Integer doInBackground(String... datas) {
-            Integer result = -1;
+            Integer result = ERROR_NODOING;
             phone = mPhone;
             imei = getImei();
+            passNo = mPassNo;
+            SignatureApp sa = new SignatureApp(ctx, R.raw.sign);
+            String session = null;
 
-//            SignatureApp sa = new SignatureApp(ctx, R.raw.sign);
-//            String session = null;
-//
-//            while (!sa.isSuccess()) {
-//                session = sa.postSignature(imei, client);
-//            }
-//            try {
-//                //HttpClient client =new MyHttpClient(ctx);
-//                sResult = session;
-//                HttpGet hg = new HttpGet("https://app.lambda.tw/session");
-//                hg.setHeader("lack.session", session);
-//                Log.d(session, hg.getFirstHeader("lack.session").toString());
-//                HttpResponse response = client.execute(hg);
-//                HttpEntity entity = response.getEntity();
-//                Log.d("xxxxxxxxxxxxxx", EntityUtils.toString(entity));
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-
-            result = FAIL;
+            while (!sa.isSuccess()) {
+                session = sa.postauthorize(imei, phone, passNo, client);
+            }
+            try {
+                result = sa.getResultNo();
+                HttpGet hg = new HttpGet("https://app.lambda.tw/session");
+                hg.setHeader("lack.session", session);
+                Log.d(session, hg.getFirstHeader("lack.session").toString());
+                HttpResponse response = client.execute(hg);
+                HttpEntity entity = response.getEntity();
+                Log.d("xxxxxxxxxxxxxx", EntityUtils.toString(entity));
+            } catch (Exception e) {
+                e.printStackTrace();
+                sResult = e.toString();
+                result = ERROR_EXCEPTION;
+            }
             return result;
         }
 
         protected void onPostExecute(Integer result) {
             switch (result) {
-                case SUCCESS: // ok : pwd ok
+                case SUCCESS: // ok
                     ToMainActivity();
                     break;
-                case FAIL: // err : pwd error
+                case FAIL_NOEXSIT: // err : database no you
                     SMS_dialog();
                     break;
-                default:
+                case ERROR_GETDATA:
+                    Toast.makeText(ctx, res.getString(R.string.msg_err_getdata) + "(" + ERROR_GETDATA + ")", Toast.LENGTH_SHORT).show();
+                    break;
+                case ERROR_EXCEPTION:
                     Toast.makeText(ctx, sResult, Toast.LENGTH_SHORT).show();
+                    break;
+                case ERROR_NODOING:
+                    Toast.makeText(ctx, "No Doing", Toast.LENGTH_SHORT).show();
+                    break;
             }
         }
     }
@@ -214,7 +233,6 @@ public class Act_AuthSign extends Activity {
     private void SMS_dialog() {
         new AlertDialog.Builder(ctx).setTitle(mPhone).setMessage("我們會將簡訊驗證碼傳到上面的號碼").setPositiveButton("確認", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-
                 ToAuthSMSActivity();
             }
         }).setNegativeButton("取消", null).show();
@@ -301,7 +319,18 @@ public class Act_AuthSign extends Activity {
             if (requestCode == AuthSMSCode) {
 
                 String pwd = data.getStringExtra("pwd");
-                Toast.makeText(ctx, pwd, Toast.LENGTH_SHORT).show();
+                int ipwd = -1;
+                try {
+                    ipwd = Integer.valueOf(pwd);
+                } catch (NumberFormatException ex) {
+
+                }
+                if (ipwd == -1 || ipwd != mPassNo) {
+                    Toast.makeText(ctx, "驗證碼錯誤", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ctx, mPassNo + "", Toast.LENGTH_SHORT).show();
+                    AuthUserPWDTask();
+                }
             }
         } else { // cancel
             if (requestCode == AuthSMSCode) {
