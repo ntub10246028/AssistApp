@@ -2,26 +2,18 @@
     android:id="@+id/laySwipe"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
-    >
+    android:padding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/bt_sort"
+        <GridView
+            android:id="@+id/gv_fgm_datas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="排序" />
-
-        <ListView
-            android:id="@+id/lv_aaa_datas"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-        </ListView>
+            android:numColumns="2" />
     </LinearLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>

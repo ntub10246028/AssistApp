@@ -1,4 +1,4 @@
-package com.example.apple.assistapp;
+package com.example.apple.assistapp.Activity;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,10 +6,8 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,12 +22,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.apple.assistapp.MyFragmentAdapter;
+import com.example.apple.assistapp.R;
 import com.example.apple.assistapp.ui.SlidingTabLayout;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +46,7 @@ import java.util.List;
  */
 
 @SuppressWarnings("deprecation")
-public class Act_Main extends ActionBarActivity {
+public class Act_Main extends AppCompatActivity {
 
     private Context ctxt = Act_Main.this;
     private MyFragmentAdapter fragmentAdapter;
@@ -221,11 +216,11 @@ public class Act_Main extends ActionBarActivity {
 
     private void InitialTabView() {
         Titles = new ArrayList<String>();
-        Titles.add("AAA");
-        Titles.add("BBB");
+        Titles.add("Chrome");
+        Titles.add("Apple");
         Icons = new ArrayList<Integer>();
-        Icons.add(android.R.drawable.ic_menu_sort_by_size);
-        Icons.add(android.R.drawable.ic_menu_sort_by_size);
+        Icons.add(R.drawable.ic_chrome);
+        Icons.add(R.drawable.ic_apple);
     }
 
     private void InitialViews() {

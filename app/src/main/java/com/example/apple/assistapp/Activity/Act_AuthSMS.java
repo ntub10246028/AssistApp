@@ -1,4 +1,4 @@
-package com.example.apple.assistapp;
+package com.example.apple.assistapp.Activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+
+import com.example.apple.assistapp.Br_SMS;
+import com.example.apple.assistapp.R;
 
 public class Act_AuthSMS extends Activity implements Br_SMS.BRInteraction {
     // Obj

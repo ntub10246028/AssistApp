@@ -6,6 +6,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.example.apple.assistapp.Fragment.Fragment1;
+import com.example.apple.assistapp.Fragment.Fragment2;
+
 import java.util.List;
 
 

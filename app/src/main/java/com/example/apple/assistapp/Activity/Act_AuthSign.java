@@ -1,4 +1,4 @@
-package com.example.apple.assistapp;
+package com.example.apple.assistapp.Activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,7 +20,10 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.apple.assistapp.connectionApp.SignatureApp;
+import com.example.apple.assistapp.HttpConnection;
+import com.example.apple.assistapp.MyHttpClient;
+import com.example.apple.assistapp.R;
+import com.example.apple.assistapp.ConnectionApp.SignatureApp;
 import com.example.apple.assistapp.other.Net;
 
 import org.apache.http.HttpEntity;

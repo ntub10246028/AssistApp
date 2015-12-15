@@ -13,9 +13,8 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Act_AuthSign"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".Activity.Act_Main"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,10 +22,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Act_Main"
+            android:name=".Activity.Act_AuthSign"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Act_AuthSMS"
+            android:name=".Activity.Act_AuthSMS"
             android:screenOrientation="portrait" />
 
         <receiver android:name=".Br_SMS">

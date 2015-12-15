@@ -1,4 +1,4 @@
-package com.example.apple.assistapp;
+package com.example.apple.assistapp.Fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,16 +14,27 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.apple.assistapp.Adapter.DataGridAdapter;
+import com.example.apple.assistapp.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Fragment1 extends Fragment {
+    //
     private Context ctxt;
-    private int position;
+    // UI
     private SwipeRefreshLayout laySwipe;
-    private ListView lv_aaa_datas;
+    private GridView gv_datas;
+    private DataGridAdapter dataAdapter;
+    //
+    // Other
+    private int position;
 
     public static Fragment1 newInstance(int pos) {
         Fragment1 fragment = new Fragment1();
@@ -43,7 +54,7 @@ public class Fragment1 extends Fragment {
         ctxt = getActivity();
         View v = inflater.inflate(R.layout.fragment_1, container, false);
         laySwipe = (SwipeRefreshLayout) v.findViewById(R.id.laySwipe);
-        lv_aaa_datas = (ListView) v.findViewById(R.id.lv_aaa_datas);
+        gv_datas = (GridView) v.findViewById(R.id.gv_fgm_datas);
 
         laySwipe.setOnRefreshListener(onSwipeToRefresh);
         laySwipe.setColorSchemeResources(android.R.color.holo_red_light,
@@ -51,44 +62,32 @@ public class Fragment1 extends Fragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light);
 
-        String[] datas = { "AAA1", "AAA2", "AAA3", "AAA4", "AAA5", "AAA6",
-                "AAA7", "AAA8", "AAA9", "AAA10" };
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(ctxt,
-                android.R.layout.simple_list_item_1, datas);
+        List<String> datas = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            datas.add("Text");
+        }
+        dataAdapter = new DataGridAdapter(ctxt, datas);
         // 更新Adapter
         //adapter.notifyDataSetChanged();
 
-        lv_aaa_datas.setAdapter(adapter);
-        lv_aaa_datas.setOnScrollListener(onListScroll);
-        lv_aaa_datas.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                String text = ((TextView) v).getText().toString();
-                Toast.makeText(ctxt, text, Toast.LENGTH_SHORT).show();
-            }
-        });
-        return v;
-    }
+        gv_datas.setAdapter(dataAdapter);
 
-    private boolean listIsAtTop() {
-        if (lv_aaa_datas.getChildCount() == 0)
-            return true;
-        return lv_aaa_datas.getChildAt(0).getTop() == 0;
+        return v;
     }
 
     private OnRefreshListener onSwipeToRefresh = new OnRefreshListener() {
         public void onRefresh() {
-            if (listIsAtTop()) {
-                laySwipe.setRefreshing(true);
-                new Handler().postDelayed(new Runnable() {
-                    public void run() {
-                        laySwipe.setRefreshing(false);
-                        Toast.makeText(getActivity(), "Refresh done!",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }, 1000);
-
-            }
+//            if (listIsAtTop()) {
+//                laySwipe.setRefreshing(true);
+//                new Handler().postDelayed(new Runnable() {
+//                    public void run() {
+//                        laySwipe.setRefreshing(false);
+//                        Toast.makeText(getActivity(), "Refresh done!",
+//                                Toast.LENGTH_SHORT).show();
+//                    }
+//                }, 1000);
+//
+//            }
         }
     };
     private OnScrollListener onListScroll = new OnScrollListener() {

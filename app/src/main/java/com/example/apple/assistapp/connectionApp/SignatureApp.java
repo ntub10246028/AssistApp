@@ -1,7 +1,6 @@
-package com.example.apple.assistapp.connectionApp;
+package com.example.apple.assistapp.ConnectionApp;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.example.apple.assistapp.JsonReaderPost;
 import com.example.apple.assistapp.MyHttpClient;
