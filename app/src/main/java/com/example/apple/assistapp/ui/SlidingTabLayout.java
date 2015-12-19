@@ -1,37 +1,37 @@
 package com.example.apple.assistapp.ui;
 
-      //  import com.example.main.MyFragmentAdapter;
+//  import com.example.main.MyFragmentAdapter;
 
-        import android.content.Context;
-        import android.os.Build;
-        import android.support.v4.view.ViewPager;
-        import android.util.AttributeSet;
-        import android.util.TypedValue;
-        import android.view.Gravity;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.widget.HorizontalScrollView;
-        import android.widget.ImageView;
-        import android.widget.LinearLayout;
-        import android.widget.TextView;
+import android.content.Context;
+import android.os.Build;
+import android.support.v4.view.ViewPager;
+import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-        import com.example.apple.assistapp.MyFragmentAdapter;
+import com.example.apple.assistapp.MyFragmentAdapter;
 
 /**
  * To be used with ViewPager to provide a tab indicator component which give
  * constant feedback as to the user's scroll progress.
- * <p>
+ * <p/>
  * To use the component, simply add it to your view hierarchy. Then in your
  * {@link android.app.Activity} or {@link android.support.v4.app.Fragment} call
  * {@link #setViewPager(ViewPager)} providing it the ViewPager this layout is
  * being used for.
- * <p>
+ * <p/>
  * The colors can be customized in two ways. The first and simplest is to
  * provide an array of colors via {@link #setSelectedIndicatorColors(int...)}
  * and {@link #setDividerColors(int...)}. The alternative is via the
  * {@link TabColorizer} interface which provides you complete control over which
  * color is used for any individual position.
- * <p>
+ * <p/>
  * The views used as tabs can be customized by calling
  * {@link #setCustomTabView(int, int)}, providing the layout ID of your custom
  * layout.
@@ -46,13 +46,13 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
         /**
          * @return return the color of the indicator used when {@code position}
-         *         is selected.
+         * is selected.
          */
         int getIndicatorColor(int position);
 
         /**
          * @return return the color of the divider drawn to the right of
-         *         {@code position}.
+         * {@code position}.
          */
         int getDividerColor(int position);
 
@@ -109,7 +109,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
     /**
      * Set the custom {@link TabColorizer} to be used.
-     *
+     * <p/>
      * If you only require simple custmisation then you can use
      * {@link #setSelectedIndicatorColors(int...)} and
      * {@link #setDividerColors(int...)} to achieve similar effects.
@@ -151,10 +151,8 @@ public class SlidingTabLayout extends HorizontalScrollView {
     /**
      * Set the custom layout to be inflated for the tab views.
      *
-     * @param layoutResId
-     *            Layout id to be inflated
-     * @param textViewId
-     *            id of the {@link TextView} in the inflated view
+     * @param layoutResId Layout id to be inflated
+     * @param textViewId  id of the {@link TextView} in the inflated view
      */
     public void setCustomTabView(int layoutResId, int imgViewId, int textViewId) {
         mTabViewLayoutId = layoutResId;
@@ -270,6 +268,9 @@ public class SlidingTabLayout extends HorizontalScrollView {
     }
 
     private void populateTabStrip() {
+        removeOldSelection(); // add those two lines
+        oldSelection = null;
+
         final MyFragmentAdapter adapter = (MyFragmentAdapter) mViewPager
                 .getAdapter();
         final View.OnClickListener tabClickListener = new TabClickListener();
@@ -306,6 +307,15 @@ public class SlidingTabLayout extends HorizontalScrollView {
         }
     }
 
+    private View oldSelection;
+
+    // method to remove `selected` state from old one
+    private void removeOldSelection() {
+        if (oldSelection != null) {
+            oldSelection.setSelected(false);
+        }
+    }
+
     private void scrollToTab(int tabIndex, int positionOffset) {
         final int tabStripChildCount = mTabStrip.getChildCount();
         if (tabStripChildCount == 0 || tabIndex < 0
@@ -315,6 +325,13 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
         View selectedChild = mTabStrip.getChildAt(tabIndex);
         if (selectedChild != null) {
+
+            if (positionOffset == 0 && selectedChild != oldSelection) { // added part
+                selectedChild.setSelected(true);
+                removeOldSelection();
+                oldSelection = selectedChild;
+            }
+
             int targetScrollX = selectedChild.getLeft() + positionOffset;
 
             if (tabIndex > 0 || positionOffset > 0) {

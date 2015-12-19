@@ -233,11 +233,11 @@ public class Act_Main extends AppCompatActivity {
                 R.id.tv_tab_title);
 
         mSlidingTabLayout.setViewPager(mViewPager);
-        int dark = getResources().getColor(R.color.dark);
-        int white = getResources().getColor(R.color.white);
+        int dark = getResources().getColor(R.color.red);
+        int white = getResources().getColor(R.color.green);
         mSlidingTabLayout.setDividerColors(dark);
         // mSlidingTabLayout.setBackgroundColor(dark);
-        mSlidingTabLayout.setSelectedIndicatorColors(white);
+        mSlidingTabLayout.setSelectedIndicatorColors(white,dark);
     }
 
 }
