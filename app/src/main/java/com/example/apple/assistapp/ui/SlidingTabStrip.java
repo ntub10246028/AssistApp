@@ -1,4 +1,4 @@
-package com.example.apple.assistapp.ui;
+package com.example.apple.assistapp.UI;
         import android.R;
         import android.content.Context;
         import android.graphics.Canvas;

@@ -1,7 +1,9 @@
-package com.example.apple.assistapp;
+package com.example.apple.assistapp.ConnectionApp;
 
 import android.content.Context;
 
+
+import com.example.apple.assistapp.R;
 
 import java.io.InputStream;
 import java.security.KeyStore;

@@ -2,18 +2,17 @@
     android:id="@+id/laySwipe"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp">
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <GridView
-            android:id="@+id/gv_fgm_datas"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:numColumns="2" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycleview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>

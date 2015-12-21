@@ -3,10 +3,12 @@
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="gray">#ADADAD</color>
     <color name="red">#FF0000</color>
     <color name="green">#00FF00</color>
     <color name="dark">#4F4F4F</color>
     <color name="trans">#00FFFFFF</color>
+    <color name="trans_half">#88FFFFFF</color>
     <!-- example color -->
     <color name="colorPrimary_blue">#0277BD</color>
     <color name="colorPrimaryDark_blue">#01579B</color>

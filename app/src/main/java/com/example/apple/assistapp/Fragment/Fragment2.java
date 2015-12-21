@@ -3,30 +3,43 @@
 package com.example.apple.assistapp.Fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.content.Context;
+import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.apple.assistapp.Activity.Act_IssueArticle;
+import com.example.apple.assistapp.Adapter.RVListAdapter;
+import com.example.apple.assistapp.Other.ActivityCode;
+import com.example.apple.assistapp.Other.Item;
 import com.example.apple.assistapp.R;
+import com.example.apple.assistapp.UI.DividerItemDecoration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Fragment2 extends Fragment {
 
     private Context ctxt;
-    private ListView lv_bbb_datas;
-    private ImageButton imgbt_add;
     private int position;
+    // UI
+    private SwipeRefreshLayout laySwipe;
+    private FloatingActionButton fab;
+    private RecyclerView rv;
+    // Adapter
+    private RVListAdapter adapter_rv;
 
     public static Fragment2 newInstance(int pos) {
         Fragment2 fragment = new Fragment2();
@@ -35,6 +48,7 @@ public class Fragment2 extends Fragment {
         fragment.setArguments(b);
         return fragment;
     }
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         position = getArguments() != null ? getArguments().getInt("pos") : 2;
@@ -44,69 +58,58 @@ public class Fragment2 extends Fragment {
                              Bundle savedInstanceState) {
         ctxt = getActivity();
         View v = inflater.inflate(R.layout.fragment_2, container, false);
-        lv_bbb_datas = (ListView) v.findViewById(R.id.lv_bbb_datas);
-        imgbt_add = (ImageButton) v.findViewById(R.id.imgbt_add);
-        String[] datas = { "BBB1", "BBB2", "BBB3", "BBB4", "BBB5", "BBB6",
-                "BBB7", "BBB8", "BBB9", "BBB10" };
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(ctxt,
-                android.R.layout.simple_list_item_1, datas);
-        lv_bbb_datas.setAdapter(adapter);
-        // lv_bbb_datas.setOnScrollListener(scrolllistener);
-        lv_bbb_datas.setOnItemClickListener(new OnItemClickListener(){
-            public void onItemClick(AdapterView<?> parent, View v, int position,
-                                    long id) {
-                String text = ((TextView)v).getText().toString();
-                Toast.makeText(ctxt, text, Toast.LENGTH_SHORT).show();
-            }});
-        imgbt_add.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                Toast.makeText(ctxt, "add", Toast.LENGTH_SHORT).show();
+        laySwipe = (SwipeRefreshLayout) v.findViewById(R.id.laySwipe_list);
+        rv = (RecyclerView) v.findViewById(R.id.rv_list);
+        fab = (FloatingActionButton) v.findViewById(R.id.fab_list);
+        // Fab Setting
+        fab.setOnClickListener(new OnClickListener() {
+            public void onClick(View view) {
+                Intent it = new Intent(ctxt, Act_IssueArticle.class);
+                getActivity().startActivityForResult(it, ActivityCode.ADD);
             }
         });
+        // SwipeRefreshLayout Setting
+        laySwipe.setOnRefreshListener(onSwipeToRefresh);
+        laySwipe.setColorSchemeResources(android.R.color.holo_red_light,
+                android.R.color.holo_blue_light,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light);
+        //  RecyclerView Setting
+        List<Item> list = new ArrayList<Item>();
+        for (int i = 0; i < 20; i++) {
+            Item item = new Item();
+            item.setText("Text" + i);
+            list.add(item);
+        }
+        // 2. set layoutManger
+        GridLayoutManager manager = new GridLayoutManager(ctxt, 2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            public int getSpanSize(int position) {
+                return 2;
+            }
+        });
+        rv.setLayoutManager(manager);
+        // 3. create an adapter
+        adapter_rv = new RVListAdapter(list);
+        // 4. set adapter
+        rv.setAdapter(adapter_rv);
+        // 5. set item animator to DefaultAnimator
+        rv.setItemAnimator(new DefaultItemAnimator());
+        // 6. set Divider
+        rv.addItemDecoration(new DividerItemDecoration(ctxt, DividerItemDecoration.VERTICAL_LIST));
+
         return v;
     }
 
-//	OnScrollListener scrolllistener = new OnScrollListener() {
-//		int mLastFirstVisibleItem;
-//		boolean mIsScrollingUp = false;
-//		boolean isScroll = false;
-//
-//		public void onScroll(AbsListView v, int first, int arg2, int arg3) {
-//			if (!isScroll) {
-//				isScroll = true;
-//				ListView lv = lv_bbb_datas;
-//
-//				if (v.getId() == lv_bbb_datas.getId()) {
-//
-//					if (first > mLastFirstVisibleItem) {
-//						mIsScrollingUp = false;
-//					} else if (first < mLastFirstVisibleItem) {
-//						mIsScrollingUp = true;
-//					}
-//					mLastFirstVisibleItem = first;
-//					if (mIsScrollingUp) {
-//						Animation am = AnimationUtils.loadAnimation(
-//								getActivity(), R.layout.animation_appear);
-//						imgbt_add.startAnimation(am);
-//						imgbt_add.setVisibility(View.INVISIBLE);
-//					} else {
-//						Animation am = AnimationUtils.loadAnimation(
-//								getActivity(), R.layout.animation_disappear);
-//						imgbt_add.startAnimation(am);
-//						imgbt_add.setVisibility(View.VISIBLE);
-//					}
-//				}
-//			}
-//		}
-//
-//		public void onScrollStateChanged(AbsListView v, int scrollState) {
-//
-//			if (scrollState == 0) { // stop
-//				isScroll = false;
-//			}
-//
-//		}
-//
-//	};
-
+    private SwipeRefreshLayout.OnRefreshListener onSwipeToRefresh = new SwipeRefreshLayout.OnRefreshListener() {
+        public void onRefresh() {
+            Toast.makeText(ctxt, "Refresh", Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    laySwipe.setRefreshing(false);
+                }
+            }, 2000);
+        }
+    };
 }

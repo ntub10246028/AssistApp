@@ -1,4 +1,4 @@
-package com.example.apple.assistapp.other;
+package com.example.apple.assistapp.Other;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

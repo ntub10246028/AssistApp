@@ -6,19 +6,18 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.apple.assistapp.Adapter.DataGridAdapter;
+import com.example.apple.assistapp.Adapter.MyRVAdapter;
+import com.example.apple.assistapp.Other.Item;
 import com.example.apple.assistapp.R;
 
 import java.util.ArrayList;
@@ -30,9 +29,9 @@ public class Fragment1 extends Fragment {
     private Context ctxt;
     // UI
     private SwipeRefreshLayout laySwipe;
-    private GridView gv_datas;
-    private DataGridAdapter dataAdapter;
-    //
+    private RecyclerView mRecycleview;
+    // Adapter
+    private MyRVAdapter adapter_rv;
     // Other
     private int position;
 
@@ -54,55 +53,49 @@ public class Fragment1 extends Fragment {
         ctxt = getActivity();
         View v = inflater.inflate(R.layout.fragment_1, container, false);
         laySwipe = (SwipeRefreshLayout) v.findViewById(R.id.laySwipe);
-        gv_datas = (GridView) v.findViewById(R.id.gv_fgm_datas);
+        mRecycleview = (RecyclerView) v.findViewById(R.id.recycleview);
 
+        // SwipeRefreshLayout Setting
         laySwipe.setOnRefreshListener(onSwipeToRefresh);
         laySwipe.setColorSchemeResources(android.R.color.holo_red_light,
                 android.R.color.holo_blue_light,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light);
-
-        List<String> datas = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            datas.add("Text");
+        //  RecyclerView Setting
+        List<Item> list = new ArrayList<Item>();
+        for (int i = 0; i < 20; i++) {
+            Item item = new Item();
+            item.setText("Text" + i);
+            item.setImgurl("http://goo.gl/XUBhFS");
+            list.add(item);
         }
-        dataAdapter = new DataGridAdapter(ctxt, datas);
-        // 更新Adapter
-        //adapter.notifyDataSetChanged();
-
-        gv_datas.setAdapter(dataAdapter);
+        // 2. set layoutManger
+        GridLayoutManager manager = new GridLayoutManager(ctxt, 2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            public int getSpanSize(int position) {
+                return (position + 1) % 3 == 0 ? 2 : 1;
+            }
+        });
+        mRecycleview.setLayoutManager(manager);
+        // 3. create an adapter
+        adapter_rv = new MyRVAdapter(list);
+        // 4. set adapter
+        mRecycleview.setAdapter(adapter_rv);
+        // 5. set item animator to DefaultAnimator
+        mRecycleview.setItemAnimator(new DefaultItemAnimator());
 
         return v;
     }
 
     private OnRefreshListener onSwipeToRefresh = new OnRefreshListener() {
         public void onRefresh() {
-//            if (listIsAtTop()) {
-//                laySwipe.setRefreshing(true);
-//                new Handler().postDelayed(new Runnable() {
-//                    public void run() {
-//                        laySwipe.setRefreshing(false);
-//                        Toast.makeText(getActivity(), "Refresh done!",
-//                                Toast.LENGTH_SHORT).show();
-//                    }
-//                }, 1000);
-//
-//            }
-        }
-    };
-    private OnScrollListener onListScroll = new OnScrollListener() {
-
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-        }
-
-        public void onScroll(AbsListView view, int firstVisibleItem,
-                             int visibleItemCount, int totalItemCount) {
-            if (firstVisibleItem == 0) {
-                laySwipe.setEnabled(true);
-            } else {
-                laySwipe.setEnabled(false);
-            }
+            Toast.makeText(ctxt, "Refresh", Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    laySwipe.setRefreshing(false);
+                }
+            }, 2000);
         }
     };
 }

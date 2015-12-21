@@ -25,7 +25,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <com.example.apple.assistapp.ui.SlidingTabLayout
+                <com.example.apple.assistapp.UI.SlidingTabLayout
                     android:id="@+id/slidingtab"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

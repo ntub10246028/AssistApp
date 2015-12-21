@@ -20,11 +20,10 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.apple.assistapp.HttpConnection;
-import com.example.apple.assistapp.MyHttpClient;
+import com.example.apple.assistapp.ConnectionApp.MyHttpClient;
 import com.example.apple.assistapp.R;
 import com.example.apple.assistapp.ConnectionApp.SignatureApp;
-import com.example.apple.assistapp.other.Net;
+import com.example.apple.assistapp.Other.Net;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -37,8 +36,6 @@ public class Act_AuthSign extends Activity {
     private Context ctx = Act_AuthSign.this;
     private MyHttpClient client = null;
     private Resources res;
-    // Http
-    private HttpConnection conn;
     // StartActivity
     private static final int AuthSMSCode = 1;
     // SharedPreferences

@@ -2,7 +2,8 @@
     <string name="app_name">assist</string>
 
     <string name="Content1">Title</string>
-
+    <!-- Test -->
+    <string name="test1">這附近有什麼好吃的嗎?</string>
     <!-- Msg Err-->
     <string name="msg_err_network">無法取得網路</string>
     <string name="msg_err_getdata">無法取得資料</string>
@@ -16,4 +17,11 @@
 
     <!-- AuthSMS -->
     <string name="sms_text">請將簡訊收到的驗證碼輸入至上方</string>
+    <!-- Add -->
+    <string name="text_send">發出問題</string>
+    <string name="text_title">提出問題</string>
+    <string name="text_articletitle">標題</string>
+    <string name="text_articlecontent">內容</string>
+
+
 </resources>

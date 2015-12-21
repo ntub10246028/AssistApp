@@ -1,4 +1,4 @@
-package com.example.apple.assistapp.ui;
+package com.example.apple.assistapp.UI;
 
 //  import com.example.main.MyFragmentAdapter;
 
@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.apple.assistapp.MyFragmentAdapter;
+import com.example.apple.assistapp.Adapter.MyFragmentAdapter;
 
 /**
  * To be used with ViewPager to provide a tab indicator component which give

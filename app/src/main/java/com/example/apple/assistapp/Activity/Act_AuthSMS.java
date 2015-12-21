@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.apple.assistapp.Br_SMS;
+import com.example.apple.assistapp.Receiver.Br_SMS;
 import com.example.apple.assistapp.R;
 
 public class Act_AuthSMS extends Activity implements Br_SMS.BRInteraction {

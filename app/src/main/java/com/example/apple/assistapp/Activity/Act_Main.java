@@ -1,6 +1,7 @@
 package com.example.apple.assistapp.Activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -22,9 +23,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.apple.assistapp.MyFragmentAdapter;
+import com.example.apple.assistapp.Adapter.MyFragmentAdapter;
+import com.example.apple.assistapp.Other.ActivityCode;
 import com.example.apple.assistapp.R;
-import com.example.apple.assistapp.ui.SlidingTabLayout;
+import com.example.apple.assistapp.UI.SlidingTabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -216,8 +218,8 @@ public class Act_Main extends AppCompatActivity {
 
     private void InitialTabView() {
         Titles = new ArrayList<String>();
-        Titles.add("Chrome");
-        Titles.add("Apple");
+        Titles.add("求救區");
+        Titles.add("清單");
         Icons = new ArrayList<Integer>();
         Icons.add(R.drawable.ic_chrome);
         Icons.add(R.drawable.ic_apple);
@@ -233,11 +235,25 @@ public class Act_Main extends AppCompatActivity {
                 R.id.tv_tab_title);
 
         mSlidingTabLayout.setViewPager(mViewPager);
-        int dark = getResources().getColor(R.color.red);
-        int white = getResources().getColor(R.color.green);
-        mSlidingTabLayout.setDividerColors(dark);
-        // mSlidingTabLayout.setBackgroundColor(dark);
-        mSlidingTabLayout.setSelectedIndicatorColors(white,dark);
+        int red = getResources().getColor(R.color.red);
+        int green = getResources().getColor(R.color.green);
+        int trans = getResources().getColor(R.color.trans);
+        //mSlidingTabLayout.setDividerColors(dark);
+
+        //mSlidingTabLayout.setSelectedIndicatorColors(white,dark);
+        mSlidingTabLayout.setSelectedIndicatorColors(trans);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case ActivityCode.ADD:
+                if (resultCode == RESULT_OK) {
+                    String result = data.getStringExtra("test");
+                    Toast.makeText(ctxt, result, Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
 }

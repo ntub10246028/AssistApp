@@ -27,8 +27,11 @@
         <activity
             android:name=".Activity.Act_AuthSMS"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.Act_IssueArticle"
+            android:screenOrientation="portrait" />
 
-        <receiver android:name=".Br_SMS">
+        <receiver android:name=".Receiver.Br_SMS">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>

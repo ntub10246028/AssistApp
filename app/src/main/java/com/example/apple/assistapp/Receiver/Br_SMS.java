@@ -1,4 +1,4 @@
-package com.example.apple.assistapp;
+package com.example.apple.assistapp.Receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

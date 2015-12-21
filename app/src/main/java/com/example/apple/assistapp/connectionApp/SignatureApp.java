@@ -2,9 +2,6 @@ package com.example.apple.assistapp.ConnectionApp;
 
 import android.content.Context;
 
-import com.example.apple.assistapp.JsonReaderPost;
-import com.example.apple.assistapp.MyHttpClient;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
