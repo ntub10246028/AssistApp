@@ -6,6 +6,8 @@
     <color name="gray">#ADADAD</color>
     <color name="red">#FF0000</color>
     <color name="green">#00FF00</color>
+    <color name="green2">#43A047</color>
+
     <color name="dark">#4F4F4F</color>
     <color name="trans">#00FFFFFF</color>
     <color name="trans_half">#88FFFFFF</color>
@@ -13,4 +15,7 @@
     <color name="colorPrimary_blue">#0277BD</color>
     <color name="colorPrimaryDark_blue">#01579B</color>
     <color name="colorAccent_blue">#01579B</color>
+    <!-- Tab Status Color -->
+    <color name="tab_background_normal">#7DB8B2</color>
+
 </resources>

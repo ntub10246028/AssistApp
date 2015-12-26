@@ -95,8 +95,8 @@ public class Fragment2 extends Fragment {
         rv.setAdapter(adapter_rv);
         // 5. set item animator to DefaultAnimator
         rv.setItemAnimator(new DefaultItemAnimator());
-        // 6. set Divider
-        rv.addItemDecoration(new DividerItemDecoration(ctxt, DividerItemDecoration.VERTICAL_LIST));
+//        // 6. set Divider
+//        rv.addItemDecoration(new DividerItemDecoration(ctxt, DividerItemDecoration.VERTICAL_LIST));
 
         return v;
     }
