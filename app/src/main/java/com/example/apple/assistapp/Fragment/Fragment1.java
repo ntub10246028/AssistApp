@@ -66,7 +66,9 @@ public class Fragment1 extends Fragment {
         for (int i = 0; i < 20; i++) {
             Item item = new Item();
             item.setText("Text" + i);
-            item.setImgurl("http://goo.gl/XUBhFS");
+            if ((i + 1) % 3 == 0) {
+                item.setImgurl("http://goo.gl/XUBhFS");
+            }
             list.add(item);
         }
         // 2. set layoutManger
@@ -89,10 +91,11 @@ public class Fragment1 extends Fragment {
 
     private OnRefreshListener onSwipeToRefresh = new OnRefreshListener() {
         public void onRefresh() {
-            Toast.makeText(ctxt, "Refresh", Toast.LENGTH_SHORT).show();
+
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    Toast.makeText(ctxt, "Refresh", Toast.LENGTH_SHORT).show();
                     laySwipe.setRefreshing(false);
                 }
             }, 2000);

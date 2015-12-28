@@ -39,7 +39,6 @@ public class RVListAdapter extends RecyclerView.Adapter {
 
         // setTextSize
         mholder.text.setTextSize(((position + 1) % 3 == 0) ? NORMAL : SMALL);
-        mholder.text.setSelected(true);
         mholder.text.setText(list.get(position).getText());
     }
 

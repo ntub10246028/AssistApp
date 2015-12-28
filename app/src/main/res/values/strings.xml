@@ -22,6 +22,6 @@
     <string name="text_title">提出問題</string>
     <string name="text_articletitle">標題</string>
     <string name="text_articlecontent">內容</string>
-
+    <string name="warning_removeimage">移除這張圖片?</string>
 
 </resources>
