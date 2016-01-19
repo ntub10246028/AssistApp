@@ -7,7 +7,6 @@
         android:id="@+id/layout_left"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#6C6C6C"
         android:orientation="vertical"
         android:padding="10dp" >
 
@@ -25,9 +24,9 @@
 
             <ImageButton
                 android:id="@+id/imgbt_drawer_search"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@android:drawable/ic_menu_search" />
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/m_history_search" />
         </LinearLayout>
 
         <ListView
@@ -39,7 +38,7 @@
 
     <View
         android:id="@+id/view1"
-        android:layout_width="10dp"
+        android:layout_width="5dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"

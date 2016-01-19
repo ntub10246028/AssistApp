@@ -16,6 +16,10 @@
     <color name="colorPrimaryDark_blue">#01579B</color>
     <color name="colorAccent_blue">#01579B</color>
     <!-- Tab Status Color -->
-    <color name="tab_background_normal">#7DB8B2</color>
+    <color name="tab_background_normal">#B3B3B4</color>
+    <color name="tab_background_select">@color/white</color>
+
+    <color name="tab_text_normal">#FFFFFF</color>
+    <color name="tab_text_select">#221815</color>
 
 </resources>
