@@ -11,15 +11,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.lambda.app.assistapp.Activity.Act_IssueArticle;
 import com.lambda.app.assistapp.Adapter.RVListAdapter;
+import com.lambda.app.assistapp.Listener.OnRcvScrollListener;
 import com.lambda.app.assistapp.Other.ActivityCode;
 import com.lambda.app.assistapp.Other.Item;
 import com.example.apple.assistapp.R;
@@ -38,6 +41,8 @@ public class Frg_Processing extends Fragment {
     private ImageButton imgbt_add;
     // Adapter
     private RVListAdapter adapter_rv;
+    //
+    private GridLayoutManager manager;
 
     public static Frg_Processing newInstance(int pos) {
         Frg_Processing fragment = new Frg_Processing();
@@ -62,6 +67,7 @@ public class Frg_Processing extends Fragment {
 
         // SwipeRefreshLayout Setting
         laySwipe.setOnRefreshListener(onSwipeToRefresh);
+
         laySwipe.setColorSchemeResources(android.R.color.holo_red_light,
                 android.R.color.holo_blue_light,
                 android.R.color.holo_green_light,
@@ -75,6 +81,15 @@ public class Frg_Processing extends Fragment {
             }
         });
         //  RecyclerView Setting
+        rv.setOnScrollListener(new OnRcvScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int topRowVerticalPosition =
+                        (recyclerView == null || recyclerView.getChildCount() == 0) ? 0 : recyclerView.getChildAt(0).getTop();
+                laySwipe.setEnabled(topRowVerticalPosition >= 0);
+            }
+        });
         List<Item> list = new ArrayList<Item>();
         for (int i = 0; i < 20; i++) {
             Item item = new Item();
@@ -82,7 +97,7 @@ public class Frg_Processing extends Fragment {
             list.add(item);
         }
         // 2. set layoutManger
-        GridLayoutManager manager = new GridLayoutManager(ctxt, 2);
+        manager = new GridLayoutManager(ctxt, 2);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             public int getSpanSize(int position) {
                 return 2;
@@ -108,4 +123,5 @@ public class Frg_Processing extends Fragment {
             }, 1000);
         }
     };
+
 }

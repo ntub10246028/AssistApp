@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.lambda.app.assistapp.Listener.OnRcvScrollListener;
 import com.lambda.app.assistapp.Other.Item;
 import com.lambda.app.assistapp.Adapter.MyRVAdapter;
 import com.example.apple.assistapp.R;
@@ -60,6 +61,15 @@ public class Frg_NearTask extends Fragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light);
         //  RecyclerView Setting
+        mRecycleview.setOnScrollListener(new OnRcvScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int topRowVerticalPosition =
+                        (recyclerView == null || recyclerView.getChildCount() == 0) ? 0 : recyclerView.getChildAt(0).getTop();
+                laySwipe.setEnabled(topRowVerticalPosition >= 0);
+            }
+        });
         List<Item> list = new ArrayList<Item>();
         for (int i = 0; i < 20; i++) {
             Item item = new Item();
