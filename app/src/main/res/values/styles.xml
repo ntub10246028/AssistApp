@@ -3,11 +3,11 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <!-- colorPrimary is used for default action bar background -->
-        <item name="android:colorPrimary">@color/colorPrimary_blue</item>
-        <!-- colorPrimary is used for default the status bar -->
-        <item name="android:colorPrimaryDark">@color/colorPrimaryDark_blue</item>
-        <item name="android:colorAccent">@color/colorAccent_blue</item>
+        <!--&lt;!&ndash; colorPrimary is used for default action bar background &ndash;&gt;-->
+        <!--<item name="android:colorPrimary">@color/colorPrimary_blue</item>-->
+        <!--&lt;!&ndash; colorPrimary is used for default the status bar &ndash;&gt;-->
+        <!--<item name="android:colorPrimaryDark">@color/colorPrimaryDark_blue</item>-->
+        <!--<item name="android:colorAccent">@color/colorAccent_blue</item>-->
     </style>
 
     <style name="Widget.Assist.Toolbar" parent="Widget.AppCompat.ActionBar">

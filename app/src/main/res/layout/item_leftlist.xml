@@ -15,7 +15,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textSize="20sp"
+        android:textColor="@color/black" />
 
     <ImageView
         android:id="@+id/img_item_leftlist_status"
@@ -35,5 +36,5 @@
         android:layout_below="@+id/img_item_leftlist_status"
         android:text="Large Text"
         android:textColor="@color/black"
-        android:textSize="20sp" />
+        android:textSize="16sp" />
 </RelativeLayout>

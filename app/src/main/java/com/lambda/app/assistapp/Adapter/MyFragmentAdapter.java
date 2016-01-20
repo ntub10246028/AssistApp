@@ -6,8 +6,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.lambda.app.assistapp.Fragment.Frg_HelpArea;
-import com.lambda.app.assistapp.Fragment.Frg_List;
+import com.lambda.app.assistapp.Fragment.Frg_NearTask;
+import com.lambda.app.assistapp.Fragment.Frg_Processing;
 
 import java.util.List;
 
@@ -31,9 +31,9 @@ public class MyFragmentAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return Frg_HelpArea.newInstance(position);
+                return Frg_NearTask.newInstance(position);
             case 1:
-                return Frg_List.newInstance(position);
+                return Frg_Processing.newInstance(position);
             default:
                 return null;
         }
