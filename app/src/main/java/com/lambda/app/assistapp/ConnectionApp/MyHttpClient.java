@@ -6,6 +6,7 @@ import android.content.Context;
 import com.example.apple.assistapp.R;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.security.KeyStore;
 
 
@@ -19,9 +20,22 @@ import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 public class MyHttpClient extends DefaultHttpClient {
-    final Context context;
+    private static MyHttpClient client = new MyHttpClient();
+    private Context context;
 
-    public MyHttpClient(Context context) {
+    private MyHttpClient() {
+
+    }
+
+    public static MyHttpClient getMyHttpClient() {
+        return client;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
         this.context = context;
     }
 

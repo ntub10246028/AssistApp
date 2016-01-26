@@ -2,6 +2,7 @@ package com.lambda.app.assistapp.ConnectionApp;
 /**
  * Created by super on 2015/9/18.
  */
+
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -31,7 +32,7 @@ public class JsonReaderPost {
         this.mContext = mContext;
     }
 
-    public JSONObject Reader(List<NameValuePair> params,String dir,MyHttpClient client) throws IOException, JSONException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException, UnrecoverableKeyException {
+    public JSONObject Reader(List<NameValuePair> params, String dir, MyHttpClient client) throws IOException, JSONException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException, UnrecoverableKeyException {
         //String ints = "";
         //List<NameValuePair> params = new ArrayList<NameValuePair>();
         //params.add(new BasicNameValuePair("query","SELECT+AlertId+FROM+Orion.Alerts"));
@@ -39,45 +40,43 @@ public class JsonReaderPost {
         //HttpClient client = new DefaultHttpClient();
         //DefaultHttpClient client =new MyHttpClient(mContext);
 
-        HttpPost httpPost = new
-                HttpPost("https://app.lambda.tw/"+dir);
+        HttpPost httpPost = new HttpPost("https://app.lambda.tw/" + dir);
+        Log.d("JsonReaderPost", "Step1");
         //httpPost.addHeader("content-type", "application/json");
         //httpPost.addHeader("Authorization", "Basic YWRtaW46");
         httpPost.setEntity(new UrlEncodedFormEntity(params));
-
+        Log.d("JsonReaderPost", "Step2");
 
         HttpResponse response;
         String result = null;
-
+        Log.d("JsonReaderPost", "Step3");
         response = client.execute(httpPost);
+        Log.d("JsonReaderPost", "Step4");
         HttpEntity entity = response.getEntity();
+        Log.d("JsonReaderPost", "Step5");
         //Log.d("response", EntityUtils.toString(entity));
-        result=EntityUtils.toString(entity);
-        Log.d("DEBUG",result);
-
+        result = EntityUtils.toString(entity);
+        Log.d("JsonReaderPost", result);
+        Log.d("JsonReaderPost", "Step6");
 
         //String Strresult = EntityUtils.toString(entity, HTTP.UTF_8);
         List<Cookie> cookies = client.getCookieStore().getCookies();
         String get_result;
-        String Strcookie=null;
-        if (!cookies.isEmpty())
-        {
-            get_result="get cookie ok...";
-            for (int i = 0; i < cookies.size(); i++)
-            {
+        String Strcookie = null;
+        if (!cookies.isEmpty()) {
+            get_result = "get cookie ok...";
+            for (int i = 0; i < cookies.size(); i++) {
                 Cookie cookie = cookies.get(i);
-                Log.d(cookie.getName(),cookie.getValue());
+                Log.d(cookie.getName(), cookie.getValue());
                 this.setCookie(cookie.getValue());
                 Strcookie = cookie.getName() + "=" + cookie.getValue() + ";domain=" +
                         cookie.getDomain();
             }
-            get_result=Strcookie;
+            get_result = Strcookie;
+        } else {
+            get_result = "get cookie error";
         }
-        else
-        {
-            get_result="get cookie error";
-        }
-        Log.d("cookie",get_result);
+        Log.d("cookie", get_result);
 
         // Converting the String result into JSONObject jsonObj and then into
         // JSONArray to get data

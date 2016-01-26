@@ -11,17 +11,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.lambda.app.assistapp.Activity.Act_IssueArticle;
+import com.lambda.app.assistapp.Activity.Act_AuthSign;
+import com.lambda.app.assistapp.Activity.Act_NewMission;
 import com.lambda.app.assistapp.Adapter.RVListAdapter;
+import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
 import com.lambda.app.assistapp.Listener.OnRcvScrollListener;
 import com.lambda.app.assistapp.Other.ActivityCode;
 import com.lambda.app.assistapp.Other.Item;
@@ -34,6 +34,7 @@ import java.util.List;
 public class Frg_Processing extends Fragment {
 
     private Context ctxt;
+    private MyHttpClient client;
     private int position;
     // UI
     private SwipeRefreshLayout laySwipe;
@@ -55,6 +56,7 @@ public class Frg_Processing extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         position = getArguments() != null ? getArguments().getInt("pos") : 2;
+        client=MyHttpClient.getMyHttpClient();
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,7 +78,7 @@ public class Frg_Processing extends Fragment {
         imgbt_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent it = new Intent(ctxt, Act_IssueArticle.class);
+                Intent it = new Intent(ctxt, Act_NewMission.class);
                 getActivity().startActivityForResult(it, ActivityCode.ADD);
             }
         });

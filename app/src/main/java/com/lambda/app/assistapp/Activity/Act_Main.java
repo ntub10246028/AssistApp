@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lambda.app.assistapp.Adapter.LeftListAdapter;
+import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
 import com.lambda.app.assistapp.Other.ActivityCode;
 import com.lambda.app.assistapp.Other.Item_History;
 import com.lambda.app.assistapp.UI.SlidingTabLayout;
@@ -38,6 +39,7 @@ import java.util.List;
 public class Act_Main extends AppCompatActivity {
 
     private Context ctxt = Act_Main.this;
+    private MyHttpClient client;
     private MyFragmentAdapter fragmentAdapter;
     private List<String> Titles;
     private List<Integer> Icons;
@@ -73,27 +75,34 @@ public class Act_Main extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        InitialSomething();
         InitialWindowInfo();
         InitialDrawerLayout();
         InitialToolBar();
         InitialTabView();
-        InitialViews();
+        InitialUI();
+        InitialAction();
+    }
+
+    private void InitialSomething() {
+        client = MyHttpClient.getMyHttpClient();
+        if (client != null) {
+            Toast.makeText(ctxt, "YA", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(ctxt, "NO", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void InitialWindowInfo() {
         window_width = getResources().getDisplayMetrics().widthPixels;
         window_height = getResources().getDisplayMetrics().heightPixels;
-
         draweropen_offset_left = (int) (window_width * perfectRate_left);
-
     }
 
     private void InitialDrawerLayout() {
         main_layout = (LinearLayout) findViewById(R.id.main_layout);
         drawer_left_layout = (LinearLayout) findViewById(R.id.drawer_left_layout);
         drawer_right_layout = (LinearLayout) findViewById(R.id.drawer_right_layout);
-
         DrawerLayout.LayoutParams params = (DrawerLayout.LayoutParams) drawer_left_layout
                 .getLayoutParams();
         params.width = draweropen_offset_left;
@@ -219,12 +228,17 @@ public class Act_Main extends AppCompatActivity {
         Icons.add(R.drawable.tab_image_processing_selector);
     }
 
-    private void InitialViews() {
+    private void InitialUI() {
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
+
+        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.slidingtab);
+
+    }
+
+    private void InitialAction() {
         fragmentAdapter = new MyFragmentAdapter(getSupportFragmentManager(),
                 Titles, Icons);
         mViewPager.setAdapter(fragmentAdapter);
-        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.slidingtab);
         mSlidingTabLayout.setCustomTabView(R.layout.tabview, R.id.tv_tab_icon,
                 R.id.tv_tab_title);
 

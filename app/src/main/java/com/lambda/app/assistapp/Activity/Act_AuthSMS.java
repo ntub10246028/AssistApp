@@ -14,7 +14,7 @@ import com.example.apple.assistapp.R;
 
 public class Act_AuthSMS extends Activity implements Br_SMS.BRInteraction {
     // Obj
-    private Context ctx = Act_AuthSMS.this;
+    private Context ctxt = Act_AuthSMS.this;
 
     // UI
     private EditText et_pwd;

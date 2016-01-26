@@ -8,4 +8,9 @@ public class TaskCode {
     public static final int Fail = 0;
     public static final int Empty = -8;
     public static final int NoResponse = -1;
+    /**
+     *
+     */
+    public static final int New_Mission_Fail = -10;
+    public static final int New_Mission_LackData = -11;
 }

@@ -9,32 +9,48 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.apple.assistapp.R;
+import com.lambda.app.assistapp.ConnectionApp.JsonReaderPost;
+import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
+import com.lambda.app.assistapp.Other.IsVail;
+import com.lambda.app.assistapp.Other.Net;
+import com.lambda.app.assistapp.Other.TaskCode;
+import com.lambda.app.assistapp.Other.URLs;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by v on 2015/12/20.
  */
-public class Act_IssueArticle extends AppCompatActivity {
+public class Act_NewMission extends AppCompatActivity {
 
     //
-    private Context ctxt = Act_IssueArticle.this;
+    private Context ctxt = Act_NewMission.this;
+    private MyHttpClient client;
     private Resources res;
+    private JsonReaderPost jp;
     private static final int BYCAMERA = 1;
     private static final int BYPHOTO = 0;
     //
     private Button bt_issue;
     private EditText et_title, et_content;
-    private ImageView img_upload_1, img_upload_2, img_upload_3, img_upload_4, img_upload_selected;
     //
     private boolean[] imageIsEmpty = {true, true, true, true};
 
@@ -45,10 +61,79 @@ public class Act_IssueArticle extends AppCompatActivity {
         InitialSomething();
         InitialUI();
         InitialAction();
+        if (client != null) {
+            Toast.makeText(ctxt, "Y", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(ctxt, "N", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void NewMissionTask() {
+        if (Net.isNetWork(ctxt)) {
+            new NewMissionTask().execute();
+        } else {
+            Toast.makeText(Act_NewMission.this, res.getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    class NewMissionTask extends AsyncTask<String, Integer, Integer> {
+        private String title;
+        private String content;
+        private int missionid;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            title = et_title.getText().toString();
+            content = et_content.getText().toString();
+        }
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+            int result = TaskCode.NoResponse;
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("title", title));
+            params.add(new BasicNameValuePair("content", content));
+            params.add(new BasicNameValuePair("locationID", "360.0"));
+            try {
+                JSONObject jobj = jp.Reader(params, URLs.url_New_Mission, client);
+                if (jobj == null) return result;
+                result = jobj.getInt("result");
+                if (result == TaskCode.Success) {
+                    missionid = jobj.getInt("missionid");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d("NewMissionTask", e.toString());
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            super.onPostExecute(result);
+            switch (result) {
+                case TaskCode.Success:
+                    Toast.makeText(ctxt, "Success", Toast.LENGTH_SHORT).show();
+                    break;
+                case TaskCode.New_Mission_Fail:
+                    Toast.makeText(ctxt, "Fail", Toast.LENGTH_SHORT).show();
+                    break;
+                case TaskCode.New_Mission_LackData:
+                    Toast.makeText(ctxt, "LackData", Toast.LENGTH_SHORT).show();
+                    break;
+                case TaskCode.NoResponse:
+                    Toast.makeText(ctxt, "NoResponse", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
     }
 
     private void InitialSomething() {
         res = getResources();
+        jp = new JsonReaderPost(ctxt);
+        client = MyHttpClient.getMyHttpClient();
     }
 
 
@@ -56,33 +141,23 @@ public class Act_IssueArticle extends AppCompatActivity {
         bt_issue = (Button) findViewById(R.id.bt_ia_issue);
         et_title = (EditText) findViewById(R.id.et_ia_title);
         et_content = (EditText) findViewById(R.id.et_ia_content);
-        img_upload_1 = (ImageView) findViewById(R.id.img_upload_1);
-        img_upload_2 = (ImageView) findViewById(R.id.img_upload_2);
-        img_upload_3 = (ImageView) findViewById(R.id.img_upload_3);
-        img_upload_4 = (ImageView) findViewById(R.id.img_upload_4);
-        img_upload_selected = img_upload_1;
     }
 
     private void InitialAction() {
         bt_issue.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-
+                String title = et_title.getText().toString();
+                String content = et_content.getText().toString();
+                if (IsVail.isVail_New_Mission(ctxt, title, content)) {
+                    NewMissionTask();
+                }
             }
         });
-        img_upload_1.setOnClickListener(ImageClick);
-        img_upload_2.setOnClickListener(ImageClick);
-        img_upload_3.setOnClickListener(ImageClick);
-        img_upload_4.setOnClickListener(ImageClick);
-
-        img_upload_1.setOnLongClickListener(ImageLongClick);
-        img_upload_2.setOnLongClickListener(ImageLongClick);
-        img_upload_3.setOnLongClickListener(ImageLongClick);
-        img_upload_4.setOnLongClickListener(ImageLongClick);
     }
 
     View.OnClickListener ImageClick = new View.OnClickListener() {
         public void onClick(View v) {
-            img_upload_selected = (ImageView) v;
+            //img_upload_selected = (ImageView) v;
             final CharSequence[] items = {"相簿", "拍照"};
             AlertDialog dlg = new AlertDialog.Builder(ctxt).setTitle("選擇照片").setItems(items,
                     new DialogInterface.OnClickListener() {
@@ -106,24 +181,6 @@ public class Act_IssueArticle extends AppCompatActivity {
             dlg.show();
         }
     };
-    View.OnLongClickListener ImageLongClick = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(final View v) {
-            img_upload_selected = (ImageView) v;
-            // if no image
-            if (img_upload_selected.getDrawable() == res.getDrawable(R.drawable.non_selected_background)) {
-                return true;
-            }
-            new AlertDialog.Builder(ctxt).setMessage(res.getString(R.string.warning_removeimage)).setPositiveButton("刪除", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    img_upload_selected.setImageResource(R.drawable.non_selected_background);
-                }
-            }).setNegativeButton("取消", null).show();
-
-            return true;
-        }
-    };
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -142,7 +199,7 @@ public class Act_IssueArticle extends AppCompatActivity {
                 //將字節數組轉換為ImageView可調用的Bitmap對象
                 myBitmap = getPicFromBytes(mContent, null);
                 ////把得到的圖片?定在控件上顯示
-                img_upload_selected.setImageBitmap(myBitmap);
+                //img_upload_selected.setImageBitmap(myBitmap);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -173,7 +230,7 @@ public class Act_IssueArticle extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                img_upload_selected.setImageBitmap(myBitmap);
+                //img_upload_selected.setImageBitmap(myBitmap);
             }
         }
 

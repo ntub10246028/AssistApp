@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.lambda.app.assistapp.Activity.Act_AuthSign;
+import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
 import com.lambda.app.assistapp.Listener.OnRcvScrollListener;
 import com.lambda.app.assistapp.Other.Item;
 import com.lambda.app.assistapp.Adapter.MyRVAdapter;
@@ -26,6 +28,7 @@ import java.util.List;
 public class Frg_NearTask extends Fragment {
     //
     private Context ctxt;
+    private MyHttpClient client;
     // UI
     private SwipeRefreshLayout laySwipe;
     private RecyclerView mRecycleview;
@@ -34,7 +37,7 @@ public class Frg_NearTask extends Fragment {
     // Other
     private int position;
 
-    public static Frg_NearTask newInstance(int pos) {
+    public static Frg_NearTask newInstance(int pos ) {
         Frg_NearTask fragment = new Frg_NearTask();
         Bundle b = new Bundle();
         b.putInt("pos", pos);
@@ -45,6 +48,7 @@ public class Frg_NearTask extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         position = getArguments() != null ? getArguments().getInt("pos") : 1;
+        client=MyHttpClient.getMyHttpClient();
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,16 +78,14 @@ public class Frg_NearTask extends Fragment {
         for (int i = 0; i < 20; i++) {
             Item item = new Item();
             item.setText("Text" + i);
-            if ((i + 1) % 3 == 0) {
-                item.setImgurl("http://goo.gl/XUBhFS");
-            }
+            item.setImgurl("http://goo.gl/XUBhFS");
             list.add(item);
         }
         // 2. set layoutManger
         GridLayoutManager manager = new GridLayoutManager(ctxt, 2);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             public int getSpanSize(int position) {
-                return (position + 1) % 3 == 0 ? 2 : 1;
+                return 2;
             }
         });
         mRecycleview.setLayoutManager(manager);
