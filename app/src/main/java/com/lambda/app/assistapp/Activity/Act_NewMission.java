@@ -49,7 +49,7 @@ public class Act_NewMission extends AppCompatActivity {
     private static final int BYCAMERA = 1;
     private static final int BYPHOTO = 0;
     //
-    private Button bt_issue;
+    private ImageView iv_camera, iv_map, iv_time, iv_send;
     private EditText et_title, et_content;
     //
     private boolean[] imageIsEmpty = {true, true, true, true};
@@ -57,7 +57,7 @@ public class Act_NewMission extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_issuearticle);
+        setContentView(R.layout.activity_newmission);
         InitialSomething();
         InitialUI();
         InitialAction();
@@ -138,13 +138,34 @@ public class Act_NewMission extends AppCompatActivity {
 
 
     private void InitialUI() {
-        bt_issue = (Button) findViewById(R.id.bt_ia_issue);
-        et_title = (EditText) findViewById(R.id.et_ia_title);
-        et_content = (EditText) findViewById(R.id.et_ia_content);
+        iv_camera = (ImageView) findViewById(R.id.iv_newmission_camera);
+        iv_map = (ImageView) findViewById(R.id.iv_newmission_map);
+        iv_time = (ImageView) findViewById(R.id.iv_newmission_time);
+        iv_send = (ImageView) findViewById(R.id.iv_newmission_send);
+
+        et_title = (EditText) findViewById(R.id.et_newmission_title);
+        et_content = (EditText) findViewById(R.id.et_newmission_content);
     }
 
     private void InitialAction() {
-        bt_issue.setOnClickListener(new View.OnClickListener() {
+        iv_camera.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+
+            }
+        });
+        iv_map.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+
+            }
+        });
+        iv_time.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+
+            }
+        });
+
+
+        iv_send.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 String title = et_title.getText().toString();
                 String content = et_content.getText().toString();
