@@ -41,23 +41,17 @@ public class JsonReaderPost {
         //DefaultHttpClient client =new MyHttpClient(mContext);
 
         HttpPost httpPost = new HttpPost("https://app.lambda.tw/" + dir);
-        Log.d("JsonReaderPost", "Step1");
         //httpPost.addHeader("content-type", "application/json");
         //httpPost.addHeader("Authorization", "Basic YWRtaW46");
         httpPost.setEntity(new UrlEncodedFormEntity(params));
-        Log.d("JsonReaderPost", "Step2");
 
         HttpResponse response;
         String result = null;
-        Log.d("JsonReaderPost", "Step3");
         response = client.execute(httpPost);
-        Log.d("JsonReaderPost", "Step4");
         HttpEntity entity = response.getEntity();
-        Log.d("JsonReaderPost", "Step5");
         //Log.d("response", EntityUtils.toString(entity));
         result = EntityUtils.toString(entity);
         Log.d("JsonReaderPost", result);
-        Log.d("JsonReaderPost", "Step6");
 
         //String Strresult = EntityUtils.toString(entity, HTTP.UTF_8);
         List<Cookie> cookies = client.getCookieStore().getCookies();

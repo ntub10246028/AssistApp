@@ -8,7 +8,8 @@
     <string name="msg_err_network">無法取得網路</string>
     <string name="msg_err_noresponse">伺服器沒有回應</string>
     <string name="msg_err_format">格式錯誤</string>
-
+    <!-- Main -->
+    <string name="msg_exit">在按一次返回鍵離開</string>
     <!-- AuthSign -->
     <string-array name="country_number">
         <item>+886</item>

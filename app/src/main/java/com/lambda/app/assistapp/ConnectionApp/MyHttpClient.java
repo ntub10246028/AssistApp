@@ -3,7 +3,7 @@ package com.lambda.app.assistapp.ConnectionApp;
 import android.content.Context;
 
 
-import com.example.apple.assistapp.R;
+import com.lambda.app.assistapp.R;
 
 import java.io.InputStream;
 import java.io.Serializable;

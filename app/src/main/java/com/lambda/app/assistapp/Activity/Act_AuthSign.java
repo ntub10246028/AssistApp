@@ -24,8 +24,8 @@ import com.lambda.app.assistapp.Other.ActivityCode;
 import com.lambda.app.assistapp.Other.Net;
 import com.lambda.app.assistapp.Other.TaskCode;
 import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
-import com.example.apple.assistapp.R;
 import com.lambda.app.assistapp.ConnectionApp.SignatureApp;
+import com.lambda.app.assistapp.R;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;

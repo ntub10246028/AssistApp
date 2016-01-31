@@ -28,9 +28,9 @@ import com.lambda.app.assistapp.Adapter.LeftListAdapter;
 import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
 import com.lambda.app.assistapp.Other.ActivityCode;
 import com.lambda.app.assistapp.Other.Item_History;
+import com.lambda.app.assistapp.R;
 import com.lambda.app.assistapp.UI.SlidingTabLayout;
 import com.lambda.app.assistapp.Adapter.MyFragmentAdapter;
-import com.example.apple.assistapp.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -261,6 +261,18 @@ public class Act_Main extends AppCompatActivity {
                     Toast.makeText(ctxt, result, Toast.LENGTH_SHORT).show();
                 }
                 break;
+        }
+    }
+
+    private static long lastPressTime = 0;
+
+    public void onBackPressed() {
+
+        if (System.currentTimeMillis() - lastPressTime < 2000) {
+            super.onBackPressed();
+        } else {
+            lastPressTime = System.currentTimeMillis();
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_exit), Toast.LENGTH_SHORT).show();
         }
     }
 }

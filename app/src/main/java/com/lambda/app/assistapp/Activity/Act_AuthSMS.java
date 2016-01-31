@@ -9,8 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.lambda.app.assistapp.R;
 import com.lambda.app.assistapp.Receiver.Br_SMS;
-import com.example.apple.assistapp.R;
 
 public class Act_AuthSMS extends Activity implements Br_SMS.BRInteraction {
     // Obj
@@ -41,7 +41,7 @@ public class Act_AuthSMS extends Activity implements Br_SMS.BRInteraction {
         bt_ok.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent it = new Intent();
-                it.putExtra("pwd",et_pwd.getText().toString());
+                it.putExtra("pwd", et_pwd.getText().toString());
                 setResult(RESULT_OK, it);
                 finish();
             }
@@ -63,7 +63,7 @@ public class Act_AuthSMS extends Activity implements Br_SMS.BRInteraction {
             unregisterReceiver(receiver_sms);
             et_pwd.setText(content);
             Intent it = new Intent();
-            it.putExtra("pwd",content);
+            it.putExtra("pwd", content);
             setResult(RESULT_OK, it);
             finish();
         }

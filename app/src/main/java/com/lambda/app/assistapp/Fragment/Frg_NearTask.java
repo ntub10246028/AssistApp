@@ -1,31 +1,47 @@
 package com.lambda.app.assistapp.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.lambda.app.assistapp.Activity.Act_AuthSign;
+import com.lambda.app.assistapp.ConnectionApp.JsonReaderPost;
 import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
+import com.lambda.app.assistapp.Item.AroundItem;
 import com.lambda.app.assistapp.Listener.OnRcvScrollListener;
-import com.lambda.app.assistapp.Other.Item;
-import com.lambda.app.assistapp.Adapter.MyRVAdapter;
-import com.example.apple.assistapp.R;
+import com.lambda.app.assistapp.Adapter.AroundRVAdapter;
+import com.lambda.app.assistapp.Other.Net;
+import com.lambda.app.assistapp.Other.TaskCode;
+import com.lambda.app.assistapp.Other.URLs;
+import com.lambda.app.assistapp.R;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Frg_NearTask extends Fragment {
+public class Frg_NearTask extends Fragment implements LocationListener {
     //
     private Context ctxt;
     private MyHttpClient client;
@@ -33,11 +49,17 @@ public class Frg_NearTask extends Fragment {
     private SwipeRefreshLayout laySwipe;
     private RecyclerView mRecycleview;
     // Adapter
-    private MyRVAdapter adapter_rv;
+    private AroundRVAdapter adapter_rv;
     // Other
     private int position;
+    private List<AroundItem> list_around;
+    // For get Lan Let
+    private boolean getService = false;     //是否已開啟定位服務
+    private LocationManager lms;
+    private Location location;
+    private String bestProvider = LocationManager.GPS_PROVIDER;
 
-    public static Frg_NearTask newInstance(int pos ) {
+    public static Frg_NearTask newInstance(int pos) {
         Frg_NearTask fragment = new Frg_NearTask();
         Bundle b = new Bundle();
         b.putInt("pos", pos);
@@ -48,22 +70,26 @@ public class Frg_NearTask extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         position = getArguments() != null ? getArguments().getInt("pos") : 1;
-        client=MyHttpClient.getMyHttpClient();
+        client = MyHttpClient.getMyHttpClient();
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ctxt = getActivity();
+        InitialSomething();
         View v = inflater.inflate(R.layout.fragment_neartask, container, false);
-        laySwipe = (SwipeRefreshLayout) v.findViewById(R.id.laySwipe);
-        mRecycleview = (RecyclerView) v.findViewById(R.id.recycleview);
+        InitialUI(v);
+        InitialAction();
 
+
+        setlocations();
+        return v;
+    }
+
+    private void InitialAction() {
         // SwipeRefreshLayout Setting
         laySwipe.setOnRefreshListener(onSwipeToRefresh);
-        laySwipe.setColorSchemeResources(android.R.color.holo_red_light,
-                android.R.color.holo_blue_light,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light);
+        laySwipe.setColorSchemeResources(android.R.color.black);
         //  RecyclerView Setting
         mRecycleview.setOnScrollListener(new OnRcvScrollListener() {
             @Override
@@ -74,13 +100,6 @@ public class Frg_NearTask extends Fragment {
                 laySwipe.setEnabled(topRowVerticalPosition >= 0);
             }
         });
-        List<Item> list = new ArrayList<Item>();
-        for (int i = 0; i < 20; i++) {
-            Item item = new Item();
-            item.setText("Text" + i);
-            item.setImgurl("http://goo.gl/XUBhFS");
-            list.add(item);
-        }
         // 2. set layoutManger
         GridLayoutManager manager = new GridLayoutManager(ctxt, 2);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -90,13 +109,20 @@ public class Frg_NearTask extends Fragment {
         });
         mRecycleview.setLayoutManager(manager);
         // 3. create an adapter
-        adapter_rv = new MyRVAdapter(list);
+        adapter_rv = new AroundRVAdapter(list_around);
         // 4. set adapter
         mRecycleview.setAdapter(adapter_rv);
         // 5. set item animator to DefaultAnimator
         mRecycleview.setItemAnimator(new DefaultItemAnimator());
+    }
 
-        return v;
+    private void InitialUI(View v) {
+        laySwipe = (SwipeRefreshLayout) v.findViewById(R.id.laySwipe);
+        mRecycleview = (RecyclerView) v.findViewById(R.id.recycleview);
+    }
+
+    private void InitialSomething() {
+        list_around = new ArrayList<>();
     }
 
     private OnRefreshListener onSwipeToRefresh = new OnRefreshListener() {
@@ -105,11 +131,152 @@ public class Frg_NearTask extends Fragment {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    //LoadingAroundMission();
                     Toast.makeText(ctxt, "Refresh", Toast.LENGTH_SHORT).show();
                     laySwipe.setRefreshing(false);
                 }
             }, 1000);
         }
     };
+
+    private void LoadingAroundMission(String... datas) {
+        if (Net.isNetWork(ctxt)) {
+            new LoadingAroundMission().execute(datas);
+        } else {
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    class LoadingAroundMission extends AsyncTask<String, Integer, Integer> {
+        private String longitude, latitude;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            list_around.clear();
+        }
+
+        @Override
+        protected Integer doInBackground(String... datas) {
+            Integer result = TaskCode.NoResponse;
+            longitude = datas[0];
+            latitude = datas[1];
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("lon", longitude));
+            params.add(new BasicNameValuePair("lat", latitude));
+            try {
+                JsonReaderPost jp = new JsonReaderPost(ctxt);
+                JSONObject jobj = jp.Reader(params, URLs.url_around_Mission, client);
+                if (jobj == null) return result;
+                Log.d("LoadingAroundMission", jobj.toString());
+                result = jobj.getInt("result");
+                if (result == TaskCode.Success) {
+                    JSONArray jarray = jobj.getJSONArray("around");
+                    for (int i = 0; i < jarray.length(); i++) {
+                        JSONObject item = jarray.getJSONObject(i);
+                        AroundItem aitem = new AroundItem();
+                        aitem.setMission(item.getInt("missionid"));
+                        aitem.setLocationx(item.getDouble("locationx"));
+                        aitem.setLocationy(item.getDouble("locationy"));
+                        list_around.add(aitem);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d("LoadingAroundMission", e.toString());
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            super.onPostExecute(result);
+            switch (result) {
+                case TaskCode.NoResponse:
+                    Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    }
+
+    private void setlocations() {
+        LocationManager status = (LocationManager) (ctxt.getSystemService(Context.LOCATION_SERVICE));
+        if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            //如果GPS或網路定位開啟，呼叫locationServiceInitial()更新位置
+            locationServiceInitial();
+        } else {
+            Toast.makeText(ctxt, "請開啟定位服務", Toast.LENGTH_LONG).show();
+            getService = true; //確認開啟定位服務
+            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)); //開啟設定頁面
+        }
+    }
+
+    private void locationServiceInitial() {
+        lms = (LocationManager) ctxt.getSystemService(ctxt.LOCATION_SERVICE); //取得系統定位服務
+         /*做法一,由程式判斷用GPS_provider
+           if (lms.isProviderEnabled(LocationManager.GPS_PROVIDER) ) {
+               location = lms.getLastKnownLocation(LocationManager.GPS_PROVIDER);  //使用GPS定位座標
+         }
+         else if ( lms.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+         { location = lms.getLastKnownLocation(LocationManager.NETWORK_PROVIDER); //使用GPS定位座標
+         }
+         else {}*/
+        // 做法二,由Criteria物件判斷提供最準確的資訊
+        Criteria criteria = new Criteria();  //資訊提供者選取標準
+        bestProvider = lms.getBestProvider(criteria, true);    //選擇精準度最高的提供者
+        Location location = lms.getLastKnownLocation(bestProvider);
+
+        getLocation(location);
+    }
+
+    private void getLocation(Location location) { //將定位資訊顯示在畫面中
+        if (location != null) {
+            Double longitude = location.getLongitude();   //取得經度
+            Double latitude = location.getLatitude();     //取得緯度
+            LoadingAroundMission(Double.toString(longitude), Double.toString(latitude));
+            Toast.makeText(ctxt, longitude + " " + latitude, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(ctxt, "無法定位座標", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {  //當地點改變時
+        // TODO 自動產生的方法 Stub
+        getLocation(location);
+    }
+
+    @Override
+    public void onProviderDisabled(String arg0) {//當GPS或網路定位功能關閉時
+        // TODO 自動產生的方法 Stub
+        Toast.makeText(ctxt, "請開啟gps或3G網路", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onProviderEnabled(String arg0) { //當GPS或網路定位功能開啟
+        // TODO 自動產生的方法 Stub
+    }
+
+    @Override
+    public void onStatusChanged(String arg0, int arg1, Bundle arg2) { //定位狀態改變
+        // TODO 自動產生的方法 Stub
+    }
+
+    public void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+        if (getService) {
+            lms.requestLocationUpdates(bestProvider, 5000, 1, this);
+            //服務提供者、更新頻率60000毫秒=1分鐘、最短距離、地點改變時呼叫物件
+        }
+    }
+
+    public void onPause() {
+        // TODO Auto-generated method stub
+        super.onPause();
+        if (getService) {
+            lms.removeUpdates(this);   //離開頁面時停止更新
+        }
+    }
 }
 

@@ -19,13 +19,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.apple.assistapp.R;
 import com.lambda.app.assistapp.ConnectionApp.JsonReaderPost;
 import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
 import com.lambda.app.assistapp.Other.IsVail;
 import com.lambda.app.assistapp.Other.Net;
 import com.lambda.app.assistapp.Other.TaskCode;
 import com.lambda.app.assistapp.Other.URLs;
+import com.lambda.app.assistapp.R;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -94,10 +94,16 @@ public class Act_NewMission extends AppCompatActivity {
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("title", title));
             params.add(new BasicNameValuePair("content", content));
-            params.add(new BasicNameValuePair("locationID", "360.0"));
+            params.add(new BasicNameValuePair("locationID", "1"));
+            params.add(new BasicNameValuePair("locationX", "121.477765"));
+            params.add(new BasicNameValuePair("locationY", "25.065432"));
+            params.add(new BasicNameValuePair("onlineLimitTime", "5:00:00"));
+            params.add(new BasicNameValuePair("runLimitTime", "1:00:00"));
+
             try {
                 JSONObject jobj = jp.Reader(params, URLs.url_New_Mission, client);
                 if (jobj == null) return result;
+                Log.d("NewMissionTask", jobj.toString());
                 result = jobj.getInt("result");
                 if (result == TaskCode.Success) {
                     missionid = jobj.getInt("missionid");
@@ -150,7 +156,23 @@ public class Act_NewMission extends AppCompatActivity {
     private void InitialAction() {
         iv_camera.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                final CharSequence[] items = {"相簿", "拍照"};
+                AlertDialog dlg = new AlertDialog.Builder(ctxt).setTitle("選擇照片").setItems(items,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which == 1) {
+                                    Intent getImageByCamera = new Intent("android.media.action.IMAGE_CAPTURE");
+                                    startActivityForResult(getImageByCamera, BYCAMERA);
+                                } else {
+                                    Intent getImage = new Intent(Intent.ACTION_PICK);
+                                    getImage.setType("image/*");
+                                    Intent destIntent = Intent.createChooser(getImage, "選擇檔案");
+                                    startActivityForResult(destIntent, BYPHOTO);
+                                }
 
+                            }
+                        }).create();
+                dlg.show();
             }
         });
         iv_map.setOnClickListener(new View.OnClickListener() {
@@ -176,32 +198,6 @@ public class Act_NewMission extends AppCompatActivity {
         });
     }
 
-    View.OnClickListener ImageClick = new View.OnClickListener() {
-        public void onClick(View v) {
-            //img_upload_selected = (ImageView) v;
-            final CharSequence[] items = {"相簿", "拍照"};
-            AlertDialog dlg = new AlertDialog.Builder(ctxt).setTitle("選擇照片").setItems(items,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (which == 1) {
-                                Intent getImageByCamera = new Intent("android.media.action.IMAGE_CAPTURE");
-                                startActivityForResult(getImageByCamera, BYCAMERA);
-                            } else {
-//                                Intent getImage = new Intent(Intent.ACTION_GET_CONTENT);
-//                                getImage.addCategory(Intent.CATEGORY_OPENABLE);
-//                                getImage.setType("image/*");
-//                                startActivityForResult(getImage, BYPHOTO);
-                                Intent getImage = new Intent(Intent.ACTION_PICK);
-                                getImage.setType("image/*");
-                                Intent destIntent = Intent.createChooser(getImage, "選擇檔案");
-                                startActivityForResult(destIntent, BYPHOTO);
-                            }
-
-                        }
-                    }).create();
-            dlg.show();
-        }
-    };
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -224,22 +220,6 @@ public class Act_NewMission extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-//            //方式二
-//            try {
-//                Uri selectedImage = data.getData();
-//                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-//
-//                Cursor cursor = getContentResolver().query(selectedImage,
-//                        filePathColumn, null, null, null);
-//                cursor.moveToFirst();
-//
-//                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-//                String picturePath = cursor.getString(columnIndex);
-//                cursor.close();
-//                img.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
         } else if (requestCode == BYCAMERA) {
             if (resultCode == RESULT_OK) {
                 try {

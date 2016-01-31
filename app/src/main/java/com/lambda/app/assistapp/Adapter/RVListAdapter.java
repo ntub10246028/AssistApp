@@ -8,7 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lambda.app.assistapp.Other.Item;
-import com.example.apple.assistapp.R;
+import com.lambda.app.assistapp.R;
 
 import java.util.List;
 

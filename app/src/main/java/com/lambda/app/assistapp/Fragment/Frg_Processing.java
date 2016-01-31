@@ -25,7 +25,7 @@ import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
 import com.lambda.app.assistapp.Listener.OnRcvScrollListener;
 import com.lambda.app.assistapp.Other.ActivityCode;
 import com.lambda.app.assistapp.Other.Item;
-import com.example.apple.assistapp.R;
+import com.lambda.app.assistapp.R;
 
 import java.util.ArrayList;
 import java.util.List;

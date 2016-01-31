@@ -8,8 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lambda.app.assistapp.Item.AroundItem;
 import com.lambda.app.assistapp.Other.Item;
-import com.example.apple.assistapp.R;
+import com.lambda.app.assistapp.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -17,12 +18,12 @@ import java.util.List;
 /**
  * Created by v on 2015/12/19.
  */
-public class MyRVAdapter extends RecyclerView.Adapter {
+public class AroundRVAdapter extends RecyclerView.Adapter {
     private final float NORMAL = 16f;
     private final float SMALL = 14f;
-    private List<Item> list;
+    private List<AroundItem> list;
 
-    public MyRVAdapter(List<Item> list) {
+    public AroundRVAdapter(List<AroundItem> list) {
         this.list = list;
     }
 
@@ -36,15 +37,12 @@ public class MyRVAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         // Get Your Holder
-        MyRVAdapter.ViewHolder mholder = (MyRVAdapter.ViewHolder) holder;
+        AroundRVAdapter.ViewHolder mholder = (AroundRVAdapter.ViewHolder) holder;
 
         // setTextSize
-        mholder.text.setTextSize(((position + 1) % 3 == 0) ? NORMAL : SMALL);
+        mholder.text.setTextSize(NORMAL);
         mholder.text.setSelected(true);
 
-        // Loading Image use URL
-        Picasso.with(mholder.img.getContext()).cancelRequest(mholder.img);
-        Picasso.with(mholder.img.getContext()).load(list.get(position).getImgurl()).placeholder(R.drawable.loading).into(mholder.img);
     }
 
     @Override
@@ -67,7 +65,7 @@ public class MyRVAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(view.getContext(), "position = " + getPosition(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(view.getContext(), "position = " + getPosition(), Toast.LENGTH_SHORT).show();
         }
     }
 }
