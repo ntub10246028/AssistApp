@@ -18,14 +18,15 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.lambda.app.assistapp.Activity.Act_AuthSign;
 import com.lambda.app.assistapp.Activity.Act_NewMission;
-import com.lambda.app.assistapp.Adapter.RVListAdapter;
+import com.lambda.app.assistapp.Adapter.ProcessingRVAdapter;
 import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
+import com.lambda.app.assistapp.Item.ProcessingItem;
 import com.lambda.app.assistapp.Listener.OnRcvScrollListener;
 import com.lambda.app.assistapp.Other.ActivityCode;
 import com.lambda.app.assistapp.Other.Item;
 import com.lambda.app.assistapp.R;
+import com.lambda.app.assistapp.UI.ItemOffsetDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +42,10 @@ public class Frg_Processing extends Fragment {
     private RecyclerView rv;
     private ImageButton imgbt_add;
     // Adapter
-    private RVListAdapter adapter_rv;
-    //
+    private ProcessingRVAdapter adapter_rv;
     private GridLayoutManager manager;
+    //
+    private List<ProcessingItem> list_processing;
 
     public static Frg_Processing newInstance(int pos) {
         Frg_Processing fragment = new Frg_Processing();
@@ -56,20 +58,31 @@ public class Frg_Processing extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         position = getArguments() != null ? getArguments().getInt("pos") : 2;
-        client=MyHttpClient.getMyHttpClient();
+        client = MyHttpClient.getMyHttpClient();
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ctxt = getActivity();
         View v = inflater.inflate(R.layout.fragment_processing, container, false);
-        laySwipe = (SwipeRefreshLayout) v.findViewById(R.id.laySwipe_list);
-        rv = (RecyclerView) v.findViewById(R.id.rv_list);
-        imgbt_add = (ImageButton) v.findViewById(R.id.imgbt_add);
+        InitialSomething();
+        InitialUI(v);
+        InitialAction();
 
+
+        List<Item> list = new ArrayList<Item>();
+        for (int i = 0; i < 20; i++) {
+            Item item = new Item();
+            item.setText("Text" + i);
+            list.add(item);
+        }
+
+        return v;
+    }
+
+    private void InitialAction() {
         // SwipeRefreshLayout Setting
         laySwipe.setOnRefreshListener(onSwipeToRefresh);
-
         laySwipe.setColorSchemeResources(android.R.color.holo_red_light,
                 android.R.color.holo_blue_light,
                 android.R.color.holo_green_light,
@@ -92,13 +105,7 @@ public class Frg_Processing extends Fragment {
                 laySwipe.setEnabled(topRowVerticalPosition >= 0);
             }
         });
-        List<Item> list = new ArrayList<Item>();
-        for (int i = 0; i < 20; i++) {
-            Item item = new Item();
-            item.setText("Text" + i);
-            list.add(item);
-        }
-        // 2. set layoutManger
+        //  set layoutManger
         manager = new GridLayoutManager(ctxt, 2);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             public int getSpanSize(int position) {
@@ -106,13 +113,36 @@ public class Frg_Processing extends Fragment {
             }
         });
         rv.setLayoutManager(manager);
-        // 3. create an adapter
-        adapter_rv = new RVListAdapter(list);
-        // 4. set adapter
+        // item between item
+        ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(10);
+        rv.addItemDecoration(itemDecoration);
+        // set adapter
+        list_processing = getData();
+        adapter_rv = new ProcessingRVAdapter(list_processing);
+        // set adapter
         rv.setAdapter(adapter_rv);
-        // 5. set item animator to DefaultAnimator
+        // set item animator to DefaultAnimator
         rv.setItemAnimator(new DefaultItemAnimator());
-        return v;
+    }
+
+    private List<ProcessingItem> getData() {
+        List<ProcessingItem> list = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            ProcessingItem item = new ProcessingItem();
+            item.setText("Text" + i);
+            list.add(item);
+        }
+        return list;
+    }
+
+    private void InitialUI(View v) {
+        laySwipe = (SwipeRefreshLayout) v.findViewById(R.id.laySwipe_list);
+        rv = (RecyclerView) v.findViewById(R.id.rv_list);
+        imgbt_add = (ImageButton) v.findViewById(R.id.imgbt_add);
+    }
+
+    private void InitialSomething() {
+        list_processing = new ArrayList<>();
     }
 
     private SwipeRefreshLayout.OnRefreshListener onSwipeToRefresh = new SwipeRefreshLayout.OnRefreshListener() {

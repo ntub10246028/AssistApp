@@ -115,6 +115,9 @@ public class Frg_NearTask extends Fragment implements LocationListener {
         // 5. set item animator to DefaultAnimator
         mRecycleview.setItemAnimator(new DefaultItemAnimator());
     }
+    private void getData(){
+
+    }
 
     private void InitialUI(View v) {
         laySwipe = (SwipeRefreshLayout) v.findViewById(R.id.laySwipe);

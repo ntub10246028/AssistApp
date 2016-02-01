@@ -6,12 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.lambda.app.assistapp.Item.AroundItem;
-import com.lambda.app.assistapp.Other.Item;
 import com.lambda.app.assistapp.R;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -19,8 +16,6 @@ import java.util.List;
  * Created by v on 2015/12/19.
  */
 public class AroundRVAdapter extends RecyclerView.Adapter {
-    private final float NORMAL = 16f;
-    private final float SMALL = 14f;
     private List<AroundItem> list;
 
     public AroundRVAdapter(List<AroundItem> list) {
@@ -29,7 +24,7 @@ public class AroundRVAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rv_test, null);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rv_around, null);
         ViewHolder holder = new ViewHolder(v);
         return holder;
     }
@@ -40,7 +35,6 @@ public class AroundRVAdapter extends RecyclerView.Adapter {
         AroundRVAdapter.ViewHolder mholder = (AroundRVAdapter.ViewHolder) holder;
 
         // setTextSize
-        mholder.text.setTextSize(NORMAL);
         mholder.text.setSelected(true);
 
     }
