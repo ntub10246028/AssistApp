@@ -59,7 +59,7 @@ public class SignatureApp {
         BigInteger m1 = new BigInteger(imei).modPow(this.d, this.N);
         BigInteger m2 = new BigInteger(phone).modPow(this.d, this.N);
 
-        JsonReaderPost jp = new JsonReaderPost(this.ctx);
+        JsonReaderPost jp = new JsonReaderPost();
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("imei", m1.toString()));
         params.add(new BasicNameValuePair("phone", m2.toString()));
@@ -86,7 +86,7 @@ public class SignatureApp {
         BigInteger m2 = new BigInteger(phone).modPow(this.d, this.N);
         BigInteger m3 = new BigInteger(strPass).modPow(this.d, this.N);
 
-        JsonReaderPost jp = new JsonReaderPost(this.ctx);
+        JsonReaderPost jp = new JsonReaderPost();
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("imei", m1.toString()));
         params.add(new BasicNameValuePair("phone", m2.toString()));

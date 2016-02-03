@@ -25,35 +25,22 @@ import android.content.Context;
 import android.util.Log;
 
 public class JsonReaderPost {
-    private Context mContext;
     private String cookie;
 
-    public JsonReaderPost(Context mContext) {
-        this.mContext = mContext;
+    public JsonReaderPost() {
     }
 
     public JSONObject Reader(List<NameValuePair> params, String dir, MyHttpClient client) throws IOException, JSONException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException, UnrecoverableKeyException {
-        //String ints = "";
-        //List<NameValuePair> params = new ArrayList<NameValuePair>();
-        //params.add(new BasicNameValuePair("query","SELECT+AlertId+FROM+Orion.Alerts"));
-
-        //HttpClient client = new DefaultHttpClient();
-        //DefaultHttpClient client =new MyHttpClient(mContext);
 
         HttpPost httpPost = new HttpPost("https://app.lambda.tw/" + dir);
-        //httpPost.addHeader("content-type", "application/json");
-        //httpPost.addHeader("Authorization", "Basic YWRtaW46");
         httpPost.setEntity(new UrlEncodedFormEntity(params));
 
         HttpResponse response;
         String result = null;
         response = client.execute(httpPost);
         HttpEntity entity = response.getEntity();
-        //Log.d("response", EntityUtils.toString(entity));
         result = EntityUtils.toString(entity);
         Log.d("JsonReaderPost", result);
-
-        //String Strresult = EntityUtils.toString(entity, HTTP.UTF_8);
         List<Cookie> cookies = client.getCookieStore().getCookies();
         String get_result;
         String Strcookie = null;
@@ -71,12 +58,6 @@ public class JsonReaderPost {
             get_result = "get cookie error";
         }
         Log.d("cookie", get_result);
-
-        // Converting the String result into JSONObject jsonObj and then into
-        // JSONArray to get data
-
-        //JSONObject jsonObj = new JSONObject(result);
-        //return jsonObj;
         return new JSONObject(result);
 
     }

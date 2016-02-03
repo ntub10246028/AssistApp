@@ -9,8 +9,13 @@ public class TaskCode {
     public static final int Empty = -8;
     public static final int NoResponse = -1;
     /**
-     *
+     *      New Mission
      */
     public static final int New_Mission_Fail = -10;
     public static final int New_Mission_LackData = -11;
+    /**
+     *     Upload Image
+     */
+    public static final int Upload_image_NoThisMan = -20;
+    public static final int Upload_image_NoReplaceImage = -21;
 }

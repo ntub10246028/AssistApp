@@ -86,11 +86,11 @@ public class Act_Main extends AppCompatActivity {
 
     private void InitialSomething() {
         client = MyHttpClient.getMyHttpClient();
-        if (client != null) {
-            Toast.makeText(ctxt, "YA", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(ctxt, "NO", Toast.LENGTH_SHORT).show();
-        }
+//        if (client != null) {
+//            Toast.makeText(ctxt, "YA", Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(ctxt, "NO", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     private void InitialWindowInfo() {

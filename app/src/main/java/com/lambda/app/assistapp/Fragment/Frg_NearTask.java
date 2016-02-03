@@ -80,10 +80,20 @@ public class Frg_NearTask extends Fragment implements LocationListener {
         View v = inflater.inflate(R.layout.fragment_neartask, container, false);
         InitialUI(v);
         InitialAction();
-
-
-        setlocations();
+        GetCurrentPositionAndLoading();
         return v;
+    }
+
+    private void GetCurrentPositionAndLoading() {
+        Location location = getLocation();
+        if (location != null) {
+            Double lon = location.getLongitude();
+            Double lat = location.getLatitude();
+            Log.d("Frg_NearTask", "lon = " + lon + " lat = " + lat);
+            LoadingAroundMission(Double.toString(lon), Double.toString(lat));
+        } else {
+            Toast.makeText(ctxt, "無法取得位置", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void InitialAction() {
@@ -115,7 +125,8 @@ public class Frg_NearTask extends Fragment implements LocationListener {
         // 5. set item animator to DefaultAnimator
         mRecycleview.setItemAnimator(new DefaultItemAnimator());
     }
-    private void getData(){
+
+    private void getData() {
 
     }
 
@@ -130,15 +141,8 @@ public class Frg_NearTask extends Fragment implements LocationListener {
 
     private OnRefreshListener onSwipeToRefresh = new OnRefreshListener() {
         public void onRefresh() {
-
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //LoadingAroundMission();
-                    Toast.makeText(ctxt, "Refresh", Toast.LENGTH_SHORT).show();
-                    laySwipe.setRefreshing(false);
-                }
-            }, 1000);
+            GetCurrentPositionAndLoading();
+            laySwipe.setRefreshing(false);
         }
     };
 
@@ -168,7 +172,7 @@ public class Frg_NearTask extends Fragment implements LocationListener {
             params.add(new BasicNameValuePair("lon", longitude));
             params.add(new BasicNameValuePair("lat", latitude));
             try {
-                JsonReaderPost jp = new JsonReaderPost(ctxt);
+                JsonReaderPost jp = new JsonReaderPost();
                 JSONObject jobj = jp.Reader(params, URLs.url_around_Mission, client);
                 if (jobj == null) return result;
                 Log.d("LoadingAroundMission", jobj.toString());
@@ -195,58 +199,66 @@ public class Frg_NearTask extends Fragment implements LocationListener {
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             switch (result) {
+                case TaskCode.Empty:
+                case TaskCode.Success:
+                    Toast.makeText(ctxt, "success", Toast.LENGTH_SHORT).show();
+                    RefreshRecyclerView();
+                    break;
                 case TaskCode.NoResponse:
                     Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
                     break;
+                default:
+                    Toast.makeText(ctxt, "error : " + result, Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private void setlocations() {
+    private void RefreshRecyclerView() {
+        if (adapter_rv != null) {
+            adapter_rv.notifyDataSetChanged();
+        }
+    }
+
+    private Location LocationSetting() {
         LocationManager status = (LocationManager) (ctxt.getSystemService(Context.LOCATION_SERVICE));
         if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             //如果GPS或網路定位開啟，呼叫locationServiceInitial()更新位置
-            locationServiceInitial();
+            return LocationServiceInitial();
         } else {
             Toast.makeText(ctxt, "請開啟定位服務", Toast.LENGTH_LONG).show();
             getService = true; //確認開啟定位服務
             startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)); //開啟設定頁面
+            return null;
         }
     }
 
-    private void locationServiceInitial() {
+    private Location LocationServiceInitial() {
         lms = (LocationManager) ctxt.getSystemService(ctxt.LOCATION_SERVICE); //取得系統定位服務
-         /*做法一,由程式判斷用GPS_provider
-           if (lms.isProviderEnabled(LocationManager.GPS_PROVIDER) ) {
-               location = lms.getLastKnownLocation(LocationManager.GPS_PROVIDER);  //使用GPS定位座標
-         }
-         else if ( lms.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
-         { location = lms.getLastKnownLocation(LocationManager.NETWORK_PROVIDER); //使用GPS定位座標
-         }
-         else {}*/
-        // 做法二,由Criteria物件判斷提供最準確的資訊
+        // 由Criteria物件判斷提供最準確的資訊
         Criteria criteria = new Criteria();  //資訊提供者選取標準
         bestProvider = lms.getBestProvider(criteria, true);    //選擇精準度最高的提供者
         Location location = lms.getLastKnownLocation(bestProvider);
-
-        getLocation(location);
+        return location;
     }
 
-    private void getLocation(Location location) { //將定位資訊顯示在畫面中
-        if (location != null) {
-            Double longitude = location.getLongitude();   //取得經度
-            Double latitude = location.getLatitude();     //取得緯度
-            LoadingAroundMission(Double.toString(longitude), Double.toString(latitude));
-            Toast.makeText(ctxt, longitude + " " + latitude, Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(ctxt, "無法定位座標", Toast.LENGTH_LONG).show();
-        }
+    private Location getLocation() {
+        return LocationSetting();
     }
 
     @Override
     public void onLocationChanged(Location location) {  //當地點改變時
-        // TODO 自動產生的方法 Stub
-        getLocation(location);
+        //Location location = getLocation();
+        if (location != null) {
+            Double lon = location.getLongitude();
+            Double lat = location.getLatitude();
+            StringBuilder builder = new StringBuilder();
+            builder.append("lon = " + lon + "\n");
+            builder.append("lat = " + lat);
+            Toast.makeText(ctxt, builder, Toast.LENGTH_SHORT).show();
+            LoadingAroundMission(Double.toString(lon), Double.toString(lat));
+        } else {
+            Toast.makeText(ctxt, "無法取得位置", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -262,7 +274,7 @@ public class Frg_NearTask extends Fragment implements LocationListener {
 
     @Override
     public void onStatusChanged(String arg0, int arg1, Bundle arg2) { //定位狀態改變
-        // TODO 自動產生的方法 Stub
+        Toast.makeText(ctxt, "status change", Toast.LENGTH_SHORT).show();
     }
 
     public void onResume() {
