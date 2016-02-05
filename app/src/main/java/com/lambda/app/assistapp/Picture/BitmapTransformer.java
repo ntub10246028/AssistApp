@@ -13,7 +13,7 @@ import java.io.ByteArrayOutputStream;
 public class BitmapTransformer {
     public static String BitmapToBase64(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 70, baos);
         byte[] byteArray = baos.toByteArray();
         String encode = Base64.encodeToString(byteArray, Base64.DEFAULT);
         return encode;

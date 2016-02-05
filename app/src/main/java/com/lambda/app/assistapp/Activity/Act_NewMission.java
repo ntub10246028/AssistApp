@@ -122,7 +122,6 @@ public class Act_NewMission extends AppCompatActivity {
                 e.printStackTrace();
                 Log.d("NewMissionTask", e.toString());
             }
-
             return result;
         }
 
@@ -171,15 +170,14 @@ public class Act_NewMission extends AppCompatActivity {
             Log.d("UpLoadImageTask", "Size = " + list_bmp_base64.size());
             for (String bmp64 : list_bmp_base64) {
                 List<NameValuePair> params = new ArrayList<>();
-                params.add(new BasicNameValuePair("missionid", Integer.toString(missionid)));
+                params.add(new BasicNameValuePair("missionID", Integer.toString(missionid)));
                 params.add(new BasicNameValuePair("imageString", bmp64));
+                Log.d("UpLoadImageTask", missionid + "");
+                Log.d("UpLoadImageTask", bmp64);
                 try {
                     JSONObject jobj = jp.Reader(params, URLs.url_upload_image, client);
                     if (jobj == null) return result;
                     result = jobj.getInt("result");
-                    if (result == TaskCode.Success) {
-                        missionid = jobj.getInt("missionid");
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.d("UpLoadImageTask", e.toString());
@@ -194,7 +192,7 @@ public class Act_NewMission extends AppCompatActivity {
             super.onPostExecute(result);
             switch (result) {
                 case TaskCode.Success:
-                    UpLoadImageTask(missionid);
+                    Toast.makeText(ctxt, "OK", Toast.LENGTH_SHORT).show();
                     break;
                 case TaskCode.Upload_image_NoThisMan:
                     Toast.makeText(ctxt, getResources().getString(R.string.msg_err_upload_image_nothismane), Toast.LENGTH_SHORT).show();
@@ -204,7 +202,6 @@ public class Act_NewMission extends AppCompatActivity {
                     break;
                 case TaskCode.NoResponse:
                     Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
-
                     break;
                 default:
                     Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();

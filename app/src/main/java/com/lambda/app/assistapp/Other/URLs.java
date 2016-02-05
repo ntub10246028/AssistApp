@@ -8,4 +8,5 @@ public class URLs {
     public static final String url_New_Mission = "new-mission";
     public static final String url_around_Mission = "around";
     public static final String url_upload_image = "upload-image";
+    public static final String url_get_mission_data = "mission-data";
 }

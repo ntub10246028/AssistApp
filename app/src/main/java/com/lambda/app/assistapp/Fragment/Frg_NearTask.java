@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.lambda.app.assistapp.ConnectionApp.JsonReaderPost;
 import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
 import com.lambda.app.assistapp.Item.AroundItem;
+import com.lambda.app.assistapp.Item.MissionData;
 import com.lambda.app.assistapp.Listener.OnRcvScrollListener;
 import com.lambda.app.assistapp.Adapter.AroundRVAdapter;
 import com.lambda.app.assistapp.Other.Net;
@@ -53,6 +54,7 @@ public class Frg_NearTask extends Fragment implements LocationListener {
     // Other
     private int position;
     private List<AroundItem> list_around;
+    private List<MissionData> list_missiondata;
     // For get Lan Let
     private boolean getService = false;     //是否已開啟定位服務
     private LocationManager lms;
@@ -137,6 +139,7 @@ public class Frg_NearTask extends Fragment implements LocationListener {
 
     private void InitialSomething() {
         list_around = new ArrayList<>();
+        list_missiondata = new ArrayList<>();
     }
 
     private OnRefreshListener onSwipeToRefresh = new OnRefreshListener() {
@@ -203,6 +206,7 @@ public class Frg_NearTask extends Fragment implements LocationListener {
                 case TaskCode.Success:
                     Toast.makeText(ctxt, "success", Toast.LENGTH_SHORT).show();
                     RefreshRecyclerView();
+                    LoadingMission(getMissions());
                     break;
                 case TaskCode.NoResponse:
                     Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
@@ -212,6 +216,95 @@ public class Frg_NearTask extends Fragment implements LocationListener {
             }
         }
     }
+
+    private List<Integer> getMissions() {
+        List<Integer> result = new ArrayList<>();
+        for (AroundItem item : list_around) {
+            result.add(item.getMission());
+        }
+        return result;
+    }
+
+    ///
+    private void LoadingMission(List<Integer> datas) {
+        if (Net.isNetWork(ctxt)) {
+            new LoadingMission().execute(datas);
+        } else {
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    class LoadingMission extends AsyncTask<List<Integer>, Integer, Integer> {
+        private List<Integer> missions;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            list_missiondata.clear();
+        }
+
+        @Override
+        protected Integer doInBackground(List<Integer>... datas) {
+            Integer result = TaskCode.NoResponse;
+            missions = datas[0];
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            for (Integer id : missions) {
+                params.add(new BasicNameValuePair("missionID[]", Integer.toString(id)));
+                //params.add(new BasicNameValuePair("missionID[]", 27 + ""));
+            }
+            try {
+                JsonReaderPost jp = new JsonReaderPost();
+                JSONObject jobj = jp.Reader(params, URLs.url_get_mission_data, client);
+                if (jobj == null) return result;
+                Log.d("LoadingMission", jobj.toString());
+                result = jobj.getInt("result");
+                if (result == TaskCode.Success) {
+                    JSONArray jarray = jobj.getJSONArray("missiondata");
+                    for (int i = 0; i < jarray.length(); i++) {
+                        JSONObject item = jarray.getJSONObject(i);
+                        MissionData idata = new MissionData();
+                        idata.setMissionid(item.getInt("missionid"));
+                        idata.setPosttime(item.getString("posttime"));
+                        idata.setOnlinelimittime(item.getString("onlinelimittime"));
+                        idata.setRunlimittime(item.getString("runlimittime"));
+                        idata.setLocationx(item.getDouble("locationx"));
+                        idata.setLocationy(item.getDouble("locationy"));
+                        idata.setLocationtypeid(item.getInt("locationtypeid"));
+                        idata.setTitle(item.getString("title"));
+                        idata.setContent(item.getString("content"));
+                        idata.setImage(item.getString("image"));
+                        idata.setGettime(item.getString("gettime"));
+                        list_missiondata.add(idata);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d("LoadingAroundMission", e.toString());
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            super.onPostExecute(result);
+            switch (result) {
+                case TaskCode.Empty:
+                case TaskCode.Success:
+                    String ss = "";
+                    for (MissionData data : list_missiondata) {
+                        ss += data.getTitle();
+                    }
+                    Toast.makeText(ctxt, ss, Toast.LENGTH_SHORT).show();
+                    break;
+                case TaskCode.NoResponse:
+                    Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    Toast.makeText(ctxt, "error : " + result, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
     private void RefreshRecyclerView() {
         if (adapter_rv != null) {

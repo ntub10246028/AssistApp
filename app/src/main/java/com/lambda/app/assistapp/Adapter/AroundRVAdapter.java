@@ -33,9 +33,9 @@ public class AroundRVAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         // Get Your Holder
         AroundRVAdapter.ViewHolder mholder = (AroundRVAdapter.ViewHolder) holder;
-
+        AroundItem item = list.get(position);
         // setTextSize
-        mholder.text.setSelected(true);
+        mholder.text.setText(item.getMission()+"");
 
     }
 
