@@ -6,8 +6,13 @@ package com.lambda.app.assistapp.Other;
 public class TaskCode {
     public static final int Success = 1;
     public static final int Fail = 0;
-    public static final int Empty = -8;
+    public static final int Empty = 0;
     public static final int NoResponse = -1;
+    /**
+     *      Sign
+     */
+    public static final int ThisUserNoExist = -8;
+
     /**
      *      New Mission
      */

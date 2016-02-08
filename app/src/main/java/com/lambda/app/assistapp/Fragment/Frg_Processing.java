@@ -3,6 +3,7 @@
 package com.lambda.app.assistapp.Fragment;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.content.Context;
@@ -35,6 +36,7 @@ import java.util.List;
 public class Frg_Processing extends Fragment {
 
     private Context ctxt;
+    private Activity activity;
     private MyHttpClient client;
     private int position;
     // UI
@@ -55,18 +57,27 @@ public class Frg_Processing extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.activity = activity;
+        this.ctxt = activity;
+    }
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        position = getArguments() != null ? getArguments().getInt("pos") : 2;
-        client = MyHttpClient.getMyHttpClient();
+        InitialSomething();
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ctxt = getActivity();
-        View v = inflater.inflate(R.layout.fragment_processing, container, false);
-        InitialSomething();
-        InitialUI(v);
+        return inflater.inflate(R.layout.fragment_processing, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        InitialUI(getView());
         InitialAction();
 
 
@@ -76,8 +87,6 @@ public class Frg_Processing extends Fragment {
             item.setText("Text" + i);
             list.add(item);
         }
-
-        return v;
     }
 
     private void InitialAction() {
@@ -92,7 +101,7 @@ public class Frg_Processing extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent it = new Intent(ctxt, Act_NewMission.class);
-                getActivity().startActivityForResult(it, ActivityCode.ADD);
+                activity.startActivityForResult(it, ActivityCode.NewMission);
             }
         });
         //  RecyclerView Setting
@@ -142,12 +151,14 @@ public class Frg_Processing extends Fragment {
     }
 
     private void InitialSomething() {
+        position = getArguments() != null ? getArguments().getInt("pos") : 2;
+        client = MyHttpClient.getMyHttpClient();
         list_processing = new ArrayList<>();
     }
 
     private SwipeRefreshLayout.OnRefreshListener onSwipeToRefresh = new SwipeRefreshLayout.OnRefreshListener() {
         public void onRefresh() {
-            Toast.makeText(ctxt, "Refresh", Toast.LENGTH_SHORT).show();
+
             new Handler().postDelayed(new Runnable() {
                 public void run() {
                     laySwipe.setRefreshing(false);
@@ -155,5 +166,4 @@ public class Frg_Processing extends Fragment {
             }, 1000);
         }
     };
-
 }

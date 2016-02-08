@@ -1,6 +1,7 @@
 package com.lambda.app.assistapp.Activity;
 
 import android.app.AlertDialog;
+import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,10 +12,14 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -24,10 +29,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.lambda.app.assistapp.ConnectionApp.JsonReaderPost;
 import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
+import com.lambda.app.assistapp.Other.Hardware;
 import com.lambda.app.assistapp.Other.IsVail;
 import com.lambda.app.assistapp.Other.Net;
 import com.lambda.app.assistapp.Other.TaskCode;
@@ -43,6 +51,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -50,7 +59,7 @@ import java.util.List;
  * Created by v on 2015/12/20.
  */
 public class Act_NewMission extends AppCompatActivity {
-
+    //
     private Context ctxt = Act_NewMission.this;
     private MyHttpClient client;
     private Resources res;
@@ -58,11 +67,18 @@ public class Act_NewMission extends AppCompatActivity {
     private TextImageTransformer titrans;
     private static final int PICK_PICTURE = 0;
     private static final int TAKE_PICTURE = 1;
-    //
+    // UI
     private ImageView iv_camera, iv_map, iv_time, iv_send;
     private EditText et_title, et_content;
-    //
+    // Other
     private List<String> list_bmp_base64;
+    // select time dialog
+    private Button bt_onlinetime, bt_runtime;
+    // For get Lan Let
+    private boolean getService = false;     //是否已開啟定位服務
+    private LocationManager lms;
+    private Location location;
+    private String bestProvider = LocationManager.GPS_PROVIDER;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,24 +87,23 @@ public class Act_NewMission extends AppCompatActivity {
         InitialSomething();
         InitialUI();
         InitialAction();
-//        if (client != null) {
-//            Toast.makeText(ctxt, "Y", Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(ctxt, "N", Toast.LENGTH_SHORT).show();
-//        }
     }
 
     private void NewMissionTask() {
         if (Net.isNetWork(ctxt)) {
             new NewMissionTask().execute();
         } else {
-            Toast.makeText(Act_NewMission.this, res.getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
     }
 
     class NewMissionTask extends AsyncTask<String, Integer, Integer> {
         private String title;
         private String content;
+        private String lon;
+        private String lat;
+        private String onlinetime;
+        private String runtime;
         private int missionid;
 
         @Override
@@ -96,6 +111,17 @@ public class Act_NewMission extends AppCompatActivity {
             super.onPreExecute();
             title = et_title.getText().toString();
             content = et_content.getText().toString();
+            Location location = getLocation();
+            lon = Double.toString(location.getLongitude());
+            lat = Double.toString(location.getLatitude());
+            if (bt_onlinetime != null && bt_runtime != null) {
+                onlinetime = bt_onlinetime.getText().toString();
+                runtime = bt_runtime.getText().toString();
+            } else {
+                onlinetime = getResources().getString(R.string.default_time);
+                runtime = getResources().getString(R.string.default_time);
+            }
+            Log.d("NewMissionTask", "online : " + onlinetime + " runtime : " + runtime);
         }
 
         @Override
@@ -105,14 +131,15 @@ public class Act_NewMission extends AppCompatActivity {
             params.add(new BasicNameValuePair("title", title));
             params.add(new BasicNameValuePair("content", content));
             params.add(new BasicNameValuePair("locationID", "1"));
-            params.add(new BasicNameValuePair("locationX", "121.5256661"));
-            params.add(new BasicNameValuePair("locationY", "25.0421488"));
-            params.add(new BasicNameValuePair("onlineLimitTime", "10:00:00"));
-            params.add(new BasicNameValuePair("runLimitTime", "2:00:00"));
+            params.add(new BasicNameValuePair("locationX", lon));
+            params.add(new BasicNameValuePair("locationY", lat));
+            params.add(new BasicNameValuePair("onlineLimitTime", onlinetime));
+            params.add(new BasicNameValuePair("runLimitTime", runtime));
 
             try {
                 JSONObject jobj = jp.Reader(params, URLs.url_New_Mission, client);
-                if (jobj == null) return result;
+                if (jobj == null)
+                    return result;
                 Log.d("NewMissionTask", jobj.toString());
                 result = jobj.getInt("result");
                 if (result == TaskCode.Success) {
@@ -130,7 +157,12 @@ public class Act_NewMission extends AppCompatActivity {
             super.onPostExecute(result);
             switch (result) {
                 case TaskCode.Success:
-                    UpLoadImageTask(missionid);
+                    if (!list_bmp_base64.isEmpty()) {
+                        UpLoadImageTask(missionid);
+                    } else {
+                        Toast.makeText(ctxt, "成功", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
                     break;
                 case TaskCode.New_Mission_Fail:
                     Toast.makeText(ctxt, getResources().getString(R.string.msg_err_new_mission_fail), Toast.LENGTH_SHORT).show();
@@ -176,7 +208,8 @@ public class Act_NewMission extends AppCompatActivity {
                 Log.d("UpLoadImageTask", bmp64);
                 try {
                     JSONObject jobj = jp.Reader(params, URLs.url_upload_image, client);
-                    if (jobj == null) return result;
+                    if (jobj == null)
+                        return result;
                     result = jobj.getInt("result");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -187,12 +220,12 @@ public class Act_NewMission extends AppCompatActivity {
             return result;
         }
 
-        @Override
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             switch (result) {
                 case TaskCode.Success:
-                    Toast.makeText(ctxt, "OK", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctxt, "成功", Toast.LENGTH_SHORT).show();
+                    finish();
                     break;
                 case TaskCode.Upload_image_NoThisMan:
                     Toast.makeText(ctxt, getResources().getString(R.string.msg_err_upload_image_nothismane), Toast.LENGTH_SHORT).show();
@@ -223,17 +256,124 @@ public class Act_NewMission extends AppCompatActivity {
         }
     }
 
+    private Location LocationServiceInitial() {
+        lms = (LocationManager) ctxt.getSystemService(ctxt.LOCATION_SERVICE); //取得系統定位服務
+        // 由Criteria物件判斷提供最準確的資訊
+        Criteria criteria = new Criteria();  //資訊提供者選取標準
+        bestProvider = lms.getBestProvider(criteria, true);    //選擇精準度最高的提供者
+        Location location = lms.getLastKnownLocation(bestProvider);
+        return location;
+    }
 
-    private boolean isIntentAvailable(Intent intent) {
-        PackageManager manager = getPackageManager();
-        List<ResolveInfo> list = manager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        return list.size() > 0;
+    private Location LocationSetting() {
+        LocationManager status = (LocationManager) (ctxt.getSystemService(Context.LOCATION_SERVICE));
+        if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            //如果GPS或網路定位開啟，呼叫locationServiceInitial()更新位置
+            return LocationServiceInitial();
+        } else {
+            Toast.makeText(ctxt, "請開啟定位服務", Toast.LENGTH_LONG).show();
+            getService = true; //確認開啟定位服務
+            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)); //開啟設定頁面
+            return null;
+        }
+    }
+
+    private Location getLocation() {
+        return LocationSetting();
+    }
+
+    private NumberPicker np_hour, np_min, np_sec;
+    private int ol_hour = 24, ol_min = 0, ol_sec = 0;
+    private int r_hour = 24, r_min = 0, r_sec = 0;
+    private final int ONLINE = 0;
+    private final int RUN = 1;
+
+    private void TimeDialog(final View bt, final int mode) {
+        AlertDialog.Builder b = new AlertDialog.Builder(ctxt, AlertDialog.THEME_HOLO_LIGHT);
+        View v = getLayoutInflater().inflate(R.layout.ui_timepicker, null);
+        np_hour = (NumberPicker) v.findViewById(R.id.np_hour);
+        np_min = (NumberPicker) v.findViewById(R.id.np_min);
+        np_sec = (NumberPicker) v.findViewById(R.id.np_sec);
+        np_hour.setMaxValue(24);
+        np_min.setMaxValue(59);
+        np_sec.setMaxValue(59);
+        np_hour.setValue(mode == ONLINE ? ol_hour : r_hour);
+        np_min.setValue(mode == ONLINE ? ol_min : r_min);
+        np_sec.setValue(mode == ONLINE ? ol_sec : r_sec);
+        np_hour.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            public void onValueChange(NumberPicker picker, int oldV, int newV) {
+                if (mode == ONLINE) {
+                    ol_hour = newV;
+                } else {
+                    r_hour = newV;
+                }
+            }
+        });
+        np_min.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            public void onValueChange(NumberPicker picker, int oldV, int newV) {
+                if (mode == ONLINE) {
+                    ol_min = newV;
+                } else {
+                    r_min = newV;
+                }
+            }
+        });
+        np_sec.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            public void onValueChange(NumberPicker picker, int oldV, int newV) {
+                if (mode == ONLINE) {
+                    ol_sec = newV;
+                } else {
+                    r_sec = newV;
+                }
+            }
+        });
+        b.setPositiveButton(getResources().getString(R.string.button_ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                String result = IsVail.isVail_TimePick(ctxt, np_hour.getValue(), np_min.getValue(), np_sec.getValue());
+                if (result.equals(getResources().getString(R.string.default_time))) {
+                    if (mode == ONLINE) {
+                        ol_hour = 24;
+                        ol_min = 0;
+                        ol_sec = 0;
+                    } else {
+                        r_hour = 24;
+                        r_min = 0;
+                        r_sec = 0;
+                    }
+                }
+
+                ((Button) bt).setText(result);
+            }
+        });
+        b.setView(v);
+        b.show();
+    }
+
+    private void PickTimeDialog() {
+        AlertDialog.Builder b = new AlertDialog.Builder(ctxt, AlertDialog.THEME_HOLO_LIGHT);
+        View v = getLayoutInflater().inflate(R.layout.dialog_picktime, null);
+        bt_onlinetime = (Button) v.findViewById(R.id.bt_picktime_onlinetime);
+        bt_runtime = (Button) v.findViewById(R.id.bt_picktime_runtime);
+        bt_onlinetime.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                TimeDialog(v, ONLINE);
+            }
+        });
+        bt_runtime.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                TimeDialog(v, RUN);
+            }
+        });
+        b.setPositiveButton(getResources().getString(R.string.button_ok), null);
+        b.setView(v);
+        b.show();
     }
 
 
     private void InitialAction() {
         iv_camera.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+            public void onClick(View v) {
+                Hardware.closeKeyBoard(ctxt, v);
                 final CharSequence[] items = {"相簿", "拍照"};
                 AlertDialog dlg = new AlertDialog.Builder(ctxt).setTitle("選擇照片").setItems(items,
                         new DialogInterface.OnClickListener() {
@@ -243,10 +383,10 @@ public class Act_NewMission extends AppCompatActivity {
                                     startActivityForResult(iPickPicture, PICK_PICTURE);
                                 } else {
                                     Intent iTakePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                    if (isIntentAvailable(iTakePicture)) {
+                                    if (Hardware.isIntentAvailable(ctxt, iTakePicture)) {
                                         startActivityForResult(iTakePicture, TAKE_PICTURE);
                                     } else {
-                                        Toast.makeText(ctxt, "No Device", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(ctxt, "沒有拍攝裝置", Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
@@ -256,25 +396,26 @@ public class Act_NewMission extends AppCompatActivity {
             }
         });
         iv_map.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-
+            public void onClick(View v) {
+                Hardware.closeKeyBoard(ctxt, v);
             }
         });
         iv_time.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-
+            public void onClick(View v) {
+                Hardware.closeKeyBoard(ctxt, v);
+                PickTimeDialog();
             }
         });
 
         iv_send.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+            public void onClick(View v) {
+                Hardware.closeKeyBoard(ctxt, v);
                 String title = et_title.getText().toString();
                 String content = et_content.getText().toString();
                 if (IsVail.isVail_New_Mission(ctxt, title, content)) {
                     convertBitmapToBase64();
                     NewMissionTask();
                 }
-                //Toast.makeText(ctxt, content, Toast.LENGTH_SHORT).show();
             }
         });
     }

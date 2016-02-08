@@ -72,6 +72,9 @@ public class Act_Main extends AppCompatActivity {
     private ImageButton imgbt_drawer_search;
     private ListView lv_drawer_datas;
 
+    //
+
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -86,11 +89,6 @@ public class Act_Main extends AppCompatActivity {
 
     private void InitialSomething() {
         client = MyHttpClient.getMyHttpClient();
-//        if (client != null) {
-//            Toast.makeText(ctxt, "YA", Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(ctxt, "NO", Toast.LENGTH_SHORT).show();
-//        }
     }
 
     private void InitialWindowInfo() {
@@ -220,19 +218,17 @@ public class Act_Main extends AppCompatActivity {
     }
 
     private void InitialTabView() {
-        Titles = new ArrayList<String>();
+        Titles = new ArrayList<>();
         Titles.add("附近任務");
         Titles.add("進行中");
-        Icons = new ArrayList<Integer>();
+        Icons = new ArrayList<>();
         Icons.add(R.drawable.tab_image_neartask_selector);
         Icons.add(R.drawable.tab_image_processing_selector);
     }
 
     private void InitialUI() {
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
-
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.slidingtab);
-
     }
 
     private void InitialAction() {
@@ -243,25 +239,13 @@ public class Act_Main extends AppCompatActivity {
                 R.id.tv_tab_title);
 
         mSlidingTabLayout.setViewPager(mViewPager);
-        int red = getResources().getColor(R.color.red);
-        int green = getResources().getColor(R.color.green);
         int trans = getResources().getColor(R.color.trans);
-        //mSlidingTabLayout.setDividerColors(dark);
-        //mSlidingTabLayout.setSelectedIndicatorColors(white,dark);
         mSlidingTabLayout.setSelectedIndicatorColors(trans);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case ActivityCode.ADD:
-                if (resultCode == RESULT_OK) {
-                    String result = data.getStringExtra("test");
-                    Toast.makeText(ctxt, result, Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
     }
 
     private static long lastPressTime = 0;

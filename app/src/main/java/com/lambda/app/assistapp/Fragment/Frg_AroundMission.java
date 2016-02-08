@@ -1,5 +1,6 @@
 package com.lambda.app.assistapp.Fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Criteria;
@@ -8,7 +9,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,7 +24,7 @@ import android.widget.Toast;
 
 import com.lambda.app.assistapp.ConnectionApp.JsonReaderPost;
 import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
-import com.lambda.app.assistapp.Item.AroundItem;
+import com.lambda.app.assistapp.Item.ReadyMission;
 import com.lambda.app.assistapp.Item.MissionData;
 import com.lambda.app.assistapp.Listener.OnRcvScrollListener;
 import com.lambda.app.assistapp.Adapter.AroundRVAdapter;
@@ -32,6 +32,7 @@ import com.lambda.app.assistapp.Other.Net;
 import com.lambda.app.assistapp.Other.TaskCode;
 import com.lambda.app.assistapp.Other.URLs;
 import com.lambda.app.assistapp.R;
+import com.lambda.app.assistapp.UI.ItemOffsetDecoration;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -42,9 +43,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Frg_NearTask extends Fragment implements LocationListener {
+public class Frg_AroundMission extends Fragment implements LocationListener {
     //
     private Context ctxt;
+    private Activity activity;
     private MyHttpClient client;
     // UI
     private SwipeRefreshLayout laySwipe;
@@ -53,37 +55,44 @@ public class Frg_NearTask extends Fragment implements LocationListener {
     private AroundRVAdapter adapter_rv;
     // Other
     private int position;
-    private List<AroundItem> list_around;
+    private List<ReadyMission> list_readmission;
     private List<MissionData> list_missiondata;
     // For get Lan Let
     private boolean getService = false;     //是否已開啟定位服務
     private LocationManager lms;
-    private Location location;
     private String bestProvider = LocationManager.GPS_PROVIDER;
 
-    public static Frg_NearTask newInstance(int pos) {
-        Frg_NearTask fragment = new Frg_NearTask();
+    public static Frg_AroundMission newInstance(int pos) {
+        Frg_AroundMission fragment = new Frg_AroundMission();
         Bundle b = new Bundle();
         b.putInt("pos", pos);
         fragment.setArguments(b);
         return fragment;
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.activity = activity;
+        this.ctxt = activity;
+    }
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        position = getArguments() != null ? getArguments().getInt("pos") : 1;
-        client = MyHttpClient.getMyHttpClient();
+        InitialSomething();
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ctxt = getActivity();
-        InitialSomething();
-        View v = inflater.inflate(R.layout.fragment_neartask, container, false);
-        InitialUI(v);
+        return inflater.inflate(R.layout.fragment_aroundmission, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        InitialUI(getView());
         InitialAction();
         GetCurrentPositionAndLoading();
-        return v;
     }
 
     private void GetCurrentPositionAndLoading() {
@@ -91,7 +100,7 @@ public class Frg_NearTask extends Fragment implements LocationListener {
         if (location != null) {
             Double lon = location.getLongitude();
             Double lat = location.getLatitude();
-            Log.d("Frg_NearTask", "lon = " + lon + " lat = " + lat);
+            Log.d("Frg_AroundMission", "lon = " + lon + " lat = " + lat);
             LoadingAroundMission(Double.toString(lon), Double.toString(lat));
         } else {
             Toast.makeText(ctxt, "無法取得位置", Toast.LENGTH_SHORT).show();
@@ -120,15 +129,15 @@ public class Frg_NearTask extends Fragment implements LocationListener {
             }
         });
         mRecycleview.setLayoutManager(manager);
+        // item between item
+        ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(10);
+        mRecycleview.addItemDecoration(itemDecoration);
         // 3. create an adapter
-        adapter_rv = new AroundRVAdapter(list_around);
+        adapter_rv = new AroundRVAdapter(ctxt, list_missiondata);
         // 4. set adapter
         mRecycleview.setAdapter(adapter_rv);
         // 5. set item animator to DefaultAnimator
         mRecycleview.setItemAnimator(new DefaultItemAnimator());
-    }
-
-    private void getData() {
 
     }
 
@@ -138,7 +147,9 @@ public class Frg_NearTask extends Fragment implements LocationListener {
     }
 
     private void InitialSomething() {
-        list_around = new ArrayList<>();
+        position = getArguments() != null ? getArguments().getInt("pos") : 1;
+        client = MyHttpClient.getMyHttpClient();
+        list_readmission = new ArrayList<>();
         list_missiondata = new ArrayList<>();
     }
 
@@ -163,7 +174,7 @@ public class Frg_NearTask extends Fragment implements LocationListener {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            list_around.clear();
+            list_readmission.clear();
         }
 
         @Override
@@ -177,18 +188,19 @@ public class Frg_NearTask extends Fragment implements LocationListener {
             try {
                 JsonReaderPost jp = new JsonReaderPost();
                 JSONObject jobj = jp.Reader(params, URLs.url_around_Mission, client);
-                if (jobj == null) return result;
+                if (jobj == null)
+                    return result;
                 Log.d("LoadingAroundMission", jobj.toString());
                 result = jobj.getInt("result");
                 if (result == TaskCode.Success) {
                     JSONArray jarray = jobj.getJSONArray("around");
                     for (int i = 0; i < jarray.length(); i++) {
                         JSONObject item = jarray.getJSONObject(i);
-                        AroundItem aitem = new AroundItem();
+                        ReadyMission aitem = new ReadyMission();
                         aitem.setMission(item.getInt("missionid"));
                         aitem.setLocationx(item.getDouble("locationx"));
                         aitem.setLocationy(item.getDouble("locationy"));
-                        list_around.add(aitem);
+                        list_readmission.add(aitem);
                     }
                 }
             } catch (Exception e) {
@@ -203,23 +215,25 @@ public class Frg_NearTask extends Fragment implements LocationListener {
             super.onPostExecute(result);
             switch (result) {
                 case TaskCode.Empty:
+                    Toast.makeText(ctxt, getResources().getString(R.string.msg_warning_around_empty), Toast.LENGTH_SHORT).show();
+                    break;
                 case TaskCode.Success:
-                    Toast.makeText(ctxt, "success", Toast.LENGTH_SHORT).show();
-                    RefreshRecyclerView();
+                    //Toast.makeText(ctxt, "Success", Toast.LENGTH_SHORT).show();
+                    //RefreshRecyclerView();
                     LoadingMission(getMissions());
                     break;
                 case TaskCode.NoResponse:
                     Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
                     break;
                 default:
-                    Toast.makeText(ctxt, "error : " + result, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     private List<Integer> getMissions() {
         List<Integer> result = new ArrayList<>();
-        for (AroundItem item : list_around) {
+        for (ReadyMission item : list_readmission) {
             result.add(item.getMission());
         }
         return result;
@@ -255,7 +269,8 @@ public class Frg_NearTask extends Fragment implements LocationListener {
             try {
                 JsonReaderPost jp = new JsonReaderPost();
                 JSONObject jobj = jp.Reader(params, URLs.url_get_mission_data, client);
-                if (jobj == null) return result;
+                if (jobj == null)
+                    return result;
                 Log.d("LoadingMission", jobj.toString());
                 result = jobj.getInt("result");
                 if (result == TaskCode.Success) {
@@ -290,11 +305,7 @@ public class Frg_NearTask extends Fragment implements LocationListener {
             switch (result) {
                 case TaskCode.Empty:
                 case TaskCode.Success:
-                    String ss = "";
-                    for (MissionData data : list_missiondata) {
-                        ss += data.getTitle();
-                    }
-                    Toast.makeText(ctxt, ss, Toast.LENGTH_SHORT).show();
+                    RefreshRecyclerView();
                     break;
                 case TaskCode.NoResponse:
                     Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();

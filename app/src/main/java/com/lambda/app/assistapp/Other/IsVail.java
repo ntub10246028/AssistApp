@@ -21,4 +21,25 @@ public class IsVail {
         }
         return true;
     }
+
+    public static String isVail_TimePick(Context ctxt, int h, int m, int s) {
+        StringBuilder sb = new StringBuilder();
+        if (h == 24) {
+            return "24:00:00";
+        }
+        sb.append((h < 10 ? "0" : ""));
+        sb.append(h);
+        sb.append(":");
+        sb.append((m < 10 ? "0" : ""));
+        sb.append(m);
+        sb.append(":");
+        sb.append((s < 10 ? "0" : ""));
+        sb.append(s);
+        return sb.toString();
+    }
+
+
+    public static boolean isBetween(int value, int min, int max) {
+        return min <= value && value <= max;
+    }
 }

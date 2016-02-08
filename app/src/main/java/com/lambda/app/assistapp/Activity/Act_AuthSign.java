@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.lambda.app.assistapp.Other.ActivityCode;
+import com.lambda.app.assistapp.Other.Hardware;
 import com.lambda.app.assistapp.Other.Net;
 import com.lambda.app.assistapp.Other.TaskCode;
 import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
@@ -133,7 +134,7 @@ public class Act_AuthSign extends Activity {
                     startActivity(it);
                     finish();
                     break;
-                case TaskCode.Empty: // err : database no you
+                case TaskCode.ThisUserNoExist: // err : database no you
                     SMS_dialog();
                     Toast.makeText(ctxt, mPassNo + "", Toast.LENGTH_SHORT).show();
                     break;
@@ -199,7 +200,7 @@ public class Act_AuthSign extends Activity {
                     startActivity(it);
                     finish();
                     break;
-                case TaskCode.Empty: // err : database no you
+                case TaskCode.ThisUserNoExist: // err : database no you
                     SMS_dialog();
                     break;
                 case TaskCode.NoResponse:
@@ -266,6 +267,7 @@ public class Act_AuthSign extends Activity {
         bt_commit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (formatIsVaild()) {
+                    Hardware.closeKeyBoard(ctxt, v);
                     saveData();
                     readData();
                     //ll_inputphone.setVisibility(View.INVISIBLE);

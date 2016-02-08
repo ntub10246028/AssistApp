@@ -3,7 +3,7 @@ package com.lambda.app.assistapp.Item;
 /**
  * Created by asus on 2016/1/31.
  */
-public class AroundItem {
+public class ReadyMission {
     private int mission;
     private double locationx;
     private double locationy;

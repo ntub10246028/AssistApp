@@ -5,8 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.lambda.app.assistapp.ConnectionApp.MyHttpClient;
-import com.lambda.app.assistapp.Fragment.Frg_NearTask;
+import com.lambda.app.assistapp.Fragment.Frg_AroundMission;
 import com.lambda.app.assistapp.Fragment.Frg_Processing;
 
 import java.util.List;
@@ -16,13 +15,11 @@ public class MyFragmentAdapter extends FragmentPagerAdapter {
 
     private List<String> Titles;
     private List<Integer> Icons;
-    private MyHttpClient client;
 
     public MyFragmentAdapter(FragmentManager fm, List<String> titles, List<Integer> icons) {
         super(fm);
         this.Titles = titles;
         this.Icons = icons;
-        this.client = client;
     }
 
     public int getCount() {
@@ -32,7 +29,7 @@ public class MyFragmentAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return Frg_NearTask.newInstance(position );
+                return Frg_AroundMission.newInstance(position);
             case 1:
                 return Frg_Processing.newInstance(position);
             default:
