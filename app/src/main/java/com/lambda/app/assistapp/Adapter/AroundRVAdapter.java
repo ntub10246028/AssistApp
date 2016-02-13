@@ -168,6 +168,5 @@ public class AroundRVAdapter extends SampleRecyclerViewAdapter {
             Log.d("LoadImageTask", e.toString());
         }
         return null;
-
     }
 }

@@ -17,6 +17,7 @@ import com.lambda.app.assistapp.Item.MissionData;
 import com.lambda.app.assistapp.Other.Net;
 import com.lambda.app.assistapp.Other.TaskCode;
 import com.lambda.app.assistapp.Other.URLs;
+import com.lambda.app.assistapp.Picture.TextImageTransformer;
 import com.lambda.app.assistapp.R;
 
 import org.apache.http.NameValuePair;
@@ -37,6 +38,7 @@ public class Act_Mission extends AppCompatActivity {
     //
     private Context ctxt = Act_Mission.this;
     private MissionData iData;
+    private TextImageTransformer titrans;
     //
     private TextView tv_title, tv_content, tv_posttime, tv_onlinetime, tv_runtime;
     private Button bt_accept;
@@ -127,6 +129,7 @@ public class Act_Mission extends AppCompatActivity {
     private void RefreshToUI() {
         tv_title.setText(iData.getTitle());
         tv_content.setText(iData.getContent());
+        titrans.ConvertImage(ctxt, tv_content, iData.getMissionid(), iData.getImage());
         tv_posttime.setText(iData.getPosttime());
         tv_onlinetime.setText(iData.getOnlinelimittime());
         tv_runtime.setText(iData.getRunlimittime());
@@ -135,12 +138,12 @@ public class Act_Mission extends AppCompatActivity {
     private void MillSecondsToDate(long ms) {
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(ms);
-        
     }
 
 
     private void InitialSomething() {
         iData = new MissionData();
+        titrans = new TextImageTransformer(ctxt);
     }
 
     private void InitialUI() {

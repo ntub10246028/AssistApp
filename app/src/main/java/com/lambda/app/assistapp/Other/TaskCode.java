@@ -23,4 +23,8 @@ public class TaskCode {
      */
     public static final int Upload_image_NoThisMan = -20;
     public static final int Upload_image_NoReplaceImage = -21;
+    /**
+     *     Load Image
+     */
+    public static final int Load_image_NoExist = -28;
 }

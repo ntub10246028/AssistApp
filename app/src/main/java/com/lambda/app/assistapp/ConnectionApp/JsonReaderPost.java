@@ -34,7 +34,6 @@ public class JsonReaderPost {
 
         HttpPost httpPost = new HttpPost("https://app.lambda.tw/" + dir);
         httpPost.setEntity(new UrlEncodedFormEntity(params));
-
         HttpResponse response;
         String result = null;
         response = client.execute(httpPost);
