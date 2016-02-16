@@ -78,7 +78,9 @@ public class MissionData {
     }
 
     public void setImage(String image) {
-        this.image = image;
+        if (!image.equals("null") && !image.equals("NULL")) {
+            this.image = image;
+        }
     }
 
     public String getGettime() {

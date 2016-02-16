@@ -59,7 +59,8 @@ public class AroundRVAdapter extends SampleRecyclerViewAdapter {
         final MissionData item = list.get(position);
         // setTextSize
         holder.title.setText(item.getTitle());
-        if (!item.getImage().isEmpty()) {
+        if (item.getImage() != null) {
+            Log.d("AroundRVAdapter", item.getImage());
             if (holder.image != null) {
                 LoadImageTask(holder.image, Integer.toString(item.getMissionid()), "1");
             }
