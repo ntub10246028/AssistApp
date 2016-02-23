@@ -25,7 +25,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <com.lambda.app.assistapp.UI.SlidingTabLayout
+                <com.lambda.assist.UI.SlidingTabLayout
                     android:id="@+id/slidingtab"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

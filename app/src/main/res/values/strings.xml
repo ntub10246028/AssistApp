@@ -33,5 +33,6 @@
     <string name="msg_err_upload_image_noreplaceimage">找不到要取代的圖片</string>
     <!-- Around Mission-->
     <string name="msg_warning_around_empty">附近沒有任務，新增一個吧 >>></string>
+    <string name="title_activity_act__map">Map</string>
 
 </resources>
