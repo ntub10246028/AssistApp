@@ -27,8 +27,13 @@ import android.widget.Toast;
 
 import com.lambda.assist.Adapter.LeftListAdapter;
 import com.lambda.assist.Adapter.MyFragmentAdapter;
+import com.lambda.assist.Asyn.LoadHistory;
+import com.lambda.assist.Asyn.LoadingMission;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
+import com.lambda.assist.Item.MissionData;
 import com.lambda.assist.Other.Item_History;
+import com.lambda.assist.Other.Net;
+import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
 import com.lambda.assist.UI.SlidingTabLayout;
 
@@ -97,6 +102,8 @@ public class Act_Main extends AppCompatActivity {
         draweropen_offset_left = (int) (window_width * perfectRate_left);
     }
 
+    private boolean F = true;
+
     private void InitialDrawerLayout() {
         main_layout = (LinearLayout) findViewById(R.id.main_layout);
         drawer_left_layout = (LinearLayout) findViewById(R.id.drawer_left_layout);
@@ -115,6 +122,13 @@ public class Act_Main extends AppCompatActivity {
             }
 
             public void onDrawerOpened(View v) {
+                if (F) {
+                    if (v.getId() == R.id.drawer_left_layout) {
+                        // refresh
+                        LoadHistory();
+                    }
+                    F = !F;
+                }
             }
 
             public void onDrawerSlide(View v, final float f) {
@@ -140,11 +154,14 @@ public class Act_Main extends AppCompatActivity {
     }
 
     private View getLeftDrawerLayout() {
+        // InitialUI
         View v = getLayoutInflater().inflate(R.layout.drawer_left, null);
         et_drawer_input = (EditText) v.findViewById(R.id.et_drawer_input);
         imgbt_drawer_search = (ImageButton) v
                 .findViewById(R.id.imgbt_drawer_search);
         lv_drawer_datas = (ListView) v.findViewById(R.id.lv_drawer_datas);
+        //
+
         List<Item_History> list = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Item_History item = new Item_History();
@@ -169,7 +186,58 @@ public class Act_Main extends AppCompatActivity {
 
             }
         });
+
         return v;
+    }
+
+    private void LoadHistory() {
+        if (Net.isNetWork(ctxt)) {
+            LoadHistory task = new LoadHistory(new LoadHistory.OnLoadHistoryListener() {
+                public void finish(Integer result, List<Integer> list) {
+                    switch (result) {
+                        case TaskCode.Success:
+                            LoadingMissionID(list);
+                            break;
+                        case TaskCode.Empty:
+
+                            break;
+                        case TaskCode.NoResponse:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            task.execute();
+        } else {
+
+        }
+    }
+
+    private void LoadingMissionID(List<Integer> list) {
+        if (Net.isNetWork(ctxt)) {
+            LoadingMission task = new LoadingMission(new LoadingMission.OnLoadingMissionIDListener() {
+                public void finish(Integer result, List<MissionData> list) {
+                    switch (result) {
+                        case TaskCode.Empty:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_warning_around_empty), Toast.LENGTH_SHORT).show();
+                            break;
+                        case TaskCode.Success:
+
+                            break;
+                        case TaskCode.NoResponse:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            task.execute();
+        } else {
+
+        }
     }
 
     private View getRightDrawerLayout() {

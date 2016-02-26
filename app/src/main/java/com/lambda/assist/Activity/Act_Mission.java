@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lambda.assist.Asyn.LoadingMission;
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
 import com.lambda.assist.Item.MissionData;
@@ -55,74 +56,31 @@ public class Act_Mission extends AppCompatActivity {
 
     private void LoadingMission(int id) {
         if (Net.isNetWork(ctxt)) {
-            new LoadingMission().execute(id);
+            LoadingMission task = new LoadingMission(new LoadingMission.OnLoadingMissionIDListener() {
+                public void finish(Integer result, List<MissionData> list) {
+                    switch (result) {
+                        case TaskCode.Success:
+                            RefreshToUI();
+                            break;
+                        case TaskCode.New_Mission_Fail:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_new_mission_fail), Toast.LENGTH_SHORT).show();
+                            break;
+                        case TaskCode.New_Mission_LackData:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_new_mission_lackdata), Toast.LENGTH_SHORT).show();
+                            break;
+                        case TaskCode.NoResponse:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            List<Integer> list = new ArrayList<>();
+            list.add(id);
+            task.execute(list);
         } else {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    class LoadingMission extends AsyncTask<Integer, Integer, Integer> {
-        private int missionid;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Integer doInBackground(Integer... datas) {
-            int result = TaskCode.NoResponse;
-            missionid = datas[0];
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("missionID[]", Integer.toString(missionid)));
-            Log.d("LoadingMission", "MissionID = " + missionid);
-            try {
-                JsonReaderPost jp = new JsonReaderPost();
-                JSONObject jobj = jp.Reader(params, URLs.url_get_mission_data, MyHttpClient.getMyHttpClient());
-                if (jobj == null)
-                    return result;
-                result = jobj.getInt("result");
-                if (result == TaskCode.Success) {
-                    JSONArray jarray = jobj.getJSONArray("missiondata");
-                    JSONObject item = jarray.getJSONObject(0);
-                    iData.setMissionid(item.getInt("missionid"));
-                    iData.setPosttime(item.getString("posttime"));
-                    iData.setOnlinelimittime(item.getString("onlinelimittime"));
-                    iData.setRunlimittime(item.getString("runlimittime"));
-                    iData.setLocationx(item.getDouble("locationx"));
-                    iData.setLocationy(item.getDouble("locationy"));
-                    iData.setLocationtypeid(item.getInt("locationtypeid"));
-                    iData.setTitle(item.getString("title"));
-                    iData.setContent(item.getString("content"));
-                    iData.setImage(item.getString("image"));
-                    iData.setGettime(item.getString("gettime"));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d("LoadingMission", e.toString());
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-            switch (result) {
-                case TaskCode.Success:
-                    RefreshToUI();
-                    break;
-                case TaskCode.New_Mission_Fail:
-                    Toast.makeText(ctxt, getResources().getString(R.string.msg_err_new_mission_fail), Toast.LENGTH_SHORT).show();
-                    break;
-                case TaskCode.New_Mission_LackData:
-                    Toast.makeText(ctxt, getResources().getString(R.string.msg_err_new_mission_lackdata), Toast.LENGTH_SHORT).show();
-                    break;
-                case TaskCode.NoResponse:
-                    Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-                    Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
@@ -134,12 +92,6 @@ public class Act_Mission extends AppCompatActivity {
         tv_onlinetime.setText(iData.getOnlinelimittime());
         tv_runtime.setText(iData.getRunlimittime());
     }
-
-    private void MillSecondsToDate(long ms) {
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(ms);
-    }
-
 
     private void InitialSomething() {
         iData = new MissionData();

@@ -117,8 +117,6 @@ public class MapsActivity extends FragmentActivity {
                 final_lng = location.getLongitude();
             } else {
                 Toast.makeText(ctxt, "無法取得位置", Toast.LENGTH_SHORT).show();
-                final_lat = 0;
-                final_lng = 0;
             }
         }
         Log.d("ActivityMap", "lon = " + final_lng + " lat = " + final_lat);
@@ -170,7 +168,7 @@ public class MapsActivity extends FragmentActivity {
 
     private void InitialExtras() {
         Intent data = getIntent();
-        final_lat = data.getDoubleExtra("lat", -1);
-        final_lng = data.getDoubleExtra("lng", -1);
+        final_lat = data.getDoubleExtra("lat",25.042385);
+        final_lng = data.getDoubleExtra("lng", 121.525241);
     }
 }

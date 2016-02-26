@@ -80,8 +80,8 @@ public class Act_NewMission extends AppCompatActivity {
     private LocationManager lms;
     private Location location;
     private String bestProvider = LocationManager.GPS_PROVIDER;
-    private double final_lat;
-    private double final_lng;
+    private double final_lat = -1;
+    private double final_lng = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -402,8 +402,8 @@ public class Act_NewMission extends AppCompatActivity {
             public void onClick(View v) {
                 Hardware.closeKeyBoard(ctxt, v);
                 Intent it = new Intent(ctxt, MapsActivity.class);
-                it.putExtra("lat",final_lat);
-                it.putExtra("lng",final_lng);
+                it.putExtra("lat", final_lat);
+                it.putExtra("lng", final_lng);
                 startActivityForResult(it, OPEN_MAP);
             }
         });
@@ -466,8 +466,8 @@ public class Act_NewMission extends AppCompatActivity {
                     et_content.setText(titrans.putBitmapToText(iBitmap, et_content));
                     break;
                 case OPEN_MAP:
-                    double lat = data.getDoubleExtra("lat", 0);
-                    double lng = data.getDoubleExtra("lng", 0);
+                    double lat = data.getDoubleExtra("lat", 25.042385);
+                    double lng = data.getDoubleExtra("lng", 121.525241);
                     Toast.makeText(ctxt, lat + "\n" + lng, Toast.LENGTH_SHORT).show();
                     break;
             }

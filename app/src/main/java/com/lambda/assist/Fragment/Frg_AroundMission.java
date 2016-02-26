@@ -294,7 +294,7 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.d("LoadingAroundMission", e.toString());
+                Log.d("LoadingMission", e.toString());
             }
             return result;
         }

@@ -10,5 +10,6 @@ public class URLs {
     public static final String url_upload_image = "upload-image";
     public static final String url_get_mission_data = "mission-data";
     public static final String url_download_image = "download";
+    public static final String url_history = "history";
 
 }
