@@ -28,7 +28,7 @@ import android.widget.Toast;
 import com.lambda.assist.Adapter.LeftListAdapter;
 import com.lambda.assist.Adapter.MyFragmentAdapter;
 import com.lambda.assist.Asyn.LoadHistory;
-import com.lambda.assist.Asyn.LoadingMission;
+import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
 import com.lambda.assist.Item.MissionData;
 import com.lambda.assist.Other.Item_History;
@@ -217,7 +217,7 @@ public class Act_Main extends AppCompatActivity {
 
     private void LoadingMissionID(List<Integer> list) {
         if (Net.isNetWork(ctxt)) {
-            LoadingMission task = new LoadingMission(new LoadingMission.OnLoadingMissionIDListener() {
+            LoadMissions task = new LoadMissions(new LoadMissions.OnLoadMissionsListener() {
                 public void finish(Integer result, List<MissionData> list) {
                     switch (result) {
                         case TaskCode.Empty:
@@ -250,7 +250,7 @@ public class Act_Main extends AppCompatActivity {
                 "Section5", "Section6", "Section7", "Section8", "Section9",
                 "Section10", "Section11", "Section12", "Section13",
                 "Section14", "Section15"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, settings);
         lv_drawer_setting.setAdapter(adapter);
 

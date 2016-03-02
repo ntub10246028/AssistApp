@@ -1,13 +1,9 @@
 package com.lambda.assist.Activity;
 
 import android.app.AlertDialog;
-import android.app.TimePickerDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -21,22 +17,18 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
 import com.lambda.assist.Other.Hardware;
-import com.lambda.assist.Other.IsVail;
+import com.lambda.assist.Other.IsVaild;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
@@ -48,11 +40,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -332,7 +320,7 @@ public class Act_NewMission extends AppCompatActivity {
         });
         b.setPositiveButton(getResources().getString(R.string.button_ok), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                String result = IsVail.isVail_TimePick(ctxt, np_hour.getValue(), np_min.getValue(), np_sec.getValue());
+                String result = IsVaild.isVail_TimePick(ctxt, np_hour.getValue(), np_min.getValue(), np_sec.getValue());
                 if (result.equals(getResources().getString(R.string.default_time))) {
                     if (mode == ONLINE) {
                         ol_hour = 24;
@@ -419,7 +407,7 @@ public class Act_NewMission extends AppCompatActivity {
                 Hardware.closeKeyBoard(ctxt, v);
                 String title = et_title.getText().toString();
                 String content = et_content.getText().toString();
-                if (IsVail.isVail_New_Mission(ctxt, title, content)) {
+                if (IsVaild.isVail_New_Mission(ctxt, title, content)) {
                     convertBitmapToBase64();
                     NewMissionTask();
                 }

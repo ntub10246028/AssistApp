@@ -1,6 +1,7 @@
 package com.lambda.assist.ConnectionApp;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -67,11 +68,6 @@ public class SignatureApp {
             JSONObject jobj = jp.Reader(params, this.url_sign, client);
             if (jobj != null) {
                 setResultNo(jobj.getInt("result"));
-                if (getResultNo() == -8)
-                    setPass(jobj.getInt("pass"));
-                this.setSuccess(true);
-            } else {
-                setResultNo(0);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -79,15 +75,13 @@ public class SignatureApp {
         return jp.getCookie();
     }
 
-    public String postauthorize(String imei, String phone, int pass, MyHttpClient client) {
-        Random rand = new Random();
-        String strPass = Integer.toString(pass);
+    public String postauthorize(String imei, String phone, String pass, MyHttpClient client) {
         BigInteger m1 = new BigInteger(imei).modPow(this.d, this.N);
         BigInteger m2 = new BigInteger(phone).modPow(this.d, this.N);
-        BigInteger m3 = new BigInteger(strPass).modPow(this.d, this.N);
+        BigInteger m3 = new BigInteger(pass).modPow(this.d, this.N);
 
         JsonReaderPost jp = new JsonReaderPost();
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("imei", m1.toString()));
         params.add(new BasicNameValuePair("phone", m2.toString()));
         params.add(new BasicNameValuePair("password", m3.toString()));
@@ -96,8 +90,6 @@ public class SignatureApp {
             if (jobj != null) {
                 setResultNo(jobj.getInt("result"));
                 this.setSuccess(true);
-            } else {
-                setResultNo(0);
             }
         } catch (Exception e) {
             e.printStackTrace();

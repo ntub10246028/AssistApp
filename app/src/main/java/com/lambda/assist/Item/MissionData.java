@@ -1,9 +1,11 @@
 package com.lambda.assist.Item;
 
+import java.io.Serializable;
+
 /**
  * Created by asus on 2016/2/5.
  */
-public class MissionData {
+public class MissionData implements Serializable{
     private int missionid;
     private int msessionid;
     private String posttime;

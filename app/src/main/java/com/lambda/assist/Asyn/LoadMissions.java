@@ -20,16 +20,16 @@ import java.util.List;
 /**
  * Created by asus on 2016/2/25.
  */
-public class LoadingMission extends AsyncTask<List<Integer>, Integer, Integer> {
-    public interface OnLoadingMissionIDListener {
+public class LoadMissions extends AsyncTask<List<Integer>, Integer, Integer> {
+    public interface OnLoadMissionsListener {
         void finish(Integer result, List<MissionData> list);
     }
 
-    private final OnLoadingMissionIDListener mListener;
+    private final OnLoadMissionsListener mListener;
     private List<Integer> missions;
     private List<MissionData> list;
 
-    public LoadingMission(OnLoadingMissionIDListener mListener) {
+    public LoadMissions(OnLoadMissionsListener mListener) {
         this.mListener = mListener;
         list = new ArrayList<>();
     }
@@ -47,7 +47,7 @@ public class LoadingMission extends AsyncTask<List<Integer>, Integer, Integer> {
             JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_get_mission_data, MyHttpClient.getMyHttpClient());
             if (jobj == null)
                 return result;
-            Log.d("LoadingMission", jobj.toString());
+            Log.d("LoadMissions", jobj.toString());
             result = jobj.getInt("result");
             if (result == TaskCode.Success) {
                 JSONArray jarray = jobj.getJSONArray("missiondata");
@@ -70,7 +70,7 @@ public class LoadingMission extends AsyncTask<List<Integer>, Integer, Integer> {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d("LoadingMission", e.toString());
+            Log.d("LoadMissions", e.toString());
         }
         return result;
     }

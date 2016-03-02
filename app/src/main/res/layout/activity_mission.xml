@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
+        android:id="@+id/main_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_mission_top"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/tv_mission_title"/>
+            android:background="@color/gray800"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/tv_mission_content"/>
+        <com.lambda.assist.UI.MissionSlidingTabLayout
+            android:id="@+id/slidingtab_mission"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/tv_mission_posttime"/>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager_mission"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/tv_mission_online"/>
+            android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/tv_mission_runtime"/>
+            <Button
+                android:id="@+id/bt_mission_gps"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="GPS" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="接受"
-            android:id="@+id/bt_mission_accept"/>
+            <Button
+                android:id="@+id/bt_mission_accept"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Accept" />
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

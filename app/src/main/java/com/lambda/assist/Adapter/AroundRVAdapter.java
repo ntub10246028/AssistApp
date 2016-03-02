@@ -69,6 +69,7 @@ public class AroundRVAdapter extends SampleRecyclerViewAdapter {
             public void onClick(View v) {
                 Intent it = new Intent(getContext(), Act_Mission.class);
                 it.putExtra("missionid", item.getMissionid());
+                it.putExtra("title",item.getTitle());
                 getContext().startActivity(it);
             }
         });

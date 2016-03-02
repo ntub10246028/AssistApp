@@ -271,7 +271,7 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
                 JSONObject jobj = jp.Reader(params, URLs.url_get_mission_data, client);
                 if (jobj == null)
                     return result;
-                Log.d("LoadingMission", jobj.toString());
+                Log.d("LoadMissions", jobj.toString());
                 result = jobj.getInt("result");
                 if (result == TaskCode.Success) {
                     JSONArray jarray = jobj.getJSONArray("missiondata");
@@ -294,7 +294,7 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.d("LoadingMission", e.toString());
+                Log.d("LoadMissions", e.toString());
             }
             return result;
         }

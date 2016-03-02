@@ -7,7 +7,11 @@
     <color name="red">#FF0000</color>
     <color name="green">#00FF00</color>
     <color name="green2">#43A047</color>
-
+    <!-- Gray -->
+    <color name="gray500">#9E9E9E</color>
+    <color name="gray800">#424242</color>
+    <color name="gray900">#212121</color>
+    <!-- -->
     <color name="dark">#4F4F4F</color>
     <color name="trans">#00FFFFFF</color>
     <color name="trans_half">#55FFFFFF</color>
@@ -19,7 +23,11 @@
     <color name="tab_background_normal">#B3B3B4</color>
     <color name="tab_background_select">@color/white</color>
 
+    <!-- In Main -->
     <color name="tab_text_normal">#FFFFFF</color>
     <color name="tab_text_select">#221815</color>
+    <!-- In Mission -->
+    <color name="tab_mission_normal">@color/gray500</color>
+    <color name="tab_mission_select">@color/white</color>
 
 </resources>

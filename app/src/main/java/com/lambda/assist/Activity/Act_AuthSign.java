@@ -20,10 +20,14 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.lambda.assist.Asyn.AuthenticatePass;
+import com.lambda.assist.Asyn.AuthenticatePhone;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
 import com.lambda.assist.ConnectionApp.SignatureApp;
 import com.lambda.assist.Other.ActivityCode;
 import com.lambda.assist.Other.Hardware;
+import com.lambda.assist.Other.IsVaild;
+import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
@@ -38,7 +42,6 @@ public class Act_AuthSign extends Activity {
     // Obj
     private Context ctxt = Act_AuthSign.this;
     private MyHttpClient client;
-    private Resources res;
     // StartActivity
     // SharedPreferences
     private SharedPreferences settings;
@@ -62,186 +65,51 @@ public class Act_AuthSign extends Activity {
         InitialUI();
         InitialAction();
         readData();
-        CheckUserExsitTask();
     }
 
-    private void CheckUserExsitTask() {
-        if (!mPhone.isEmpty()) {
+    private void AuthenticatePhoneTask(final String phone) {
+        if (!phone.isEmpty()) {
             if (Net.isNetWork(ctxt)) {
-                new CheckUserExsitTask().execute();
+                final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
+                MyHttpClient.getMyHttpClient().setContext(ctxt);
+                AuthenticatePhone task = new AuthenticatePhone(MyHttpClient.getMyHttpClient(), new AuthenticatePhone.OnAuthenticatePhoneListener() {
+                    public void finish(Integer result) {
+                        pd.dismiss();
+                        switch (result) {
+                            case TaskCode.Success: // ok
+                                saveData(phone);
+                                Intent it = new Intent(ctxt, Act_Main.class);
+                                startActivity(it);
+                                finishActivity();
+                                break;
+                            case TaskCode.ThisUserNoExist: // err : database no you
+                                SMS_dialog(phone);
+                                break;
+                            case TaskCode.NoResponse:
+                                Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                                break;
+                            default:
+                                Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                task.execute(getImei(), phone);
             } else {
-                Toast.makeText(ctxt, res.getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
             }
         } else {
             ll_inputphone.setVisibility(View.VISIBLE);
         }
     }
 
-    class CheckUserExsitTask extends AsyncTask<String, String, Integer> {
-        private String phone;
-        private String imei;
-        private String sResult = "";
-        // UI
-        private ProgressDialog pDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(ctxt);
-            pDialog.setMessage("Loading...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        protected Integer doInBackground(String... datas) {
-            Integer result = TaskCode.NoResponse;
-            phone = mPhone;
-            imei = getImei();
-            if (client == null) {
-                client = MyHttpClient.getMyHttpClient();
-                client.setContext(ctxt);
-            }
-
-            SignatureApp sa = new SignatureApp(ctxt, R.raw.sign);
-            String session = null;
-
-            while (!sa.isSuccess()) {
-                session = sa.postSignature(imei, phone, client);
-            }
-            try {
-                result = sa.getResultNo();
-                mPassNo = sa.getPass();
-                HttpGet hg = new HttpGet("https://app.lambda.tw/session");
-                hg.setHeader("lack.session", session);
-                Log.d(session, hg.getFirstHeader("lack.session").toString());
-                HttpResponse response = client.execute(hg);
-                HttpEntity entity = response.getEntity();
-                Log.d("HttpEntity Result !!!", EntityUtils.toString(entity));
-            } catch (Exception e) {
-                e.printStackTrace();
-                sResult = e.toString();
-            }
-
-            return result;
-        }
-
-        protected void onPostExecute(Integer result) {
-            pDialog.dismiss();
-            switch (result) {
-                case TaskCode.Success: // ok
-                    Intent it = new Intent(ctxt, Act_Main.class);
-                    startActivity(it);
-                    finish();
-                    break;
-                case TaskCode.ThisUserNoExist: // err : database no you
-                    SMS_dialog();
-                    Toast.makeText(ctxt, mPassNo + "", Toast.LENGTH_SHORT).show();
-                    break;
-                case TaskCode.NoResponse:
-                    Toast.makeText(ctxt, "NoResponse", Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-                    Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void AuthUserPWDTask() {
-        if (Net.isNetWork(ctxt)) {
-            new AuthUserPWDTask().execute();
-        } else {
-            Toast.makeText(ctxt, res.getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    class AuthUserPWDTask extends AsyncTask<String, String, Integer> {
-        private String phone;
-        private String imei;
-        private int passNo;
-        private String sResult = "";
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            phone = mPhone;
-            imei = getImei();
-            passNo = mPassNo;
-        }
-
-        protected Integer doInBackground(String... datas) {
-            Integer result = TaskCode.NoResponse;
-
-            SignatureApp sa = new SignatureApp(ctxt, R.raw.sign);
-            String session = null;
-
-            while (!sa.isSuccess()) {
-                session = sa.postauthorize(imei, phone, passNo, client);
-            }
-            try {
-                result = sa.getResultNo();
-                HttpGet hg = new HttpGet("https://app.lambda.tw/session");
-                hg.setHeader("lack.session", session);
-                Log.d(session, hg.getFirstHeader("lack.session").toString());
-                HttpResponse response = client.execute(hg);
-                HttpEntity entity = response.getEntity();
-                Log.d("xxxxxxxxxxxxxx", EntityUtils.toString(entity));
-            } catch (Exception e) {
-                e.printStackTrace();
-                sResult = e.toString();
-            }
-            return result;
-        }
-
-        protected void onPostExecute(Integer result) {
-            switch (result) {
-                case TaskCode.Success: // ok
-                    Intent it = new Intent(ctxt, Act_Main.class);
-                    startActivity(it);
-                    finish();
-                    break;
-                case TaskCode.ThisUserNoExist: // err : database no you
-                    SMS_dialog();
-                    break;
-                case TaskCode.NoResponse:
-                    Toast.makeText(ctxt, res.getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-            }
-        }
-    }
-
-    private void SMS_dialog() {
-        new AlertDialog.Builder(ctxt).setTitle(mPhone).setMessage(res.getString(R.string.sms_text)).setPositiveButton("確認", new DialogInterface.OnClickListener() {
+    private void SMS_dialog(final String phone) {
+        new AlertDialog.Builder(ctxt).setTitle(phone).setMessage(getResources().getString(R.string.sms_text)).setPositiveButton("確認", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 Intent it = new Intent(ctxt, Act_AuthSMS.class);
-                startActivityForResult(it, ActivityCode.AuthSMS);
+                it.putExtra("phone", phone);
+                startActivityForResult(it, ActivityCode.Sms);
             }
         }).setNegativeButton("取消", null).show();
-    }
-
-    private boolean formatIsVaild() {
-        String countryN = countryNum[sp_countryNum.getSelectedItemPosition()];
-        String phone = et_phone.getText().toString();
-        if (countryN.isEmpty() || phone.isEmpty()) {
-            return false; // 有個位置是空的 X
-        }
-        if (phone.length() == 10) {
-            if (!phone.substring(0, 2).equals("09")) {
-                return false; // 如果是 10 位數開頭不是 09 X
-            } else {
-                et_phone.setText(phone.substring(1));
-            }
-        } else if (phone.length() == 9) {
-            if (!phone.substring(0, 1).equals("9")) {
-                return false;// 如果是 9 位數開頭不是 9 X
-            } else {
-                et_phone.setText(phone);
-            }
-        } else {
-            return false;// 長度不是 9,10 位數 X
-        }
-        return true;
     }
 
     private String getImei() {
@@ -250,9 +118,7 @@ public class Act_AuthSign extends Activity {
     }
 
     private void InitialSomething() {
-        res = getResources();
-        countryNum = res.getStringArray(R.array.country_number);
-        client = null;
+        countryNum = getResources().getStringArray(R.array.country_number);
     }
 
     private void InitialUI() {
@@ -266,15 +132,14 @@ public class Act_AuthSign extends Activity {
         // button
         bt_commit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (formatIsVaild()) {
-                    Hardware.closeKeyBoard(ctxt, v);
-                    saveData();
-                    readData();
-                    //ll_inputphone.setVisibility(View.INVISIBLE);
-                    //Toast.makeText(ctxt, countryNum[sp_countryNum.getSelectedItemPosition()] + et_phone.getText().toString(), Toast.LENGTH_SHORT).show();
-                    CheckUserExsitTask();
+                Hardware.closeKeyBoard(ctxt, v);
+                String countryN = countryNum[sp_countryNum.getSelectedItemPosition()];
+                String phone = et_phone.getText().toString();
+                if (IsVaild.phoneformat(countryN, phone)) {
+                    String countryphone = countryN + phone.substring(1);
+                    AuthenticatePhoneTask(countryphone);
                 } else {
-                    Toast.makeText(ctxt, res.getString(R.string.msg_err_format), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctxt, getResources().getString(R.string.msg_err_format), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -283,46 +148,34 @@ public class Act_AuthSign extends Activity {
         sp_countryNum.setAdapter(adapter);
     }
 
-    private void saveData() {
+    private void saveData(String phone) {
         settings = getSharedPreferences(DATA, 0);
-        settings.edit().putString(phoneField, countryNum[sp_countryNum.getSelectedItemPosition()] + et_phone.getText().toString()).commit();
+        settings.edit().putString(phoneField, phone).commit();
     }
 
     private void readData() {
         settings = getSharedPreferences(DATA, 0);
-        mPhone = settings.getString(phoneField, "");
-    }
-
-    private void clearData() {
-        settings = getSharedPreferences(DATA, 0);
-        settings.edit().clear().commit();
-        Toast.makeText(ctxt, "clear", Toast.LENGTH_SHORT).show();
+        String savedphone = settings.getString(phoneField, "");
+        AuthenticatePhoneTask(savedphone);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) { // ok
-            if (requestCode == ActivityCode.AuthSMS) {
-
-                String pwd = data.getStringExtra("pwd");
-                int ipwd = -1;
-                try {
-                    ipwd = Integer.valueOf(pwd);
-                } catch (NumberFormatException ex) {
-
-                }
-                if (ipwd == -1 || ipwd != mPassNo) {
-                    Toast.makeText(ctxt, "驗證碼錯誤", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ctxt, mPassNo + "", Toast.LENGTH_SHORT).show();
-                    AuthUserPWDTask();
-                }
-            }
-        } else { // cancel
-            if (requestCode == ActivityCode.AuthSMS) {
-
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case ActivityCode.Sms:
+                    boolean isSuccess = data.getBooleanExtra("success", false);
+                    String phone = data.getStringExtra("phone");
+                    if (isSuccess) {
+                        AuthenticatePhoneTask(phone);
+                    }
+                    break;
             }
         }
+    }
+
+    private void finishActivity() {
+        this.finish();
     }
 }

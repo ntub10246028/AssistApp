@@ -34,5 +34,8 @@
     <!-- Around Mission-->
     <string name="msg_warning_around_empty">附近沒有任務，新增一個吧 >>></string>
     <string name="title_activity_act__map">Map</string>
-
+    <!-- In Mission-->
+    <string name="tab_mission_content">內文</string>
+    <string name="tab_mission_limit">限制</string>
+    <string name="tab_mission_message">留言板</string>
 </resources>

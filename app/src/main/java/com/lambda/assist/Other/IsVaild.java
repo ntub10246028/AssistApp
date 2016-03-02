@@ -9,7 +9,7 @@ import com.lambda.assist.R;
 /**
  * Created by asus on 2016/1/26.
  */
-public class IsVail {
+public class IsVaild {
     public static boolean isVail_New_Mission(Context ctxt, String title, String content) {
         if (title.isEmpty()) {
             Toast.makeText(ctxt, ctxt.getResources().getString(R.string.msg_err_new_mission_title), Toast.LENGTH_SHORT).show();
@@ -36,6 +36,20 @@ public class IsVail {
         sb.append((s < 10 ? "0" : ""));
         sb.append(s);
         return sb.toString();
+    }
+
+    public static boolean phoneformat(String countryNum, String phone) {
+        if (countryNum.isEmpty() || phone.isEmpty()) {
+            return false; // 有個位置是空的 X
+        }
+        if (phone.length() == 10) {
+            if (!phone.substring(0, 2).equals("09")) {
+                return false; // 如果是 10 位數開頭不是 09 X
+            }
+        } else {
+            return false;// 長度不是 9,10 位數 X
+        }
+        return true;
     }
 
 
