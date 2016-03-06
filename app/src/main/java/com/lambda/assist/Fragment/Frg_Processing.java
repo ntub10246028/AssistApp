@@ -17,12 +17,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.lambda.assist.Activity.Act_NewMission;
 import com.lambda.assist.Adapter.ProcessingRVAdapter;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.Item.ProcessingItem;
+import com.lambda.assist.Item.ProcessingMission;
 import com.lambda.assist.Listener.OnRcvScrollListener;
 import com.lambda.assist.Other.ActivityCode;
 import com.lambda.assist.Other.Item;
@@ -47,7 +46,7 @@ public class Frg_Processing extends Fragment {
     private ProcessingRVAdapter adapter_rv;
     private GridLayoutManager manager;
     //
-    private List<ProcessingItem> list_processing;
+    private List<ProcessingMission> list_processing;
 
     public static Frg_Processing newInstance(int pos) {
         Frg_Processing fragment = new Frg_Processing();
@@ -134,10 +133,10 @@ public class Frg_Processing extends Fragment {
         rv.setItemAnimator(new DefaultItemAnimator());
     }
 
-    private List<ProcessingItem> getData() {
-        List<ProcessingItem> list = new ArrayList<>();
+    private List<ProcessingMission> getData() {
+        List<ProcessingMission> list = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            ProcessingItem item = new ProcessingItem();
+            ProcessingMission item = new ProcessingMission();
             item.setText("Text" + i);
             list.add(item);
         }

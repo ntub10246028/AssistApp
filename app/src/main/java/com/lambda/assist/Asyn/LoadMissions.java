@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.Item.MissionData;
+import com.lambda.assist.Item.AroundMission;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
 
@@ -22,12 +22,12 @@ import java.util.List;
  */
 public class LoadMissions extends AsyncTask<List<Integer>, Integer, Integer> {
     public interface OnLoadMissionsListener {
-        void finish(Integer result, List<MissionData> list);
+        void finish(Integer result, List<AroundMission> list);
     }
 
     private final OnLoadMissionsListener mListener;
     private List<Integer> missions;
-    private List<MissionData> list;
+    private List<AroundMission> list;
 
     public LoadMissions(OnLoadMissionsListener mListener) {
         this.mListener = mListener;
@@ -39,11 +39,12 @@ public class LoadMissions extends AsyncTask<List<Integer>, Integer, Integer> {
     protected Integer doInBackground(List<Integer>... lists) {
         Integer result = TaskCode.NoResponse;
         missions = lists[0];
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        List<NameValuePair> params = new ArrayList<>();
         for (Integer id : missions) {
             params.add(new BasicNameValuePair("missionID[]", Integer.toString(id)));
         }
         try {
+            Log.d("LoadMissions", "Start");
             JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_get_mission_data, MyHttpClient.getMyHttpClient());
             if (jobj == null)
                 return result;
@@ -53,7 +54,7 @@ public class LoadMissions extends AsyncTask<List<Integer>, Integer, Integer> {
                 JSONArray jarray = jobj.getJSONArray("missiondata");
                 for (int i = 0; i < jarray.length(); i++) {
                     JSONObject item = jarray.getJSONObject(i);
-                    MissionData idata = new MissionData();
+                    AroundMission idata = new AroundMission();
                     idata.setMissionid(item.getInt("missionid"));
                     idata.setPosttime(item.getString("posttime"));
                     idata.setOnlinelimittime(item.getString("onlinelimittime"));

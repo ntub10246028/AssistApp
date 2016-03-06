@@ -25,7 +25,7 @@ import android.widget.Toast;
 import com.lambda.assist.Adapter.AroundRVAdapter;
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.Item.MissionData;
+import com.lambda.assist.Item.AroundMission;
 import com.lambda.assist.Item.ReadyMission;
 import com.lambda.assist.Listener.OnRcvScrollListener;
 import com.lambda.assist.Other.Net;
@@ -56,7 +56,7 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
     // Other
     private int position;
     private List<ReadyMission> list_readmission;
-    private List<MissionData> list_missiondata;
+    private List<AroundMission> list_missiondata;
     // For get Lan Let
     private boolean getService = false;     //是否已開啟定位服務
     private LocationManager lms;
@@ -100,6 +100,7 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
         if (location != null) {
             Double lon = location.getLongitude();
             Double lat = location.getLatitude();
+            adapter_rv.setPosition(lon, lat);
             Log.d("Frg_AroundMission", "lon = " + lon + " lat = " + lat);
             LoadingAroundMission(Double.toString(lon), Double.toString(lat));
         } else {
@@ -186,8 +187,8 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
             params.add(new BasicNameValuePair("lon", longitude));
             params.add(new BasicNameValuePair("lat", latitude));
             try {
-                JsonReaderPost jp = new JsonReaderPost();
-                JSONObject jobj = jp.Reader(params, URLs.url_around_Mission, client);
+                Log.d("LoadingAroundMission", "Start");
+                JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_around_Mission, client);
                 if (jobj == null)
                     return result;
                 Log.d("LoadingAroundMission", jobj.toString());
@@ -277,7 +278,7 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
                     JSONArray jarray = jobj.getJSONArray("missiondata");
                     for (int i = 0; i < jarray.length(); i++) {
                         JSONObject item = jarray.getJSONObject(i);
-                        MissionData idata = new MissionData();
+                        AroundMission idata = new AroundMission();
                         idata.setMissionid(item.getInt("missionid"));
                         idata.setPosttime(item.getString("posttime"));
                         idata.setOnlinelimittime(item.getString("onlinelimittime"));

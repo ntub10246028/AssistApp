@@ -3,7 +3,6 @@ package com.lambda.assist.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,7 +17,8 @@ import android.widget.Toast;
 import com.lambda.assist.Activity.Act_Mission;
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.Item.MissionData;
+import com.lambda.assist.GPS.MyGPS;
+import com.lambda.assist.Item.AroundMission;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
@@ -38,11 +38,15 @@ import java.util.List;
  * Created by v on 2015/12/19.
  */
 public class AroundRVAdapter extends SampleRecyclerViewAdapter {
-    private List<MissionData> list;
+    private List<AroundMission> list;
+    private double my_lon;
+    private double my_lat;
 
-    public AroundRVAdapter(Context context, List<MissionData> list) {
+    public AroundRVAdapter(Context context, List<AroundMission> list) {
         super(context);
         this.list = list;
+        this.my_lon = -1;
+        this.my_lat = -1;
     }
 
     @Override
@@ -56,20 +60,28 @@ public class AroundRVAdapter extends SampleRecyclerViewAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder vholder, int position) {
         // Get Your Holder
         ViewHolder holder = (ViewHolder) vholder;
-        final MissionData item = list.get(position);
-        // setTextSize
+        final AroundMission item = list.get(position);
+        // set
         holder.title.setText(item.getTitle());
-        if (item.getImage() != null) {
+        if (item.getImage() != null && !item.getImage().equals("null")) {
             Log.d("AroundRVAdapter", item.getImage());
             if (holder.image != null) {
                 LoadImageTask(holder.image, Integer.toString(item.getMissionid()), "1");
+            }
+        }
+        Log.d("AroundRVAdapter", my_lon + " " + my_lat);
+        if (my_lon != -1 && my_lat != -1) {
+            double d = MyGPS.gps2m(my_lat, my_lon, item.getLocationy(), item.getLocationx());
+            Log.d("AroundRVAdapter", d + "");
+            if (d >= 0) {
+                holder.distances.setText(d + "公尺");
             }
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent it = new Intent(getContext(), Act_Mission.class);
                 it.putExtra("missionid", item.getMissionid());
-                it.putExtra("title",item.getTitle());
+                it.putExtra("title", item.getTitle());
                 getContext().startActivity(it);
             }
         });
@@ -80,26 +92,23 @@ public class AroundRVAdapter extends SampleRecyclerViewAdapter {
         return list.size();
     }
 
-    // inner class to hold a reference to each item of RecyclerView
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    public void setPosition(double lon, double lat) {
+        my_lon = lon;
+        my_lat = lat;
+    }
 
-        public TextView title;
+    // inner class to hold a reference to each item of RecyclerView
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView title, distances;
         public ImageView image;
+
 
         public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
-            itemLayoutView.setOnClickListener(this);
-            title = (TextView) itemLayoutView.findViewById(R.id.tv_item_rv_title);
-            image = (ImageView) itemLayoutView.findViewById(R.id.img_item_rv_image);
-        }
-
-        @Override
-        public void onClick(View view) {
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            return true;
+            title = (TextView) itemLayoutView.findViewById(R.id.tv_item_around_title);
+            distances = (TextView) itemLayoutView.findViewById(R.id.tv_item_around_distance);
+            image = (ImageView) itemLayoutView.findViewById(R.id.tv_item_around_image);
         }
     }
 

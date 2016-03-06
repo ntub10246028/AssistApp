@@ -11,5 +11,8 @@ public class URLs {
     public static final String url_get_mission_data = "mission-data";
     public static final String url_download_image = "download";
     public static final String url_history = "history";
+    public static final String url_accept_mission = "get-mission";
+
+
 
 }

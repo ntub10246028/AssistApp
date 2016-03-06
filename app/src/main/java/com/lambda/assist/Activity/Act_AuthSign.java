@@ -54,9 +54,6 @@ public class Act_AuthSign extends Activity {
     private Button bt_commit;
     // other
     private String[] countryNum = null;
-    private String mImei;
-    private String mPhone;
-    private int mPassNo;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +80,9 @@ public class Act_AuthSign extends Activity {
                                 finishActivity();
                                 break;
                             case TaskCode.ThisUserNoExist: // err : database no you
-                                SMS_dialog(phone);
+                                Intent SMSit = new Intent(ctxt, Act_AuthSMS.class);
+                                SMSit.putExtra("phone", phone);
+                                startActivityForResult(SMSit, ActivityCode.Sms);
                                 break;
                             case TaskCode.NoResponse:
                                 Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
@@ -100,16 +99,6 @@ public class Act_AuthSign extends Activity {
         } else {
             ll_inputphone.setVisibility(View.VISIBLE);
         }
-    }
-
-    private void SMS_dialog(final String phone) {
-        new AlertDialog.Builder(ctxt).setTitle(phone).setMessage(getResources().getString(R.string.sms_text)).setPositiveButton("確認", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Intent it = new Intent(ctxt, Act_AuthSMS.class);
-                it.putExtra("phone", phone);
-                startActivityForResult(it, ActivityCode.Sms);
-            }
-        }).setNegativeButton("取消", null).show();
     }
 
     private String getImei() {

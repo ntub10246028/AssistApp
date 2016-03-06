@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class LoadHistory extends AsyncTask<String, Integer, Integer> {
     public interface OnLoadHistoryListener {
-        void finish(Integer result,List<Integer> list);
+        void finish(Integer result, List<Integer> list);
     }
 
     private final OnLoadHistoryListener mListener;
@@ -38,14 +38,18 @@ public class LoadHistory extends AsyncTask<String, Integer, Integer> {
         List<NameValuePair> params = new ArrayList<>();
         try {
             JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_history, MyHttpClient.getMyHttpClient());
-            if (jobj == null)
-                return result;
-            result = jobj.getInt("result");
-            if (result == TaskCode.Success) {
-                JSONArray array = jobj.getJSONArray("history");
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject ajobj = array.getJSONObject(i);
-                    list.add(ajobj.getInt("missionid"));
+            if (jobj != null) {
+                result = jobj.getInt("result");
+                if (result == TaskCode.Success) {
+                    JSONArray array = jobj.getJSONArray("history");
+                    if (array != null) {
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject ajobj = array.getJSONObject(i);
+                            list.add(ajobj.getInt("missionid"));
+                        }
+                    }else{
+                        Log.d("LoadHistory", "Array null");
+                    }
                 }
             }
         } catch (Exception e) {
@@ -59,6 +63,6 @@ public class LoadHistory extends AsyncTask<String, Integer, Integer> {
     @Override
     protected void onPostExecute(Integer integer) {
         super.onPostExecute(integer);
-        mListener.finish(integer,list);
+        mListener.finish(integer, list);
     }
 }

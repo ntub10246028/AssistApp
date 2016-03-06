@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
-import com.lambda.assist.Item.ProcessingItem;
+import com.lambda.assist.Item.ProcessingMission;
 import com.lambda.assist.R;
 
 import java.util.List;
@@ -16,9 +16,9 @@ import java.util.List;
  * Created by v on 2015/12/19.
  */
 public class ProcessingRVAdapter extends RecyclerView.Adapter {
-    private List<ProcessingItem> list;
+    private List<ProcessingMission> list;
 
-    public ProcessingRVAdapter(List<ProcessingItem> list) {
+    public ProcessingRVAdapter(List<ProcessingMission> list) {
         this.list = list;
     }
 
@@ -33,7 +33,7 @@ public class ProcessingRVAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         // Get Your Holder
         ViewHolder mholder = (ViewHolder) holder;
-        ProcessingItem item = list.get(position);
+        ProcessingMission item = list.get(position);
         mholder.text.setText(item.getText());
     }
 

@@ -10,7 +10,7 @@ import com.lambda.assist.R;
  * Created by asus on 2016/1/26.
  */
 public class IsVaild {
-    public static boolean isVail_New_Mission(Context ctxt, String title, String content) {
+    public static boolean isVail_New_Mission(Context ctxt, String title, String content,String lon , String lat , String onlinetime , String runtime) {
         if (title.isEmpty()) {
             Toast.makeText(ctxt, ctxt.getResources().getString(R.string.msg_err_new_mission_title), Toast.LENGTH_SHORT).show();
             return false;

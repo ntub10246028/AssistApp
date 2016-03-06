@@ -3,9 +3,13 @@ package com.lambda.assist.Item;
 import java.io.Serializable;
 
 /**
- * Created by asus on 2016/2/5.
+ * Created by asus on 2016/3/4.
  */
-public class MissionData implements Serializable{
+public class Mission implements Serializable {
+    public static final String AROUND = "around";
+    public static final String HISTORY = "history";
+    public static final String PROGRESSING = "progressing";
+    public String TAG;
     private int missionid;
     private int msessionid;
     private String posttime;
@@ -18,6 +22,14 @@ public class MissionData implements Serializable{
     private String content;
     private String image;
     private String gettime;
+
+    public int getMissionid() {
+        return missionid;
+    }
+
+    public void setMissionid(int missionid) {
+        this.missionid = missionid;
+    }
 
     public int getMsessionid() {
         return msessionid;
@@ -75,32 +87,6 @@ public class MissionData implements Serializable{
         this.locationtypeid = locationtypeid;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        if (!image.equals("null") && !image.equals("NULL")) {
-            this.image = image;
-        }
-    }
-
-    public String getGettime() {
-        return gettime;
-    }
-
-    public void setGettime(String gettime) {
-        this.gettime = gettime;
-    }
-
-    public int getMissionid() {
-        return missionid;
-    }
-
-    public void setMissionid(int missionid) {
-        this.missionid = missionid;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -115,5 +101,21 @@ public class MissionData implements Serializable{
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getGettime() {
+        return gettime;
+    }
+
+    public void setGettime(String gettime) {
+        this.gettime = gettime;
     }
 }

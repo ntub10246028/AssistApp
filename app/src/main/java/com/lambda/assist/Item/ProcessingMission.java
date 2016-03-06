@@ -3,7 +3,7 @@ package com.lambda.assist.Item;
 /**
  * Created by asus on 2016/2/1.
  */
-public class ProcessingItem {
+public class ProcessingMission {
     private String text ;
 
     public String getText() {

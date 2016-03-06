@@ -1,6 +1,7 @@
 package com.lambda.assist.Activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,10 +26,12 @@ import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
+import com.lambda.assist.Asyn.NewMission;
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
 import com.lambda.assist.Other.Hardware;
 import com.lambda.assist.Other.IsVaild;
+import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
@@ -80,9 +83,38 @@ public class Act_NewMission extends AppCompatActivity {
         InitialAction();
     }
 
-    private void NewMissionTask() {
+    private void NewMissionTask(String title, String content, String lon, String lat, String onlinetime, String runtime) {
         if (Net.isNetWork(ctxt)) {
-            new NewMissionTask().execute();
+            final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
+            NewMission task = new NewMission(new NewMission.OnNewMissionListener() {
+                public void finish(Integer result, Integer missionid) {
+                    pd.dismiss();
+                    switch (result) {
+                        case TaskCode.Success:
+                            if (!list_bmp_base64.isEmpty()) {
+                                UpLoadImageTask(missionid);
+                            } else {
+                                Toast.makeText(ctxt, "成功", Toast.LENGTH_SHORT).show();
+                                finishActivity();
+                            }
+                            break;
+                        case TaskCode.New_Mission_Fail:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_new_mission_fail), Toast.LENGTH_SHORT).show();
+                            break;
+                        case TaskCode.New_Mission_LackData:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_new_mission_lackdata), Toast.LENGTH_SHORT).show();
+                            break;
+                        case TaskCode.NoResponse:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+
+            task.execute(title, content, lon, lat, onlinetime, runtime);
         } else {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
@@ -293,6 +325,18 @@ public class Act_NewMission extends AppCompatActivity {
         np_sec.setValue(mode == ONLINE ? ol_sec : r_sec);
         np_hour.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             public void onValueChange(NumberPicker picker, int oldV, int newV) {
+                // when hour equals 24 , min and sec change to 0 ;
+                if (newV == 24) {
+                    np_min.setValue(0);
+                    np_sec.setValue(0);
+                    if (mode == ONLINE) {
+                        ol_min = 0;
+                        ol_sec = 0;
+                    } else {
+                        r_min = 0;
+                        r_sec = 0;
+                    }
+                }
                 if (mode == ONLINE) {
                     ol_hour = newV;
                 } else {
@@ -407,9 +451,21 @@ public class Act_NewMission extends AppCompatActivity {
                 Hardware.closeKeyBoard(ctxt, v);
                 String title = et_title.getText().toString();
                 String content = et_content.getText().toString();
-                if (IsVaild.isVail_New_Mission(ctxt, title, content)) {
+                Location location = getLocation();
+                String lon = Double.toString(location.getLongitude());
+                String lat = Double.toString(location.getLatitude());
+                String onlinetime = null;
+                String runtime = null;
+                if (bt_onlinetime != null && bt_runtime != null) {
+                    onlinetime = bt_onlinetime.getText().toString();
+                    runtime = bt_runtime.getText().toString();
+                } else {
+                    onlinetime = getResources().getString(R.string.default_time);
+                    runtime = getResources().getString(R.string.default_time);
+                }
+                if (IsVaild.isVail_New_Mission(ctxt, title, content, lon, lat, onlinetime, runtime)) {
                     convertBitmapToBase64();
-                    NewMissionTask();
+                    NewMissionTask(title, content, lon, lat, onlinetime, runtime);
                 }
             }
         });
@@ -460,5 +516,9 @@ public class Act_NewMission extends AppCompatActivity {
                     break;
             }
         }
+    }
+
+    private void finishActivity() {
+        this.finish();
     }
 }

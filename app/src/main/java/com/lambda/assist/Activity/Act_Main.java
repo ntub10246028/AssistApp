@@ -1,5 +1,6 @@
 package com.lambda.assist.Activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -10,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,13 +27,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.lambda.assist.Adapter.LeftListAdapter;
+import com.lambda.assist.Adapter.HistoryRVAdapter;
 import com.lambda.assist.Adapter.MyFragmentAdapter;
 import com.lambda.assist.Asyn.LoadHistory;
 import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.Item.MissionData;
-import com.lambda.assist.Other.Item_History;
+import com.lambda.assist.Item.AroundMission;
+import com.lambda.assist.Item.HistoryMission;
+import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
@@ -76,7 +79,8 @@ public class Act_Main extends AppCompatActivity {
     private EditText et_drawer_input;
     private ImageButton imgbt_drawer_search;
     private ListView lv_drawer_datas;
-
+    private HistoryRVAdapter historyRVAdapter;
+    private List<HistoryMission> list_historymission;
     //
 
 
@@ -94,6 +98,7 @@ public class Act_Main extends AppCompatActivity {
 
     private void InitialSomething() {
         client = MyHttpClient.getMyHttpClient();
+        list_historymission = new ArrayList<>();
     }
 
     private void InitialWindowInfo() {
@@ -126,6 +131,7 @@ public class Act_Main extends AppCompatActivity {
                     if (v.getId() == R.id.drawer_left_layout) {
                         // refresh
                         LoadHistory();
+
                     }
                     F = !F;
                 }
@@ -162,17 +168,8 @@ public class Act_Main extends AppCompatActivity {
         lv_drawer_datas = (ListView) v.findViewById(R.id.lv_drawer_datas);
         //
 
-        List<Item_History> list = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            Item_History item = new Item_History();
-            item.setTitle("Title" + i);
-            item.setDatetime("01/01");
-            item.setStatus(i % 2 == 0 ? "0" : "1");
-            list.add(item);
-        }
-
-        LeftListAdapter adapter_left = new LeftListAdapter(ctxt, list);
-        lv_drawer_datas.setAdapter(adapter_left);
+        historyRVAdapter = new HistoryRVAdapter(ctxt,list_historymission);
+        //lv_drawer_datas.setAdapter(adapter_left);
 
         imgbt_drawer_search.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -192,11 +189,16 @@ public class Act_Main extends AppCompatActivity {
 
     private void LoadHistory() {
         if (Net.isNetWork(ctxt)) {
+            final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
             LoadHistory task = new LoadHistory(new LoadHistory.OnLoadHistoryListener() {
                 public void finish(Integer result, List<Integer> list) {
+                    pd.dismiss();
+                    Log.d("LoadHistory", result + "");
                     switch (result) {
                         case TaskCode.Success:
-                            LoadingMissionID(list);
+                            if (!list.isEmpty()) {
+                                LoadingMissionID(list);
+                            }
                             break;
                         case TaskCode.Empty:
 
@@ -211,17 +213,19 @@ public class Act_Main extends AppCompatActivity {
             });
             task.execute();
         } else {
-
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void LoadingMissionID(List<Integer> list) {
         if (Net.isNetWork(ctxt)) {
+            final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
             LoadMissions task = new LoadMissions(new LoadMissions.OnLoadMissionsListener() {
-                public void finish(Integer result, List<MissionData> list) {
+                public void finish(Integer result, List<AroundMission> list) {
+                    pd.dismiss();
                     switch (result) {
                         case TaskCode.Empty:
-                            Toast.makeText(ctxt, getResources().getString(R.string.msg_warning_around_empty), Toast.LENGTH_SHORT).show();
+
                             break;
                         case TaskCode.Success:
 
@@ -236,7 +240,7 @@ public class Act_Main extends AppCompatActivity {
             });
             task.execute();
         } else {
-
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
     }
 

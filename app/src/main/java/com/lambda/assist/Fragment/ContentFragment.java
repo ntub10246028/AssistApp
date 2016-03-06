@@ -3,14 +3,13 @@ package com.lambda.assist.Fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.lambda.assist.Activity.Act_Mission;
-import com.lambda.assist.Item.MissionData;
+import com.lambda.assist.Item.AroundMission;
 import com.lambda.assist.R;
 
 /**
@@ -23,7 +22,7 @@ public class ContentFragment extends MissionBaseFragment {
     //
     private TextView tv_content;
     //
-    private MissionData nMissionData;
+    private AroundMission nAroundMission;
 
     public static ContentFragment newInstance(String title, int indicatorColor, int dividerColor) {
         ContentFragment fragment = new ContentFragment();
@@ -38,7 +37,7 @@ public class ContentFragment extends MissionBaseFragment {
         super.onAttach(activity);
 //        this.activity = activity;
         this.ctxt = activity;
-        nMissionData = ((Act_Mission) activity).getMissionData();
+        nAroundMission = ((Act_Mission) activity).getMissionData();
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +62,6 @@ public class ContentFragment extends MissionBaseFragment {
     }
 
     private void InitialAction() {
-        tv_content.setText(nMissionData.getContent());
+        tv_content.setText(nAroundMission.getContent());
     }
 }

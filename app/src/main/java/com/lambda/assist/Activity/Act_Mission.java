@@ -14,12 +14,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lambda.assist.Adapter.MissionFragmentAdapter;
+import com.lambda.assist.Asyn.AcceptMission;
 import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.Fragment.ContentFragment;
 import com.lambda.assist.Fragment.LimitFragment;
 import com.lambda.assist.Fragment.MessageFragment;
 import com.lambda.assist.Fragment.MissionBaseFragment;
-import com.lambda.assist.Item.MissionData;
+import com.lambda.assist.Item.AroundMission;
 import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
@@ -47,7 +48,7 @@ public class Act_Mission extends AppCompatActivity {
     private String title;
     //
     private List<String> list_Titles;
-    private MissionData mMissionData;
+    private AroundMission mAroundMission;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +68,7 @@ public class Act_Mission extends AppCompatActivity {
         if (Net.isNetWork(ctxt)) {
             final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
             LoadMissions task = new LoadMissions(new LoadMissions.OnLoadMissionsListener() {
-                public void finish(Integer result, List<MissionData> list) {
+                public void finish(Integer result, List<AroundMission> list) {
                     pd.dismiss();
                     switch (result) {
                         case TaskCode.Empty:
@@ -75,8 +76,8 @@ public class Act_Mission extends AppCompatActivity {
                             break;
                         case TaskCode.Success:
                             if (list != null && !list.isEmpty()) {
-                                mMissionData = list.get(0);
-                                if (mMissionData != null) {
+                                mAroundMission = list.get(0);
+                                if (mAroundMission != null) {
                                     InitialTabView();
                                 }
                             }
@@ -96,10 +97,24 @@ public class Act_Mission extends AppCompatActivity {
 
         }
     }
-    private void AcceptMission(){
+
+    private void AcceptMission(final String missionid) {
         if (Net.isNetWork(ctxt)) {
             final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
-        }else{
+            AcceptMission task = new AcceptMission(new AcceptMission.OnAcceptMissionListener() {
+                public void finish(Integer result) {
+                    pd.dismiss();
+                    switch (result) {
+                        case TaskCode.Success:
+                            Toast.makeText(ctxt, "Success", Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            Toast.makeText(ctxt, result + "", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            task.execute(missionid);
+        } else {
 
         }
     }
@@ -167,7 +182,7 @@ public class Act_Mission extends AppCompatActivity {
         });
         bt_accept.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-
+                AcceptMission(Integer.toString(missionid));
             }
         });
     }
@@ -179,7 +194,7 @@ public class Act_Mission extends AppCompatActivity {
         LoadMission();
     }
 
-    public MissionData getMissionData() {
-        return mMissionData;
+    public AroundMission getMissionData() {
+        return mAroundMission;
     }
 }
