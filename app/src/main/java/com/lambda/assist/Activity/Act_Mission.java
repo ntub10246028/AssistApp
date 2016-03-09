@@ -16,11 +16,14 @@ import android.widget.Toast;
 import com.lambda.assist.Adapter.MissionFragmentAdapter;
 import com.lambda.assist.Asyn.AcceptMission;
 import com.lambda.assist.Asyn.LoadMissions;
+import com.lambda.assist.Asyn.LoadingMessage;
 import com.lambda.assist.Fragment.ContentFragment;
 import com.lambda.assist.Fragment.LimitFragment;
 import com.lambda.assist.Fragment.MessageFragment;
 import com.lambda.assist.Fragment.MissionBaseFragment;
 import com.lambda.assist.Item.AroundMission;
+import com.lambda.assist.Item.MessageItem;
+import com.lambda.assist.Item.Mission;
 import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
@@ -48,7 +51,7 @@ public class Act_Mission extends AppCompatActivity {
     private String title;
     //
     private List<String> list_Titles;
-    private AroundMission mAroundMission;
+    private Mission mMission;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +71,7 @@ public class Act_Mission extends AppCompatActivity {
         if (Net.isNetWork(ctxt)) {
             final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
             LoadMissions task = new LoadMissions(new LoadMissions.OnLoadMissionsListener() {
-                public void finish(Integer result, List<AroundMission> list) {
+                public void finish(Integer result, List<Mission> list) {
                     pd.dismiss();
                     switch (result) {
                         case TaskCode.Empty:
@@ -76,9 +79,10 @@ public class Act_Mission extends AppCompatActivity {
                             break;
                         case TaskCode.Success:
                             if (list != null && !list.isEmpty()) {
-                                mAroundMission = list.get(0);
-                                if (mAroundMission != null) {
+                                mMission = list.get(0);
+                                if (mMission != null) {
                                     InitialTabView();
+                                    LoadMessage(mMission.getMissionid()+"");
                                 }
                             }
                             break;
@@ -94,7 +98,30 @@ public class Act_Mission extends AppCompatActivity {
             id.add(missionid);
             task.execute(id);
         } else {
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void LoadMessage(String missionid) {
+        if (Net.isNetWork(ctxt)) {
+            LoadingMessage task = new LoadingMessage(new LoadingMessage.OnLoadingMessageListener() {
+                public void finish(Integer result, List<MessageItem> list) {
+                    switch (result) {
+                        case TaskCode.Success:
+                            mMission.setMessages(list);
+                            break;
+                        case TaskCode.Empty:
+                            mMission.setMessages(list);
+                            break;
+                        case TaskCode.NoResponse:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                            break;
 
+                    }
+                }
+            });
+            task.execute(missionid);
+        } else {
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -115,7 +142,7 @@ public class Act_Mission extends AppCompatActivity {
             });
             task.execute(missionid);
         } else {
-
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -194,7 +221,7 @@ public class Act_Mission extends AppCompatActivity {
         LoadMission();
     }
 
-    public AroundMission getMissionData() {
-        return mAroundMission;
+    public Mission getMissionData() {
+        return mMission;
     }
 }

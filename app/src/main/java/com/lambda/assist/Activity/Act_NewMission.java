@@ -433,10 +433,9 @@ public class Act_NewMission extends AppCompatActivity {
         iv_map.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Hardware.closeKeyBoard(ctxt, v);
-                Intent it = new Intent(ctxt, MapsActivity.class);
-                it.putExtra("lat", final_lat);
-                it.putExtra("lng", final_lng);
-                startActivityForResult(it, OPEN_MAP);
+//                it.putExtra("lat", final_lat);
+//                it.putExtra("lng", final_lng);
+//                startActivityForResult(it, OPEN_MAP);
             }
         });
         iv_time.setOnClickListener(new View.OnClickListener() {

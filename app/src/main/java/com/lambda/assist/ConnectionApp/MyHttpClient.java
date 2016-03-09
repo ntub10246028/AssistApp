@@ -45,7 +45,7 @@ public class MyHttpClient extends DefaultHttpClient {
         //Pour les requêtes HTTP, on laisse la classe de base s'en occuper.
         registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
         // Les requêtes HTTPS se font sur le port 443. A chaque connexion HTTPS, c’est notre keystore qui sera utilisé.
-        registry.register(new Scheme("https", newSslSocketFactory(), 5000));
+        registry.register(new Scheme("https", newSslSocketFactory(), 3000));
         return new SingleClientConnManager(getParams(), registry);
     }
 

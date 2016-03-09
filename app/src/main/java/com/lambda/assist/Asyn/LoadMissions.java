@@ -6,6 +6,7 @@ import android.util.Log;
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
 import com.lambda.assist.Item.AroundMission;
+import com.lambda.assist.Item.Mission;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
 
@@ -22,12 +23,12 @@ import java.util.List;
  */
 public class LoadMissions extends AsyncTask<List<Integer>, Integer, Integer> {
     public interface OnLoadMissionsListener {
-        void finish(Integer result, List<AroundMission> list);
+        void finish(Integer result, List<Mission> list);
     }
 
     private final OnLoadMissionsListener mListener;
     private List<Integer> missions;
-    private List<AroundMission> list;
+    private List<Mission> list;
 
     public LoadMissions(OnLoadMissionsListener mListener) {
         this.mListener = mListener;
@@ -41,10 +42,11 @@ public class LoadMissions extends AsyncTask<List<Integer>, Integer, Integer> {
         missions = lists[0];
         List<NameValuePair> params = new ArrayList<>();
         for (Integer id : missions) {
+            Log.d("LoadMissions", "id "+id);
             params.add(new BasicNameValuePair("missionID[]", Integer.toString(id)));
         }
         try {
-            Log.d("LoadMissions", "Start");
+
             JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_get_mission_data, MyHttpClient.getMyHttpClient());
             if (jobj == null)
                 return result;

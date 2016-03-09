@@ -19,6 +19,7 @@ import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
 import com.lambda.assist.GPS.MyGPS;
 import com.lambda.assist.Item.AroundMission;
+import com.lambda.assist.Item.Mission;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
@@ -38,11 +39,11 @@ import java.util.List;
  * Created by v on 2015/12/19.
  */
 public class AroundRVAdapter extends SampleRecyclerViewAdapter {
-    private List<AroundMission> list;
+    private List<Mission> list;
     private double my_lon;
     private double my_lat;
 
-    public AroundRVAdapter(Context context, List<AroundMission> list) {
+    public AroundRVAdapter(Context context, List<Mission> list) {
         super(context);
         this.list = list;
         this.my_lon = -1;
@@ -60,7 +61,7 @@ public class AroundRVAdapter extends SampleRecyclerViewAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder vholder, int position) {
         // Get Your Holder
         ViewHolder holder = (ViewHolder) vholder;
-        final AroundMission item = list.get(position);
+        final Mission item = list.get(position);
         // set
         holder.title.setText(item.getTitle());
         if (item.getImage() != null && !item.getImage().equals("null")) {
@@ -71,11 +72,8 @@ public class AroundRVAdapter extends SampleRecyclerViewAdapter {
         }
         Log.d("AroundRVAdapter", my_lon + " " + my_lat);
         if (my_lon != -1 && my_lat != -1) {
-            double d = MyGPS.gps2m(my_lat, my_lon, item.getLocationy(), item.getLocationx());
-            Log.d("AroundRVAdapter", d + "");
-            if (d >= 0) {
-                holder.distances.setText(d + "公尺");
-            }
+            String distance = MyGPS.gps2m(my_lat, my_lon, item.getLocationy(), item.getLocationx());
+            holder.distances.setText(distance);
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

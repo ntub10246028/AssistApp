@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.lambda.assist.Activity.Act_Mission;
 import com.lambda.assist.Item.AroundMission;
+import com.lambda.assist.Item.Mission;
 import com.lambda.assist.R;
 
 /**
@@ -22,7 +23,7 @@ public class LimitFragment extends MissionBaseFragment {
     private TextView tv_onlinelimit;
     private TextView tv_runlimit;
     //
-    private AroundMission nAroundMission;
+    private Mission mMission;
 
     public static LimitFragment newInstance(String title, int indicatorColor, int dividerColor) {
         LimitFragment fragment = new LimitFragment();
@@ -37,7 +38,7 @@ public class LimitFragment extends MissionBaseFragment {
         super.onAttach(activity);
 //        this.activity = activity;
         this.ctxt = activity;
-        nAroundMission = ((Act_Mission) activity).getMissionData();
+        mMission = ((Act_Mission) activity).getMissionData();
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -63,8 +64,8 @@ public class LimitFragment extends MissionBaseFragment {
     }
 
     private void InitialAction() {
-        tv_onlinelimit.setText(nAroundMission.getOnlinelimittime());
-        tv_runlimit.setText(nAroundMission.getRunlimittime());
+        tv_onlinelimit.setText(mMission.getOnlinelimittime());
+        tv_runlimit.setText(mMission.getRunlimittime());
     }
 }
 

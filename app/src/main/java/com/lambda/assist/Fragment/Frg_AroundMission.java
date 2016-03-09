@@ -1,6 +1,7 @@
 package com.lambda.assist.Fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Criteria;
@@ -23,11 +24,15 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.lambda.assist.Adapter.AroundRVAdapter;
+import com.lambda.assist.Asyn.LoadMissions;
+import com.lambda.assist.Asyn.LoadingAroundMissionID;
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
 import com.lambda.assist.Item.AroundMission;
+import com.lambda.assist.Item.Mission;
 import com.lambda.assist.Item.ReadyMission;
 import com.lambda.assist.Listener.OnRcvScrollListener;
+import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
@@ -47,27 +52,21 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
     //
     private Context ctxt;
     private Activity activity;
-    private MyHttpClient client;
     // UI
     private SwipeRefreshLayout laySwipe;
     private RecyclerView mRecycleview;
     // Adapter
     private AroundRVAdapter adapter_rv;
     // Other
-    private int position;
     private List<ReadyMission> list_readmission;
-    private List<AroundMission> list_missiondata;
+    private List<Mission> list_missiondata;
     // For get Lan Let
     private boolean getService = false;     //是否已開啟定位服務
     private LocationManager lms;
     private String bestProvider = LocationManager.GPS_PROVIDER;
 
-    public static Frg_AroundMission newInstance(int pos) {
-        Frg_AroundMission fragment = new Frg_AroundMission();
-        Bundle b = new Bundle();
-        b.putInt("pos", pos);
-        fragment.setArguments(b);
-        return fragment;
+    public static Frg_AroundMission newInstance() {
+        return new Frg_AroundMission();
     }
 
     @Override
@@ -148,8 +147,6 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
     }
 
     private void InitialSomething() {
-        position = getArguments() != null ? getArguments().getInt("pos") : 1;
-        client = MyHttpClient.getMyHttpClient();
         list_readmission = new ArrayList<>();
         list_missiondata = new ArrayList<>();
     }
@@ -161,162 +158,62 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
         }
     };
 
-    private void LoadingAroundMission(String... datas) {
+    private void LoadingAroundMission(String lon, String lat) {
         if (Net.isNetWork(ctxt)) {
-            new LoadingAroundMission().execute(datas);
+            //final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
+            LoadingAroundMissionID task = new LoadingAroundMissionID(new LoadingAroundMissionID.OnLoadingAroundMissionIDListener() {
+                public void finish(Integer result, List<ReadyMission> readyMissions, List<Integer> ids) {
+                    //pd.dismiss();
+                    switch (result) {
+                        case TaskCode.Success:
+                            LoadingMission(ids);
+                            break;
+                        case TaskCode.Empty:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_warning_around_empty), Toast.LENGTH_SHORT).show();
+                            list_missiondata.clear();
+                            RefreshRecyclerView();
+                            break;
+                        case TaskCode.NoResponse:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            task.execute(lon, lat);
         } else {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
-    }
-
-    class LoadingAroundMission extends AsyncTask<String, Integer, Integer> {
-        private String longitude, latitude;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            list_readmission.clear();
-        }
-
-        @Override
-        protected Integer doInBackground(String... datas) {
-            Integer result = TaskCode.NoResponse;
-            longitude = datas[0];
-            latitude = datas[1];
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("lon", longitude));
-            params.add(new BasicNameValuePair("lat", latitude));
-            try {
-                Log.d("LoadingAroundMission", "Start");
-                JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_around_Mission, client);
-                if (jobj == null)
-                    return result;
-                Log.d("LoadingAroundMission", jobj.toString());
-                result = jobj.getInt("result");
-                if (result == TaskCode.Success) {
-                    JSONArray jarray = jobj.getJSONArray("around");
-                    for (int i = 0; i < jarray.length(); i++) {
-                        JSONObject item = jarray.getJSONObject(i);
-                        ReadyMission aitem = new ReadyMission();
-                        aitem.setMission(item.getInt("missionid"));
-                        aitem.setLocationx(item.getDouble("locationx"));
-                        aitem.setLocationy(item.getDouble("locationy"));
-                        list_readmission.add(aitem);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d("LoadingAroundMission", e.toString());
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-            switch (result) {
-                case TaskCode.Empty:
-                    Toast.makeText(ctxt, getResources().getString(R.string.msg_warning_around_empty), Toast.LENGTH_SHORT).show();
-                    break;
-                case TaskCode.Success:
-                    //Toast.makeText(ctxt, "Success", Toast.LENGTH_SHORT).show();
-                    //RefreshRecyclerView();
-                    LoadingMission(getMissions());
-                    break;
-                case TaskCode.NoResponse:
-                    Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-                    Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private List<Integer> getMissions() {
-        List<Integer> result = new ArrayList<>();
-        for (ReadyMission item : list_readmission) {
-            result.add(item.getMission());
-        }
-        return result;
     }
 
     ///
     private void LoadingMission(List<Integer> datas) {
         if (Net.isNetWork(ctxt)) {
-            new LoadingMission().execute(datas);
+            //final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
+            LoadMissions task = new LoadMissions(new LoadMissions.OnLoadMissionsListener() {
+                public void finish(Integer result, List<Mission> list) {
+                    //pd.dismiss();
+                    switch (result) {
+                        case TaskCode.Empty:
+                        case TaskCode.Success:
+                            list_missiondata.clear();
+                            list_missiondata.addAll(list);
+                            RefreshRecyclerView();
+                            break;
+                        case TaskCode.NoResponse:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            Toast.makeText(ctxt, "error : " + result, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            task.execute(datas);
         } else {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
     }
-
-    class LoadingMission extends AsyncTask<List<Integer>, Integer, Integer> {
-        private List<Integer> missions;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            list_missiondata.clear();
-        }
-
-        @Override
-        protected Integer doInBackground(List<Integer>... datas) {
-            Integer result = TaskCode.NoResponse;
-            missions = datas[0];
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            for (Integer id : missions) {
-                params.add(new BasicNameValuePair("missionID[]", Integer.toString(id)));
-                //params.add(new BasicNameValuePair("missionID[]", 27 + ""));
-            }
-            try {
-                JsonReaderPost jp = new JsonReaderPost();
-                JSONObject jobj = jp.Reader(params, URLs.url_get_mission_data, client);
-                if (jobj == null)
-                    return result;
-                Log.d("LoadMissions", jobj.toString());
-                result = jobj.getInt("result");
-                if (result == TaskCode.Success) {
-                    JSONArray jarray = jobj.getJSONArray("missiondata");
-                    for (int i = 0; i < jarray.length(); i++) {
-                        JSONObject item = jarray.getJSONObject(i);
-                        AroundMission idata = new AroundMission();
-                        idata.setMissionid(item.getInt("missionid"));
-                        idata.setPosttime(item.getString("posttime"));
-                        idata.setOnlinelimittime(item.getString("onlinelimittime"));
-                        idata.setRunlimittime(item.getString("runlimittime"));
-                        idata.setLocationx(item.getDouble("locationx"));
-                        idata.setLocationy(item.getDouble("locationy"));
-                        idata.setLocationtypeid(item.getInt("locationtypeid"));
-                        idata.setTitle(item.getString("title"));
-                        idata.setContent(item.getString("content"));
-                        idata.setImage(item.getString("image"));
-                        idata.setGettime(item.getString("gettime"));
-                        list_missiondata.add(idata);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d("LoadMissions", e.toString());
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-            switch (result) {
-                case TaskCode.Empty:
-                case TaskCode.Success:
-                    RefreshRecyclerView();
-                    break;
-                case TaskCode.NoResponse:
-                    Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-                    Toast.makeText(ctxt, "error : " + result, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
 
     private void RefreshRecyclerView() {
         if (adapter_rv != null) {

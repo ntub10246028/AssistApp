@@ -36,9 +36,8 @@ public class JsonReaderPost {
         httpPost.setEntity(new UrlEncodedFormEntity(params));
         HttpResponse response;
         String result = null;
-        Log.d("LAG", "Before response");
         response = client.execute(httpPost);
-        Log.d("LAG", "After response");
+        Log.d("LAG", "Success Response");
         HttpEntity entity = response.getEntity();
         result = EntityUtils.toString(entity);
         Log.d("JsonReaderPost", result);

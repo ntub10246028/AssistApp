@@ -1,15 +1,12 @@
 package com.lambda.assist.Item;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by asus on 2016/3/4.
  */
 public class Mission implements Serializable {
-    public static final String AROUND = "around";
-    public static final String HISTORY = "history";
-    public static final String PROGRESSING = "progressing";
-    public String TAG;
     private int missionid;
     private int msessionid;
     private String posttime;
@@ -22,6 +19,15 @@ public class Mission implements Serializable {
     private String content;
     private String image;
     private String gettime;
+    private List<MessageItem> messages;
+
+    public List<MessageItem> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<MessageItem> list_messages) {
+        this.messages = list_messages;
+    }
 
     public int getMissionid() {
         return missionid;

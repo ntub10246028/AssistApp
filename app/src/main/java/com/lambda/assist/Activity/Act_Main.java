@@ -9,7 +9,11 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -27,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.lambda.assist.Adapter.AroundRVAdapter;
 import com.lambda.assist.Adapter.HistoryRVAdapter;
 import com.lambda.assist.Adapter.MyFragmentAdapter;
 import com.lambda.assist.Asyn.LoadHistory;
@@ -34,10 +39,13 @@ import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
 import com.lambda.assist.Item.AroundMission;
 import com.lambda.assist.Item.HistoryMission;
+import com.lambda.assist.Item.Mission;
+import com.lambda.assist.Listener.OnRcvScrollListener;
 import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
+import com.lambda.assist.UI.ItemOffsetDecoration;
 import com.lambda.assist.UI.SlidingTabLayout;
 
 import java.util.ArrayList;
@@ -77,8 +85,9 @@ public class Act_Main extends AppCompatActivity {
     private ListView lv_drawer_setting;
     // Left Drawer
     private EditText et_drawer_input;
-    private ImageButton imgbt_drawer_search;
-    private ListView lv_drawer_datas;
+    private ImageButton bt_search;
+    private SwipeRefreshLayout mSwipeLayout;
+    private RecyclerView mRecycleview;
     private HistoryRVAdapter historyRVAdapter;
     private List<HistoryMission> list_historymission;
     //
@@ -163,28 +172,61 @@ public class Act_Main extends AppCompatActivity {
         // InitialUI
         View v = getLayoutInflater().inflate(R.layout.drawer_left, null);
         et_drawer_input = (EditText) v.findViewById(R.id.et_drawer_input);
-        imgbt_drawer_search = (ImageButton) v
-                .findViewById(R.id.imgbt_drawer_search);
-        lv_drawer_datas = (ListView) v.findViewById(R.id.lv_drawer_datas);
+        bt_search = (ImageButton) v.findViewById(R.id.imgbt_drawer_search);
+        mSwipeLayout = (SwipeRefreshLayout) v.findViewById(R.id.srfl_history);
+        mRecycleview = (RecyclerView) v.findViewById(R.id.rv_history);
         //
-
-        historyRVAdapter = new HistoryRVAdapter(ctxt,list_historymission);
-        //lv_drawer_datas.setAdapter(adapter_left);
-
-        imgbt_drawer_search.setOnClickListener(new OnClickListener() {
+        // SwipeRefreshLayout Setting
+        mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            public void onRefresh() {
+                //Loading
+                mSwipeLayout.setRefreshing(false);
+            }
+        });
+        mSwipeLayout.setColorSchemeResources(android.R.color.black);
+        //  RecyclerView Setting
+        mRecycleview.setOnScrollListener(new OnRcvScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int topRowVerticalPosition =
+                        (recyclerView == null || recyclerView.getChildCount() == 0) ? 0 : recyclerView.getChildAt(0).getTop();
+                mSwipeLayout.setEnabled(topRowVerticalPosition >= 0);
+            }
+        });
+        // 2. set layoutManger
+        GridLayoutManager manager = new GridLayoutManager(ctxt, 2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            public int getSpanSize(int position) {
+                return 2;
+            }
+        });
+        mRecycleview.setLayoutManager(manager);
+        // item between item
+        ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(10);
+        mRecycleview.addItemDecoration(itemDecoration);
+        // 3. create an adapter
+        historyRVAdapter = new HistoryRVAdapter(ctxt, list_historymission);
+        // 4. set adapter
+        mRecycleview.setAdapter(historyRVAdapter);
+        // 5. set item animator to DefaultAnimator
+        mRecycleview.setItemAnimator(new DefaultItemAnimator());
+        //
+        bt_search.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 String text = et_drawer_input.getText().toString();
                 Toast.makeText(ctxt, text, Toast.LENGTH_SHORT).show();
             }
         });
-        lv_drawer_datas.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
 
-            }
-        });
 
         return v;
+    }
+
+    private void refreshHistory() {
+        if (historyRVAdapter != null) {
+            historyRVAdapter.notifyDataSetChanged();
+        }
     }
 
     private void LoadHistory() {
@@ -199,6 +241,7 @@ public class Act_Main extends AppCompatActivity {
                             if (!list.isEmpty()) {
                                 LoadingMissionID(list);
                             }
+
                             break;
                         case TaskCode.Empty:
 
@@ -221,13 +264,13 @@ public class Act_Main extends AppCompatActivity {
         if (Net.isNetWork(ctxt)) {
             final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
             LoadMissions task = new LoadMissions(new LoadMissions.OnLoadMissionsListener() {
-                public void finish(Integer result, List<AroundMission> list) {
+                public void finish(Integer result, List<Mission> list) {
                     pd.dismiss();
                     switch (result) {
-                        case TaskCode.Empty:
-
-                            break;
                         case TaskCode.Success:
+                            refreshHistory();
+                            break;
+                        case TaskCode.Empty:
 
                             break;
                         case TaskCode.NoResponse:

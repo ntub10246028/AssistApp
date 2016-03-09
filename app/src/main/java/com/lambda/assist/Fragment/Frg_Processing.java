@@ -17,14 +17,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.lambda.assist.Activity.Act_NewMission;
 import com.lambda.assist.Adapter.ProcessingRVAdapter;
+import com.lambda.assist.Asyn.LoadMissions;
+import com.lambda.assist.Asyn.LoadRunning;
+import com.lambda.assist.Asyn.LoadingAroundMissionID;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
+import com.lambda.assist.Item.Mission;
 import com.lambda.assist.Item.ProcessingMission;
+import com.lambda.assist.Item.ReadyMission;
 import com.lambda.assist.Listener.OnRcvScrollListener;
 import com.lambda.assist.Other.ActivityCode;
 import com.lambda.assist.Other.Item;
+import com.lambda.assist.Other.Net;
+import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
 import com.lambda.assist.UI.ItemOffsetDecoration;
 
@@ -36,8 +44,6 @@ public class Frg_Processing extends Fragment {
 
     private Context ctxt;
     private Activity activity;
-    private MyHttpClient client;
-    private int position;
     // UI
     private SwipeRefreshLayout laySwipe;
     private RecyclerView rv;
@@ -46,14 +52,11 @@ public class Frg_Processing extends Fragment {
     private ProcessingRVAdapter adapter_rv;
     private GridLayoutManager manager;
     //
-    private List<ProcessingMission> list_processing;
+    // Other
+    private List<Mission> list_missiondata;
 
-    public static Frg_Processing newInstance(int pos) {
-        Frg_Processing fragment = new Frg_Processing();
-        Bundle b = new Bundle();
-        b.putInt("pos", pos);
-        fragment.setArguments(b);
-        return fragment;
+    public static Frg_Processing newInstance() {
+        return new Frg_Processing();
     }
 
     @Override
@@ -78,13 +81,66 @@ public class Frg_Processing extends Fragment {
         super.onActivityCreated(savedInstanceState);
         InitialUI(getView());
         InitialAction();
+        LoadRunning();
+    }
 
+    private void LoadRunning() {
+        if (Net.isNetWork(ctxt)) {
+            //final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
+            LoadRunning task = new LoadRunning(new LoadRunning.OnLoadRunningListener() {
+                public void finish(Integer result, List<Integer> ids) {
+                    switch (result) {
+                        case TaskCode.Success:
+                            LoadingMission(ids);
+                            break;
+                        case TaskCode.Empty:
+                            list_missiondata.clear();
+                            RefreshRecyclerView();
+                            break;
+                        case TaskCode.NoResponse:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            task.execute();
+        } else {
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        List<Item> list = new ArrayList<Item>();
-        for (int i = 0; i < 20; i++) {
-            Item item = new Item();
-            item.setText("Text" + i);
-            list.add(item);
+    private void LoadingMission(List<Integer> datas) {
+        if (Net.isNetWork(ctxt)) {
+            //final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
+            LoadMissions task = new LoadMissions(new LoadMissions.OnLoadMissionsListener() {
+                public void finish(Integer result, List<Mission> list) {
+                    //pd.dismiss();
+                    switch (result) {
+                        case TaskCode.Empty:
+                        case TaskCode.Success:
+                            list_missiondata.clear();
+                            list_missiondata.addAll(list);
+                            RefreshRecyclerView();
+                            break;
+                        case TaskCode.NoResponse:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            Toast.makeText(ctxt, "error : " + result, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            task.execute(datas);
+        } else {
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void RefreshRecyclerView() {
+        if (adapter_rv != null) {
+            adapter_rv.notifyDataSetChanged();
         }
     }
 
@@ -125,22 +181,11 @@ public class Frg_Processing extends Fragment {
         ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(10);
         rv.addItemDecoration(itemDecoration);
         // set adapter
-        list_processing = getData();
-        adapter_rv = new ProcessingRVAdapter(list_processing);
+        adapter_rv = new ProcessingRVAdapter(list_missiondata);
         // set adapter
         rv.setAdapter(adapter_rv);
         // set item animator to DefaultAnimator
         rv.setItemAnimator(new DefaultItemAnimator());
-    }
-
-    private List<ProcessingMission> getData() {
-        List<ProcessingMission> list = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            ProcessingMission item = new ProcessingMission();
-            item.setText("Text" + i);
-            list.add(item);
-        }
-        return list;
     }
 
     private void InitialUI(View v) {
@@ -150,17 +195,14 @@ public class Frg_Processing extends Fragment {
     }
 
     private void InitialSomething() {
-        position = getArguments() != null ? getArguments().getInt("pos") : 2;
-        client = MyHttpClient.getMyHttpClient();
-        list_processing = new ArrayList<>();
+        list_missiondata = new ArrayList<>();
     }
 
     private SwipeRefreshLayout.OnRefreshListener onSwipeToRefresh = new SwipeRefreshLayout.OnRefreshListener() {
         public void onRefresh() {
-
             new Handler().postDelayed(new Runnable() {
                 public void run() {
-                    laySwipe.setRefreshing(false);
+
                 }
             }, 1000);
         }

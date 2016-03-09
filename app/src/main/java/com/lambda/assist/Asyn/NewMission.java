@@ -47,6 +47,7 @@ public class NewMission extends AsyncTask<String, Integer, Integer> {
         params.add(new BasicNameValuePair("locationY", lat));
         params.add(new BasicNameValuePair("onlineLimitTime", onlinetime));
         params.add(new BasicNameValuePair("runLimitTime", runtime));
+        params.add(new BasicNameValuePair("multi", "0"));
         try {
             JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_New_Mission, MyHttpClient.getMyHttpClient());
             if (jobj == null)

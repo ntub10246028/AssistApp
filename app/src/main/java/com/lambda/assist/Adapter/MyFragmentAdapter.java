@@ -30,9 +30,9 @@ public class MyFragmentAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return Frg_AroundMission.newInstance(position);
+                return Frg_AroundMission.newInstance();
             case 1:
-                return Frg_Processing.newInstance(position);
+                return Frg_Processing.newInstance();
             default:
                 return null;
         }
