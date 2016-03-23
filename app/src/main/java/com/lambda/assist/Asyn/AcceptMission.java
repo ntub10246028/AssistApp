@@ -42,14 +42,9 @@ public class AcceptMission extends AsyncTask<String, String, Integer> {
             if (jobj == null)
                 return result;
             result = jobj.getInt("result");
-            if (result == TaskCode.Success) {
-
-            }
         } catch (Exception e) {
-            e.printStackTrace();
             Log.d("AcceptMission", e.toString());
         }
-
         return result;
     }
 

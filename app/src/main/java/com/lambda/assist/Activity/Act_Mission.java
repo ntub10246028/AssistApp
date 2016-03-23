@@ -21,9 +21,8 @@ import com.lambda.assist.Fragment.ContentFragment;
 import com.lambda.assist.Fragment.LimitFragment;
 import com.lambda.assist.Fragment.MessageFragment;
 import com.lambda.assist.Fragment.MissionBaseFragment;
-import com.lambda.assist.Item.AroundMission;
-import com.lambda.assist.Item.MessageItem;
-import com.lambda.assist.Item.Mission;
+import com.lambda.assist.Model.MessageItem;
+import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
@@ -82,7 +81,7 @@ public class Act_Mission extends AppCompatActivity {
                                 mMission = list.get(0);
                                 if (mMission != null) {
                                     InitialTabView();
-                                    LoadMessage(mMission.getMissionid()+"");
+                                    LoadMessage(mMission.getMissionid() + "");
                                 }
                             }
                             break;
@@ -101,6 +100,7 @@ public class Act_Mission extends AppCompatActivity {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
     }
+
     private void LoadMessage(String missionid) {
         if (Net.isNetWork(ctxt)) {
             LoadingMessage task = new LoadingMessage(new LoadingMessage.OnLoadingMessageListener() {
@@ -204,7 +204,10 @@ public class Act_Mission extends AppCompatActivity {
     private void InitialAction() {
         bt_gps.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-
+                Intent iMissionMap = new Intent(ctxt, Act_MissionMap.class);
+                iMissionMap.putExtra("lng", mMission.getLocationx());
+                iMissionMap.putExtra("lat", mMission.getLocationy());
+                startActivity(iMissionMap);
             }
         });
         bt_accept.setOnClickListener(new View.OnClickListener() {

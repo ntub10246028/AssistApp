@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.Item.MessageItem;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
 

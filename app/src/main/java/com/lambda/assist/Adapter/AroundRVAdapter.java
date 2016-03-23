@@ -17,14 +17,15 @@ import android.widget.Toast;
 import com.lambda.assist.Activity.Act_Mission;
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.GPS.MyGPS;
-import com.lambda.assist.Item.AroundMission;
-import com.lambda.assist.Item.Mission;
+import com.lambda.assist.Helper.GPSHelper;
+import com.lambda.assist.Helper.ImgurHelper;
+import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
-import com.lambda.assist.Picture.BitmapTransformer;
+import com.lambda.assist.Helper.BitmapHelper;
 import com.lambda.assist.R;
+import com.squareup.picasso.Picasso;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -64,17 +65,20 @@ public class AroundRVAdapter extends SampleRecyclerViewAdapter {
         final Mission item = list.get(position);
         // set
         holder.title.setText(item.getTitle());
-        if (item.getImage() != null && !item.getImage().equals("null")) {
-            Log.d("AroundRVAdapter", item.getImage());
-            if (holder.image != null) {
-                LoadImageTask(holder.image, Integer.toString(item.getMissionid()), "1");
-            }
-        }
+
         Log.d("AroundRVAdapter", my_lon + " " + my_lat);
         if (my_lon != -1 && my_lat != -1) {
-            String distance = MyGPS.gps2m(my_lat, my_lon, item.getLocationy(), item.getLocationx());
+            String distance = GPSHelper.gps2m(my_lat, my_lon, item.getLocationy(), item.getLocationx());
             holder.distances.setText(distance);
         }
+        String url = ImgurHelper.checkUrl(item.getContent());
+        if (url != null) {
+            Picasso.with(getContext())
+                    .load(url)
+                    .into(holder.image);
+        }
+
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent it = new Intent(getContext(), Act_Mission.class);
@@ -108,74 +112,5 @@ public class AroundRVAdapter extends SampleRecyclerViewAdapter {
             distances = (TextView) itemLayoutView.findViewById(R.id.tv_item_around_distance);
             image = (ImageView) itemLayoutView.findViewById(R.id.tv_item_around_image);
         }
-    }
-
-    private void LoadImageTask(ImageView imageView, String missionid, String which) {
-        if (Net.isNetWork(getContext())) {
-            new LoadImageTask(imageView).execute(missionid, which);
-        } else {
-            Toast.makeText(getContext(), getContext().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    class LoadImageTask extends AsyncTask<String, Integer, Bitmap> {
-
-        private final WeakReference<ImageView> imageViewReference;
-
-        public LoadImageTask(ImageView imageView) {
-            imageViewReference = new WeakReference<>(imageView);
-        }
-
-        protected Bitmap doInBackground(String... params) {
-            return downLoadImage(params[0], params[1]);
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            if (isCancelled()) {
-                bitmap = null;
-            }
-
-            if (imageViewReference != null) {
-                ImageView imageView = imageViewReference.get();
-                if (imageView != null) {
-                    if (bitmap != null) {
-                        imageView.setImageBitmap(bitmap);
-                    } else {
-//                        Drawable placeholder = imageView.getContext().getResources().getDrawable(R.drawable.placeholder);
-//                        imageView.setImageDrawable(placeholder);
-                    }
-                }
-            }
-
-        }
-    }
-
-    private Bitmap downLoadImage(String missionid, String which) {
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("missionID", missionid));
-        params.add(new BasicNameValuePair("imageFileID", which));
-        try {
-            JsonReaderPost jp = new JsonReaderPost();
-            JSONObject jobj = jp.Reader(params, URLs.url_download_image, MyHttpClient.getMyHttpClient());
-            if (jobj == null)
-                return null;
-            Log.d("LoadImageTask", jobj.toString());
-            int result = jobj.getInt("result");
-            if (result == TaskCode.Success) {
-                JSONArray jarray = jobj.getJSONArray("imagefile");
-                StringBuilder base64 = new StringBuilder();
-                for (int i = 0; i < jarray.length(); i++) {
-                    base64.append(jarray.getString(i));
-                }
-                Log.d("LoadImageTask", base64.toString());
-                return BitmapTransformer.Base64ToBitmap(base64.toString());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d("LoadImageTask", e.toString());
-        }
-        return null;
     }
 }

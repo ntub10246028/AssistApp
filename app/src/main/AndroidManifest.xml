@@ -53,6 +53,12 @@
         <activity
             android:name=".Activity.Act_Mission"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.Act_SelectMap"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.Act_MissionMap"
+            android:screenOrientation="portrait" />
 
         <receiver android:name=".Receiver.Br_SMS">
             <intent-filter>

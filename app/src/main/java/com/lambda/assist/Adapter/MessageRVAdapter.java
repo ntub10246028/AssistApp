@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.lambda.assist.Item.MessageItem;
+import com.lambda.assist.Model.MessageItem;
 import com.lambda.assist.R;
 
 import java.util.List;

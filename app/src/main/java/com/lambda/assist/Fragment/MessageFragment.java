@@ -3,7 +3,6 @@ package com.lambda.assist.Fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,24 +12,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lambda.assist.Activity.Act_Mission;
-import com.lambda.assist.Adapter.HistoryRVAdapter;
 import com.lambda.assist.Adapter.MessageRVAdapter;
 import com.lambda.assist.Asyn.AddMessage;
 import com.lambda.assist.Asyn.LoadingMessage;
-import com.lambda.assist.Item.MessageItem;
-import com.lambda.assist.Item.Mission;
+import com.lambda.assist.Model.MessageItem;
+import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Listener.OnRcvScrollListener;
 import com.lambda.assist.Other.IsVaild;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
-import com.lambda.assist.UI.ItemOffsetDecoration;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

@@ -9,8 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.lambda.assist.Activity.Act_Mission;
-import com.lambda.assist.Item.AroundMission;
-import com.lambda.assist.Item.Mission;
+import com.lambda.assist.Model.Mission;
 import com.lambda.assist.R;
 
 /**

@@ -1,6 +1,4 @@
-package com.lambda.assist.Item;
-
-import java.io.Serializable;
+package com.lambda.assist.Model;
 
 /**
  * Created by asus on 2016/2/5.

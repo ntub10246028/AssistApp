@@ -3,16 +3,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycleview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="10dp"/>
-    </LinearLayout>
+            android:padding="10dp"
+            android:visibility="gone"/>
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pb_around_processing"
+            android:layout_gravity="center_horizontal"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:indeterminate="false" />
+
+    </RelativeLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>

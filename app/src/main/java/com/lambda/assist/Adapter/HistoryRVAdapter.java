@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 
 import com.lambda.assist.Activity.Act_Mission;
-import com.lambda.assist.Item.HistoryMission;
+import com.lambda.assist.Model.HistoryMission;
 import com.lambda.assist.R;
 
 import java.util.List;

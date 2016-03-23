@@ -7,8 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
-import com.lambda.assist.Item.Mission;
-import com.lambda.assist.Item.ProcessingMission;
+import com.lambda.assist.Model.Mission;
 import com.lambda.assist.R;
 
 import java.util.List;

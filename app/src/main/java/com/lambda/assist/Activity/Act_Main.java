@@ -31,15 +31,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.lambda.assist.Adapter.AroundRVAdapter;
 import com.lambda.assist.Adapter.HistoryRVAdapter;
 import com.lambda.assist.Adapter.MyFragmentAdapter;
 import com.lambda.assist.Asyn.LoadHistory;
 import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.Item.AroundMission;
-import com.lambda.assist.Item.HistoryMission;
-import com.lambda.assist.Item.Mission;
+import com.lambda.assist.Model.HistoryMission;
+import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Listener.OnRcvScrollListener;
 import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;

@@ -1,11 +1,11 @@
-package com.lambda.assist.GPS;
+package com.lambda.assist.Helper;
 
 import java.math.BigDecimal;
 
 /**
  * Created by asus on 2016/3/6.
  */
-public class MyGPS {
+public class GPSHelper {
     private static final double EARTH_RADIUS = 6378137.0;
 
     public static String gps2m(double lat_a, double lng_a, double lat_b, double lng_b) {

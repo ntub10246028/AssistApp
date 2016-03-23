@@ -1,4 +1,4 @@
-package com.lambda.assist.Item;
+package com.lambda.assist.Model;
 
 import java.io.Serializable;
 import java.util.List;

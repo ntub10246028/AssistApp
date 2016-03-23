@@ -1,16 +1,9 @@
 package com.lambda.assist.Fragment;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -21,49 +14,53 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.Marker;
 import com.lambda.assist.Adapter.AroundRVAdapter;
 import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.Asyn.LoadingAroundMissionID;
-import com.lambda.assist.ConnectionApp.JsonReaderPost;
-import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.Item.AroundMission;
-import com.lambda.assist.Item.Mission;
-import com.lambda.assist.Item.ReadyMission;
+import com.lambda.assist.Model.Mission;
+import com.lambda.assist.Model.ReadyMission;
 import com.lambda.assist.Listener.OnRcvScrollListener;
-import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
-import com.lambda.assist.Other.URLs;
 import com.lambda.assist.R;
 import com.lambda.assist.UI.ItemOffsetDecoration;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Frg_AroundMission extends Fragment implements LocationListener {
+public class Frg_AroundMission extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
     //
     private Context ctxt;
     private Activity activity;
     // UI
     private SwipeRefreshLayout laySwipe;
     private RecyclerView mRecycleview;
+    private ProgressBar pb_progressing;
     // Adapter
     private AroundRVAdapter adapter_rv;
     // Other
     private List<ReadyMission> list_readmission;
     private List<Mission> list_missiondata;
-    // For get Lan Let
-    private boolean getService = false;     //是否已開啟定位服務
-    private LocationManager lms;
-    private String bestProvider = LocationManager.GPS_PROVIDER;
+    // Google API用戶端物件
+    private GoogleApiClient googleApiClient;
+    // Location請求物件
+    private LocationRequest locationRequest;
+    // 記錄目前最新的位置
+    private Location currentLocation;
+    // 顯示目前與儲存位置的標記物件
+    private Marker currentMarker, itemMarker;
+    private double final_lat = 0.0;
+    private double final_lng = 0.0;
+    private boolean F = true;
 
     public static Frg_AroundMission newInstance() {
         return new Frg_AroundMission();
@@ -91,19 +88,15 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
         super.onActivityCreated(savedInstanceState);
         InitialUI(getView());
         InitialAction();
-        GetCurrentPositionAndLoading();
-    }
 
-    private void GetCurrentPositionAndLoading() {
-        Location location = getLocation();
-        if (location != null) {
-            Double lon = location.getLongitude();
-            Double lat = location.getLatitude();
-            adapter_rv.setPosition(lon, lat);
-            Log.d("Frg_AroundMission", "lon = " + lon + " lat = " + lat);
-            LoadingAroundMission(Double.toString(lon), Double.toString(lat));
-        } else {
-            Toast.makeText(ctxt, "無法取得位置", Toast.LENGTH_SHORT).show();
+        // 建立Google API用戶端物件
+        configGoogleApiClient();
+
+        // 建立Location請求物件
+        configLocationRequest();
+
+        if (!googleApiClient.isConnected()) {
+            googleApiClient.connect();
         }
     }
 
@@ -144,6 +137,7 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
     private void InitialUI(View v) {
         laySwipe = (SwipeRefreshLayout) v.findViewById(R.id.laySwipe);
         mRecycleview = (RecyclerView) v.findViewById(R.id.recycleview);
+        pb_progressing = (ProgressBar) v.findViewById(R.id.pb_around_processing);
     }
 
     private void InitialSomething() {
@@ -153,17 +147,17 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
 
     private OnRefreshListener onSwipeToRefresh = new OnRefreshListener() {
         public void onRefresh() {
-            GetCurrentPositionAndLoading();
+            LoadingAroundMission(Double.toString(final_lng), Double.toString(final_lat));
             laySwipe.setRefreshing(false);
         }
     };
 
     private void LoadingAroundMission(String lon, String lat) {
         if (Net.isNetWork(ctxt)) {
-            //final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
+            ProgressingUI();
             LoadingAroundMissionID task = new LoadingAroundMissionID(new LoadingAroundMissionID.OnLoadingAroundMissionIDListener() {
                 public void finish(Integer result, List<ReadyMission> readyMissions, List<Integer> ids) {
-                    //pd.dismiss();
+                    FinishUI();
                     switch (result) {
                         case TaskCode.Success:
                             LoadingMission(ids);
@@ -217,82 +211,105 @@ public class Frg_AroundMission extends Fragment implements LocationListener {
 
     private void RefreshRecyclerView() {
         if (adapter_rv != null) {
+            adapter_rv.setPosition(final_lng, final_lat);
             adapter_rv.notifyDataSetChanged();
         }
     }
 
-    private Location LocationSetting() {
-        LocationManager status = (LocationManager) (ctxt.getSystemService(Context.LOCATION_SERVICE));
-        if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            //如果GPS或網路定位開啟，呼叫locationServiceInitial()更新位置
-            return LocationServiceInitial();
-        } else {
-            Toast.makeText(ctxt, "請開啟定位服務", Toast.LENGTH_LONG).show();
-            getService = true; //確認開啟定位服務
-            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)); //開啟設定頁面
-            return null;
+    private void ProgressingUI() {
+        mRecycleview.setVisibility(View.GONE);
+        pb_progressing.setVisibility(View.VISIBLE);
+    }
+
+    private void FinishUI() {
+        mRecycleview.setVisibility(View.VISIBLE);
+        pb_progressing.setVisibility(View.GONE);
+    }
+
+    private synchronized void configGoogleApiClient() {
+        googleApiClient = new GoogleApiClient.Builder(ctxt)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    // 建立Location請求物件
+    private void configLocationRequest() {
+        locationRequest = new LocationRequest();
+        // 設定讀取位置資訊的間隔時間為60秒（60000ms）
+        locationRequest.setInterval(10000);
+        // 設定讀取位置資訊最快的間隔時間為一秒（1000ms）
+        locationRequest.setFastestInterval(1000);
+        // 設定優先讀取高精確度的位置資訊（GPS）
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        // Already connect to google service
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                googleApiClient, locationRequest, Frg_AroundMission.this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        // google service disconnect , i is fail code
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        // google service connect fail ,  connectionResult is fail result
+        // Google Services連線失敗
+        // ConnectionResult參數是連線失敗的資訊
+        int errorCode = connectionResult.getErrorCode();
+
+        // 裝置沒有安裝Google Play服務
+        if (errorCode == ConnectionResult.SERVICE_MISSING) {
+            Toast.makeText(ctxt, "未安裝 Google play",
+                    Toast.LENGTH_LONG).show();
         }
     }
 
-    private Location LocationServiceInitial() {
-        lms = (LocationManager) ctxt.getSystemService(ctxt.LOCATION_SERVICE); //取得系統定位服務
-        // 由Criteria物件判斷提供最準確的資訊
-        Criteria criteria = new Criteria();  //資訊提供者選取標準
-        bestProvider = lms.getBestProvider(criteria, true);    //選擇精準度最高的提供者
-        Location location = lms.getLastKnownLocation(bestProvider);
-        return location;
-    }
-
-    private Location getLocation() {
-        return LocationSetting();
-    }
-
     @Override
-    public void onLocationChanged(Location location) {  //當地點改變時
-        //Location location = getLocation();
-        if (location != null) {
-            Double lon = location.getLongitude();
-            Double lat = location.getLatitude();
-            StringBuilder builder = new StringBuilder();
-            builder.append("lon = " + lon + "\n");
-            builder.append("lat = " + lat);
-            Toast.makeText(ctxt, builder, Toast.LENGTH_SHORT).show();
-            LoadingAroundMission(Double.toString(lon), Double.toString(lat));
-        } else {
-            Toast.makeText(ctxt, "無法取得位置", Toast.LENGTH_SHORT).show();
+    public void onLocationChanged(Location location) {
+        // 位置改變
+        // Location參數是目前的位置
+        currentLocation = location;
+        final_lng = currentLocation.getLongitude();
+        final_lat = currentLocation.getLatitude();
+        Log.d("Pos-AroundMission", final_lat + " " + final_lng);
+        if (F) {
+            F = !F;
+            LoadingAroundMission(Double.toString(final_lng), Double.toString(final_lat));
         }
     }
 
     @Override
-    public void onProviderDisabled(String arg0) {//當GPS或網路定位功能關閉時
-        // TODO 自動產生的方法 Stub
-        Toast.makeText(ctxt, "請開啟gps或3G網路", Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onProviderEnabled(String arg0) { //當GPS或網路定位功能開啟
-        // TODO 自動產生的方法 Stub
-    }
-
-    @Override
-    public void onStatusChanged(String arg0, int arg1, Bundle arg2) { //定位狀態改變
-        Toast.makeText(ctxt, "status change", Toast.LENGTH_SHORT).show();
-    }
-
     public void onResume() {
-        // TODO Auto-generated method stub
         super.onResume();
-        if (getService) {
-            lms.requestLocationUpdates(bestProvider, 5000, 1, this);
-            //服務提供者、更新頻率60000毫秒=1分鐘、最短距離、地點改變時呼叫物件
+        // 連線到Google API用戶端
+        if (!googleApiClient.isConnected() && currentMarker != null) {
+            googleApiClient.connect();
         }
     }
 
+    @Override
     public void onPause() {
-        // TODO Auto-generated method stub
         super.onPause();
-        if (getService) {
-            lms.removeUpdates(this);   //離開頁面時停止更新
+        // 移除位置請求服務
+        if (googleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    googleApiClient, this);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // 移除Google API用戶端連線
+        if (googleApiClient.isConnected()) {
+            googleApiClient.disconnect();
         }
     }
 }
