@@ -7,9 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -37,6 +35,7 @@ import com.lambda.assist.Asyn.NewMission;
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
 import com.lambda.assist.ForImgur.ImageResponse;
+import com.lambda.assist.Helper.BitmapHelp;
 import com.lambda.assist.Helper.DocumentHelper;
 import com.lambda.assist.Model.UploadImage;
 import com.lambda.assist.Other.Hardware;
@@ -46,7 +45,6 @@ import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
-import com.lambda.assist.Helper.BitmapHelper;
 import com.lambda.assist.Presenter.UploadImagePresenter;
 import com.lambda.assist.R;
 
@@ -415,10 +413,11 @@ public class Act_NewMission extends AppCompatActivity implements GoogleApiClient
                     try {
                         Uri returnUri = data.getData();
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), returnUri);
+                        Bitmap okBitmap = BitmapHelp.resize(bitmap);
                         String filePath = DocumentHelper.getPath(this, returnUri);
-                        if (filePath == null || filePath.isEmpty() || bitmap == null) return;
+                        if (filePath == null || filePath.isEmpty() || okBitmap == null) return;
                         chosenFile = new File(filePath);
-                        createUpload(chosenFile, bitmap);
+                        createUpload(chosenFile, okBitmap);
                         new UploadImagePresenter(this).execute(upload, new UiCallback());
                     } catch (IOException e) {
                     }

@@ -29,5 +29,7 @@
     <!-- In Mission -->
     <color name="tab_mission_normal">@color/gray500</color>
     <color name="tab_mission_select">@color/white</color>
-
+    <!-- In Mission-Message -->
+    <color name="text_isMe">#FBC02D</color>
+    <color name="text_notMe">@color/black</color>
 </resources>

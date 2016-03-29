@@ -1,17 +1,12 @@
 package com.lambda.assist.Activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,10 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.lambda.assist.Asyn.AuthenticatePass;
 import com.lambda.assist.Asyn.AuthenticatePhone;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.ConnectionApp.SignatureApp;
 import com.lambda.assist.Other.ActivityCode;
 import com.lambda.assist.Other.Hardware;
 import com.lambda.assist.Other.IsVaild;
@@ -32,16 +25,10 @@ import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
-
 
 public class Act_AuthSign extends Activity {
     // Obj
     private Context ctxt = Act_AuthSign.this;
-    private MyHttpClient client;
     // StartActivity
     // SharedPreferences
     private SharedPreferences settings;

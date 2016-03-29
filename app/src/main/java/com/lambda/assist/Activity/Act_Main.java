@@ -33,12 +33,14 @@ import android.widget.Toast;
 
 import com.lambda.assist.Adapter.HistoryRVAdapter;
 import com.lambda.assist.Adapter.MyFragmentAdapter;
+import com.lambda.assist.Adapter.SettingsListAdapter;
 import com.lambda.assist.Asyn.LoadHistory;
 import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
 import com.lambda.assist.Model.HistoryMission;
 import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Listener.OnRcvScrollListener;
+import com.lambda.assist.Other.Code;
 import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
@@ -47,6 +49,8 @@ import com.lambda.assist.UI.ItemOffsetDecoration;
 import com.lambda.assist.UI.SlidingTabLayout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
@@ -78,8 +82,6 @@ public class Act_Main extends AppCompatActivity {
     private LinearLayout drawer_left_layout;
     private LinearLayout drawer_right_layout;
     // Right Drawer
-    private ImageView img_drawer_icon;
-    private TextView tv_drawer_id;
     private ListView lv_drawer_setting;
     // Left Drawer
     private EditText et_drawer_input;
@@ -287,23 +289,18 @@ public class Act_Main extends AppCompatActivity {
 
     private View getRightDrawerLayout() {
         View v = getLayoutInflater().inflate(R.layout.drawer_right, null);
-        img_drawer_icon = (ImageView) v.findViewById(R.id.img_drawer_icon);
-        tv_drawer_id = (TextView) v.findViewById(R.id.tv_drawer_id);
         lv_drawer_setting = (ListView) v.findViewById(R.id.lv_drawer_setting);
-
-        String[] settings = {"Section1", "Section2", "Section3", "Section4",
-                "Section5", "Section6", "Section7", "Section8", "Section9",
-                "Section10", "Section11", "Section12", "Section13",
-                "Section14", "Section15"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, settings);
+        List<String> settings = Arrays.asList(getResources().getStringArray(R.array.settings));
+        SettingsListAdapter adapter = new SettingsListAdapter(ctxt, settings);
         lv_drawer_setting.setAdapter(adapter);
 
         lv_drawer_setting.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                String text = ((TextView) v).getText().toString();
-                Toast.makeText(ctxt, text, Toast.LENGTH_SHORT).show();
+                switch (position) {
+                    case Code.SETTING:
+                        break;
+                }
             }
         });
         return v;
@@ -364,6 +361,11 @@ public class Act_Main extends AppCompatActivity {
     private static long lastPressTime = 0;
 
     public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(Gravity.LEFT) || mDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
+            mDrawerLayout.closeDrawers();
+            return;
+        }
+
 
         if (System.currentTimeMillis() - lastPressTime < 2000) {
             super.onBackPressed();

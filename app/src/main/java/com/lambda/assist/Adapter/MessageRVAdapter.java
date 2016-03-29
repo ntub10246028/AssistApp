@@ -39,6 +39,8 @@ public class MessageRVAdapter extends SampleRecyclerViewAdapter {
         // set
         int me = item.getMe();
         holder.content.setText(item.getMessage());
+        int textColor = getContext().getResources().getColor(me == 0 ? R.color.text_isMe : R.color.text_notMe);
+        holder.content.setTextColor(textColor);
     }
 
     @Override

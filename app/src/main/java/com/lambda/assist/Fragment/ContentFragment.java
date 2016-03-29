@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.lambda.assist.Activity.Act_Mission;
+import com.lambda.assist.Helper.ImageTextHelp;
 import com.lambda.assist.Model.Mission;
 import com.lambda.assist.R;
 
@@ -20,7 +22,7 @@ public class ContentFragment extends MissionBaseFragment {
     //
     private Context ctxt;
     //
-    private TextView tv_content;
+    private LinearLayout ll_content;
     //
     private Mission mMission;
 
@@ -58,10 +60,10 @@ public class ContentFragment extends MissionBaseFragment {
     }
 
     private void InitialUI(View v) {
-        tv_content = (TextView) v.findViewById(R.id.tv_mission_content_content);
+        ll_content = (LinearLayout) v.findViewById(R.id.ll_mission_content_content);
     }
 
     private void InitialAction() {
-        tv_content.setText(mMission.getContent());
+        ImageTextHelp.convertUrlToButton(mMission.getContent(), ll_content);
     }
 }

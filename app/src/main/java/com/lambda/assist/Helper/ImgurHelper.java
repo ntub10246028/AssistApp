@@ -5,9 +5,9 @@ package com.lambda.assist.Helper;
  */
 public class ImgurHelper {
 
-    private static final String start = "[assist:image=";
-    private static final String end = "]";
-    private static final String imgurHttp = "http";
+    public static final String start = "[assist:image=";
+    public static final String end = "]";
+    public static final String imgurHttp = "http";
 
     public static String checkUrl(String content) {
         int sIndex = content.indexOf(start);

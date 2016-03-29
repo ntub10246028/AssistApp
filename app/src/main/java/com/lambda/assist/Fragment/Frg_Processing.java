@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -42,7 +43,7 @@ public class Frg_Processing extends Fragment {
     // UI
     private SwipeRefreshLayout laySwipe;
     private RecyclerView rv;
-    private ImageButton imgbt_add;
+    private Button bt_add;
     // Adapter
     private ProcessingRVAdapter adapter_rv;
     private GridLayoutManager manager;
@@ -147,7 +148,7 @@ public class Frg_Processing extends Fragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light);
         // ImageButton Setting
-        imgbt_add.setOnClickListener(new View.OnClickListener() {
+        bt_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent it = new Intent(ctxt, Act_NewMission.class);
@@ -186,7 +187,7 @@ public class Frg_Processing extends Fragment {
     private void InitialUI(View v) {
         laySwipe = (SwipeRefreshLayout) v.findViewById(R.id.laySwipe_list);
         rv = (RecyclerView) v.findViewById(R.id.rv_list);
-        imgbt_add = (ImageButton) v.findViewById(R.id.imgbt_add);
+        bt_add = (Button) v.findViewById(R.id.bt_processing_add);
     }
 
     private void InitialSomething() {

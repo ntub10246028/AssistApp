@@ -2,8 +2,6 @@ package com.lambda.assist.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,29 +9,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.lambda.assist.Activity.Act_Mission;
-import com.lambda.assist.ConnectionApp.JsonReaderPost;
-import com.lambda.assist.ConnectionApp.MyHttpClient;
+import com.lambda.assist.Helper.BitmapHelp;
+import com.lambda.assist.Helper.BitmapTransform;
 import com.lambda.assist.Helper.GPSHelper;
 import com.lambda.assist.Helper.ImgurHelper;
 import com.lambda.assist.Model.Mission;
-import com.lambda.assist.Other.Net;
-import com.lambda.assist.Other.TaskCode;
-import com.lambda.assist.Other.URLs;
-import com.lambda.assist.Helper.BitmapHelper;
 import com.lambda.assist.R;
 import com.squareup.picasso.Picasso;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,10 +61,12 @@ public class AroundRVAdapter extends SampleRecyclerViewAdapter {
         if (url != null) {
             Picasso.with(getContext())
                     .load(url)
+                    .transform(new BitmapTransform(BitmapHelp.maxW, BitmapHelp.maxH))
+                    .resize(BitmapHelp.size(), BitmapHelp.size())
+                    .centerInside()
                     .into(holder.image);
         }
-
-
+        
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent it = new Intent(getContext(), Act_Mission.class);

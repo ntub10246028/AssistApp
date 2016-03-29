@@ -11,7 +11,7 @@ public class MyDialog {
         ProgressDialog pDialog = new ProgressDialog(ctxt);
         pDialog.setMessage(message);
         pDialog.setIndeterminate(false);
-        pDialog.setCancelable(true);
+        pDialog.setCancelable(false);
         pDialog.show();
         return pDialog;
     }

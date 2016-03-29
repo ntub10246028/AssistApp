@@ -80,7 +80,6 @@ public class Act_Mission extends AppCompatActivity {
                             if (list != null && !list.isEmpty()) {
                                 mMission = list.get(0);
                                 if (mMission != null) {
-                                    InitialTabView();
                                     LoadMessage(mMission.getMissionid() + "");
                                 }
                             }
@@ -107,10 +106,9 @@ public class Act_Mission extends AppCompatActivity {
                 public void finish(Integer result, List<MessageItem> list) {
                     switch (result) {
                         case TaskCode.Success:
-                            mMission.setMessages(list);
-                            break;
                         case TaskCode.Empty:
                             mMission.setMessages(list);
+                            InitialTabView();
                             break;
                         case TaskCode.NoResponse:
                             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
@@ -161,6 +159,7 @@ public class Act_Mission extends AppCompatActivity {
         fragmentAdapter = new MissionFragmentAdapter(getSupportFragmentManager(), fragments);
         // pager
         mViewPager.setAdapter(fragmentAdapter);
+        mViewPager.setOffscreenPageLimit(3);
         // tabs
         mSlidingTabLayout.setCustomTabColorizer(new MissionSlidingTabLayout.TabColorizer() {
             @Override

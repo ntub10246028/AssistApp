@@ -12,6 +12,9 @@
     <string name="msg_err_format">格式錯誤</string>
     <!-- Main -->
     <string name="msg_exit">在按一次返回鍵離開</string>
+    <string-array name="settings">
+        <item>設定</item>
+    </string-array>
     <!-- AuthSign -->
     <string-array name="country_number">
         <item>+886</item>

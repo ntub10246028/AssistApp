@@ -2,8 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/laySwipe_list"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -15,12 +14,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <ImageButton
-            android:id="@+id/imgbt_add"
+        <Button
+            android:id="@+id/bt_processing_add"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="right|bottom"
-            android:background="@drawable/ic_chrome" />
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/cust_round_button"
+            android:text="+"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
+
 
     </FrameLayout>
 
