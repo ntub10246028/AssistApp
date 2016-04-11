@@ -7,17 +7,17 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.content.Context;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -25,13 +25,15 @@ import com.lambda.assist.Activity.Act_NewMission;
 import com.lambda.assist.Adapter.ProcessingRVAdapter;
 import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.Asyn.LoadRunning;
+import com.lambda.assist.Listener.OnLoadMoreListener;
 import com.lambda.assist.Model.Mission;
-import com.lambda.assist.Listener.OnRcvScrollListener;
 import com.lambda.assist.Other.ActivityCode;
+import com.lambda.assist.Other.ListUtil;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
 import com.lambda.assist.UI.ItemOffsetDecoration;
+import com.lambda.assist.UI.WrapContentLinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,10 +50,11 @@ public class Frg_Processing extends Fragment {
     private Button bt_add;
     // Adapter
     private ProcessingRVAdapter adapter_rv;
-    private GridLayoutManager manager;
     //
     // Other
     private List<Mission> list_missiondata;
+    private List<Integer> allIds;
+    private int lastMissionPosition, totalMissionPosition, countOfOnceLoad = 2;
 
     public static Frg_Processing newInstance() {
         return new Frg_Processing();
@@ -90,7 +93,14 @@ public class Frg_Processing extends Fragment {
                     FinishUI();
                     switch (result) {
                         case TaskCode.Success:
-                            LoadingMission(ids);
+                            allIds.clear();
+                            allIds.addAll(ids);
+                            list_missiondata.clear();
+                            lastMissionPosition = 0;
+                            totalMissionPosition = allIds.size() - 1;
+                            if (stillCanLoading()) {
+                                LoadingMission(canLoadMissionIds());
+                            }
                             break;
                         case TaskCode.Empty:
                             Toast.makeText(ctxt, getResources().getString(R.string.msg_warning_around_empty), Toast.LENGTH_SHORT).show();
@@ -113,22 +123,24 @@ public class Frg_Processing extends Fragment {
 
     private void LoadingMission(List<Integer> datas) {
         if (Net.isNetWork(ctxt)) {
-            ProgressingUI();
+            list_missiondata.add(null);
+            adapter_rv.notifyItemInserted(list_missiondata.size() - 1);
             LoadMissions task = new LoadMissions(new LoadMissions.OnLoadMissionsListener() {
                 public void finish(Integer result, List<Mission> list) {
-                    FinishUI();
+                    //FinishUI();
                     switch (result) {
                         case TaskCode.Empty:
                         case TaskCode.Success:
-                            list_missiondata.clear();
-                            list_missiondata.addAll(list);
-                            RefreshRecyclerView();
+                            //Remove loading item
+                            list_missiondata.remove(list_missiondata.size() - 1);
+                            adapter_rv.notifyItemRemoved(list_missiondata.size());
+                            ListUtil.append(list_missiondata, list);
+                            adapter_rv.notifyDataSetChanged();
+                            adapter_rv.setLoaded();
                             break;
                         case TaskCode.NoResponse:
                             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
                             break;
-                        default:
-                            Toast.makeText(ctxt, "error : " + result, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -160,7 +172,7 @@ public class Frg_Processing extends Fragment {
             }
         });
         //  RecyclerView Setting
-        mRecycleview.setOnScrollListener(new OnRcvScrollListener() {
+        mRecycleview.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -169,19 +181,23 @@ public class Frg_Processing extends Fragment {
                 laySwipe.setEnabled(topRowVerticalPosition >= 0);
             }
         });
+
         //  set layoutManger
-        manager = new GridLayoutManager(ctxt, 2);
-        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            public int getSpanSize(int position) {
-                return 2;
-            }
-        });
-        mRecycleview.setLayoutManager(manager);
+        mRecycleview.setLayoutManager(new WrapContentLinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false));
         // item between item
         ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(10);
         mRecycleview.addItemDecoration(itemDecoration);
         // set adapter
-        adapter_rv = new ProcessingRVAdapter(ctxt, list_missiondata);
+        adapter_rv = new ProcessingRVAdapter(ctxt, list_missiondata, mRecycleview);
+
+        adapter_rv.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                if (stillCanLoading()) {
+                    LoadingMission(canLoadMissionIds());
+                }
+            }
+        });
         // set adapter
         mRecycleview.setAdapter(adapter_rv);
         // set item animator to DefaultAnimator
@@ -197,6 +213,7 @@ public class Frg_Processing extends Fragment {
 
     private void InitialSomething() {
         list_missiondata = new ArrayList<>();
+        allIds = new ArrayList<>();
     }
 
     private SwipeRefreshLayout.OnRefreshListener onSwipeToRefresh = new SwipeRefreshLayout.OnRefreshListener() {
@@ -214,5 +231,26 @@ public class Frg_Processing extends Fragment {
     private void FinishUI() {
         mRecycleview.setVisibility(View.VISIBLE);
         pb_progressing.setVisibility(View.GONE);
+    }
+
+    private boolean stillCanLoading() {
+        Log.d("LLL", "T " + lastMissionPosition + " " + totalMissionPosition);
+        return lastMissionPosition < totalMissionPosition;
+    }
+
+    private List<Integer> canLoadMissionIds() {
+        List<Integer> result = new ArrayList<>();
+        int start = lastMissionPosition;
+        int end = start + countOfOnceLoad > totalMissionPosition ? totalMissionPosition : start + countOfOnceLoad;
+        lastMissionPosition = end + 1;
+        Log.d("LLL", "R " + start + " " + end);
+        for (int i = start; i <= end; i++) {
+            result.add(allIds.get(i));
+        }
+        return result;
+    }
+
+    private void reSetLoading() {
+
     }
 }

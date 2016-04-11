@@ -56,7 +56,6 @@ public class LoadRunning extends AsyncTask<String, Integer, Integer> {
             e.printStackTrace();
             Log.d("LoadRunning", e.toString());
         }
-        Log.d("LoadRunning" , "4");
         return result;
     }
 

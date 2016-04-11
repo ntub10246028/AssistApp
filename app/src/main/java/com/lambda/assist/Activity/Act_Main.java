@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -37,20 +36,16 @@ import com.lambda.assist.Adapter.SettingsListAdapter;
 import com.lambda.assist.Asyn.LoadHistory;
 import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.Model.HistoryMission;
 import com.lambda.assist.Model.Mission;
-import com.lambda.assist.Listener.OnRcvScrollListener;
 import com.lambda.assist.Other.Code;
 import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
-import com.lambda.assist.UI.ItemOffsetDecoration;
 import com.lambda.assist.UI.SlidingTabLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
@@ -186,7 +181,7 @@ public class Act_Main extends AppCompatActivity {
         });
         mSwipeLayout.setColorSchemeResources(android.R.color.black);
         //  RecyclerView Setting
-        mRecycleview.setOnScrollListener(new OnRcvScrollListener() {
+        mRecycleview.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);

@@ -27,7 +27,6 @@ import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.Asyn.LoadingAroundMissionID;
 import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Model.ReadyMission;
-import com.lambda.assist.Listener.OnRcvScrollListener;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
@@ -105,7 +104,7 @@ public class Frg_AroundMission extends Fragment implements GoogleApiClient.Conne
         laySwipe.setOnRefreshListener(onSwipeToRefresh);
         laySwipe.setColorSchemeResources(android.R.color.black);
         //  RecyclerView Setting
-        mRecycleview.setOnScrollListener(new OnRcvScrollListener() {
+        mRecycleview.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);

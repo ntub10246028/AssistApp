@@ -20,7 +20,6 @@ import com.lambda.assist.Asyn.AddMessage;
 import com.lambda.assist.Asyn.LoadingMessage;
 import com.lambda.assist.Model.MessageItem;
 import com.lambda.assist.Model.Mission;
-import com.lambda.assist.Listener.OnRcvScrollListener;
 import com.lambda.assist.Other.IsVaild;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
@@ -150,7 +149,7 @@ public class MessageFragment extends MissionBaseFragment {
         });
         mSwipeLayout.setColorSchemeResources(android.R.color.black);
         //  RecyclerView Setting
-        mRecycleview.setOnScrollListener(new OnRcvScrollListener() {
+        mRecycleview.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
