@@ -17,6 +17,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,13 +34,13 @@ public class JsonReaderPost {
     public JSONObject Reader(List<NameValuePair> params, String dir, MyHttpClient client) throws IOException, JSONException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException, UnrecoverableKeyException {
 
         HttpPost httpPost = new HttpPost("https://app.lambda.tw/" + dir);
-        httpPost.setEntity(new UrlEncodedFormEntity(params));
+        httpPost.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
         HttpResponse response;
         String result = null;
         response = client.execute(httpPost);
         Log.d("LAG", "Success Response");
         HttpEntity entity = response.getEntity();
-        result = EntityUtils.toString(entity);
+        result = EntityUtils.toString(entity,"UTF-8");
         Log.d("JsonReaderPost", result);
         List<Cookie> cookies = client.getCookieStore().getCookies();
         String get_result;

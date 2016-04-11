@@ -39,6 +39,7 @@ public class LoadHistory extends AsyncTask<String, Integer, Integer> {
         try {
             JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_history, MyHttpClient.getMyHttpClient());
             if (jobj != null) {
+                Log.d("LoadHistory", jobj.toString());
                 result = jobj.getInt("result");
                 if (result == TaskCode.Success) {
                     JSONArray array = jobj.getJSONArray("history");

@@ -89,7 +89,7 @@ public class Act_Main extends AppCompatActivity {
     private SwipeRefreshLayout mSwipeLayout;
     private RecyclerView mRecycleview;
     private HistoryRVAdapter historyRVAdapter;
-    private List<HistoryMission> list_historymission;
+    private List<Mission> list_historymission;
     //
 
 
@@ -180,6 +180,7 @@ public class Act_Main extends AppCompatActivity {
         mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             public void onRefresh() {
                 //Loading
+                LoadHistory();
                 mSwipeLayout.setRefreshing(false);
             }
         });
@@ -203,8 +204,8 @@ public class Act_Main extends AppCompatActivity {
         });
         mRecycleview.setLayoutManager(manager);
         // item between item
-        ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(10);
-        mRecycleview.addItemDecoration(itemDecoration);
+        //ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(10);
+        //mRecycleview.addItemDecoration(itemDecoration);
         // 3. create an adapter
         historyRVAdapter = new HistoryRVAdapter(ctxt, list_historymission);
         // 4. set adapter
@@ -244,7 +245,7 @@ public class Act_Main extends AppCompatActivity {
 
                             break;
                         case TaskCode.Empty:
-
+                            Toast.makeText(ctxt, "History is empty", Toast.LENGTH_SHORT).show();
                             break;
                         case TaskCode.NoResponse:
                             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
@@ -267,11 +268,11 @@ public class Act_Main extends AppCompatActivity {
                 public void finish(Integer result, List<Mission> list) {
                     pd.dismiss();
                     switch (result) {
-                        case TaskCode.Success:
-                            refreshHistory();
-                            break;
                         case TaskCode.Empty:
-
+                        case TaskCode.Success:
+                            list_historymission.clear();
+                            list_historymission.addAll(list);
+                            refreshHistory();
                             break;
                         case TaskCode.NoResponse:
                             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
@@ -281,7 +282,7 @@ public class Act_Main extends AppCompatActivity {
                     }
                 }
             });
-            task.execute();
+            task.execute(list);
         } else {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }

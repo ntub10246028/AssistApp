@@ -68,6 +68,9 @@ public class LoadMissions extends AsyncTask<List<Integer>, Integer, Integer> {
                     idata.setContent(item.getString("content"));
                     idata.setImage(item.getString("image"));
                     idata.setGettime(item.getString("gettime"));
+                    idata.setIsdone(item.getInt("isdone"));
+                    idata.setIscancel(item.getInt("iscancel"));
+                    idata.setLocked(item.getInt("locked"));
                     list.add(idata);
                 }
             }

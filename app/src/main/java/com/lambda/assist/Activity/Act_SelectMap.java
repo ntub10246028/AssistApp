@@ -6,6 +6,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -31,6 +33,7 @@ import com.lambda.assist.R;
 public class Act_SelectMap extends AppCompatActivity implements OnMapReadyCallback {
 
     private SupportMapFragment mapFragment;
+    private Button bt_ok, bt_cancel;
     private GoogleMap map;
 
     // 顯示目前與儲存位置的標記物件
@@ -38,7 +41,6 @@ public class Act_SelectMap extends AppCompatActivity implements OnMapReadyCallba
     // other
     private double final_lat;
     private double final_lng;
-    private String confirm = "點我確認";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +49,8 @@ public class Act_SelectMap extends AppCompatActivity implements OnMapReadyCallba
         final_lat = data.getDoubleExtra("lat", 0.0);
         final_lng = data.getDoubleExtra("lng", 0.0);
         setUpMap();
+        initUI();
+        initAction();
     }
 
     private void setUpMap() {
@@ -71,19 +75,7 @@ public class Act_SelectMap extends AppCompatActivity implements OnMapReadyCallba
                 moveMap(point);
             }
         });
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            public boolean onMarkerClick(Marker marker) {
-                if (marker.getTitle().equals(confirm)) {
-                    Intent back = new Intent();
-                    back.putExtra("lat", final_lat);
-                    back.putExtra("lng", final_lng);
-                    setResult(RESULT_OK, back);
-                    Log.d("back send", final_lat + " " + final_lng);
-                    finishActivity();
-                }
-                return false;
-            }
-        });
+
         if (final_lat != 0.0 && final_lng != 0.0) {
             LatLng itemPlace = new LatLng(final_lat, final_lng);
             addMarker(itemPlace);
@@ -98,7 +90,7 @@ public class Act_SelectMap extends AppCompatActivity implements OnMapReadyCallba
         if (currentMarker != null)
             currentMarker.remove();
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(place).title(confirm);
+        markerOptions.position(place);
         // 加入並設定記事儲存的位置標記
         currentMarker = map.addMarker(markerOptions);
         currentMarker.showInfoWindow();
@@ -114,6 +106,32 @@ public class Act_SelectMap extends AppCompatActivity implements OnMapReadyCallba
 
         // 使用動畫的效果移動地圖
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    private void initAction() {
+        bt_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent back = new Intent();
+                back.putExtra("lat", final_lat);
+                back.putExtra("lng", final_lng);
+                setResult(RESULT_OK, back);
+                Log.d("back send", final_lat + " " + final_lng);
+                finishActivity();
+            }
+        });
+        bt_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(RESULT_CANCELED);
+                finishActivity();
+            }
+        });
+    }
+
+    private void initUI() {
+        bt_ok = (Button) findViewById(R.id.bt_select_map_ok);
+        bt_cancel = (Button) findViewById(R.id.bt_select_map_cancel);
     }
 
     private void finishActivity() {

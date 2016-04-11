@@ -35,16 +35,13 @@ public class LoadRunning extends AsyncTask<String, Integer, Integer> {
     protected Integer doInBackground(String... datas) {
         int result = TaskCode.NoResponse;
         List<NameValuePair> params = new ArrayList<>();
-        Log.d("LoadRunning" , "1");
         try {
             JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_running, MyHttpClient.getMyHttpClient());
-            Log.d("LoadRunning" , "2");
             if (jobj != null) {
-                Log.d("LoadRunning" , "3");
                 Log.d("LoadRunning" , jobj.toString());
                 result = jobj.getInt("result");
                 if (result == TaskCode.Success) {
-                    JSONArray array = jobj.getJSONArray("history");
+                    JSONArray array = jobj.getJSONArray("runing");
                     if (array != null) {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject ajobj = array.getJSONObject(i);

@@ -19,6 +19,13 @@ public class Mission implements Serializable {
     private String content;
     private String image;
     private String gettime;
+    public static final int DO = 1;
+    public static final int NODO = 0;
+    private int isdone;
+    private int iscancel;
+    private int locked;
+
+
     private List<MessageItem> messages;
 
     public List<MessageItem> getMessages() {
@@ -123,5 +130,29 @@ public class Mission implements Serializable {
 
     public void setGettime(String gettime) {
         this.gettime = gettime;
+    }
+
+    public int getIsdone() {
+        return isdone;
+    }
+
+    public void setIsdone(int isdone) {
+        this.isdone = isdone;
+    }
+
+    public int getIscancel() {
+        return iscancel;
+    }
+
+    public void setIscancel(int iscancel) {
+        this.iscancel = iscancel;
+    }
+
+    public int getLocked() {
+        return locked;
+    }
+
+    public void setLocked(int locked) {
+        this.locked = locked;
     }
 }

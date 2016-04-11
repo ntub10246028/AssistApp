@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.lambda.assist.Activity.Act_NewMission;
@@ -42,7 +43,8 @@ public class Frg_Processing extends Fragment {
     private Activity activity;
     // UI
     private SwipeRefreshLayout laySwipe;
-    private RecyclerView rv;
+    private RecyclerView mRecycleview;
+    private ProgressBar pb_progressing;
     private Button bt_add;
     // Adapter
     private ProcessingRVAdapter adapter_rv;
@@ -82,14 +84,16 @@ public class Frg_Processing extends Fragment {
 
     private void LoadRunning() {
         if (Net.isNetWork(ctxt)) {
-            //final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
+            ProgressingUI();
             LoadRunning task = new LoadRunning(new LoadRunning.OnLoadRunningListener() {
                 public void finish(Integer result, List<Integer> ids) {
+                    FinishUI();
                     switch (result) {
                         case TaskCode.Success:
                             LoadingMission(ids);
                             break;
                         case TaskCode.Empty:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_warning_around_empty), Toast.LENGTH_SHORT).show();
                             list_missiondata.clear();
                             RefreshRecyclerView();
                             break;
@@ -109,10 +113,10 @@ public class Frg_Processing extends Fragment {
 
     private void LoadingMission(List<Integer> datas) {
         if (Net.isNetWork(ctxt)) {
-            //final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
+            ProgressingUI();
             LoadMissions task = new LoadMissions(new LoadMissions.OnLoadMissionsListener() {
                 public void finish(Integer result, List<Mission> list) {
-                    //pd.dismiss();
+                    FinishUI();
                     switch (result) {
                         case TaskCode.Empty:
                         case TaskCode.Success:
@@ -156,7 +160,7 @@ public class Frg_Processing extends Fragment {
             }
         });
         //  RecyclerView Setting
-        rv.setOnScrollListener(new OnRcvScrollListener() {
+        mRecycleview.setOnScrollListener(new OnRcvScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -172,21 +176,22 @@ public class Frg_Processing extends Fragment {
                 return 2;
             }
         });
-        rv.setLayoutManager(manager);
+        mRecycleview.setLayoutManager(manager);
         // item between item
         ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(10);
-        rv.addItemDecoration(itemDecoration);
+        mRecycleview.addItemDecoration(itemDecoration);
         // set adapter
-        adapter_rv = new ProcessingRVAdapter(list_missiondata);
+        adapter_rv = new ProcessingRVAdapter(ctxt, list_missiondata);
         // set adapter
-        rv.setAdapter(adapter_rv);
+        mRecycleview.setAdapter(adapter_rv);
         // set item animator to DefaultAnimator
-        rv.setItemAnimator(new DefaultItemAnimator());
+        mRecycleview.setItemAnimator(new DefaultItemAnimator());
     }
 
     private void InitialUI(View v) {
         laySwipe = (SwipeRefreshLayout) v.findViewById(R.id.laySwipe_list);
-        rv = (RecyclerView) v.findViewById(R.id.rv_list);
+        mRecycleview = (RecyclerView) v.findViewById(R.id.rv_list);
+        pb_progressing = (ProgressBar) v.findViewById(R.id.pb_running_processing);
         bt_add = (Button) v.findViewById(R.id.bt_processing_add);
     }
 
@@ -196,11 +201,18 @@ public class Frg_Processing extends Fragment {
 
     private SwipeRefreshLayout.OnRefreshListener onSwipeToRefresh = new SwipeRefreshLayout.OnRefreshListener() {
         public void onRefresh() {
-            new Handler().postDelayed(new Runnable() {
-                public void run() {
-
-                }
-            }, 1000);
+            LoadRunning();
+            laySwipe.setRefreshing(false);
         }
     };
+
+    private void ProgressingUI() {
+        mRecycleview.setVisibility(View.GONE);
+        pb_progressing.setVisibility(View.VISIBLE);
+    }
+
+    private void FinishUI() {
+        mRecycleview.setVisibility(View.VISIBLE);
+        pb_progressing.setVisibility(View.GONE);
+    }
 }

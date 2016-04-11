@@ -184,10 +184,9 @@ public class Frg_AroundMission extends Fragment implements GoogleApiClient.Conne
     ///
     private void LoadingMission(List<Integer> datas) {
         if (Net.isNetWork(ctxt)) {
-            //final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
             LoadMissions task = new LoadMissions(new LoadMissions.OnLoadMissionsListener() {
                 public void finish(Integer result, List<Mission> list) {
-                    //pd.dismiss();
+                    FinishUI();
                     switch (result) {
                         case TaskCode.Empty:
                         case TaskCode.Success:
