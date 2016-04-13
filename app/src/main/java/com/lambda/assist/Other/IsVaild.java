@@ -23,10 +23,16 @@ public class IsVaild {
     }
 
     public static String isVail_TimePick(Context ctxt, int h, int m, int s) {
-        StringBuilder sb = new StringBuilder();
+        if (h == 0 && m == 0 && s == 0) {
+            Toast.makeText(ctxt, "至少1秒", Toast.LENGTH_SHORT).show();
+            return "00:00:01";
+        }
         if (h == 24) {
+            Toast.makeText(ctxt, "最多1天", Toast.LENGTH_SHORT).show();
             return "24:00:00";
         }
+
+        StringBuilder sb = new StringBuilder();
         sb.append((h < 10 ? "0" : ""));
         sb.append(h);
         sb.append(":");

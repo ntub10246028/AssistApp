@@ -24,9 +24,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.Marker;
 import com.lambda.assist.Adapter.AroundRVAdapter;
 import com.lambda.assist.Asyn.LoadMissions;
-import com.lambda.assist.Asyn.LoadingAroundMissionID;
+import com.lambda.assist.Asyn.LoadingAround;
 import com.lambda.assist.Model.Mission;
-import com.lambda.assist.Model.ReadyMission;
+import com.lambda.assist.Model.ReadyAroundMission;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
@@ -47,7 +47,7 @@ public class Frg_AroundMission extends Fragment implements GoogleApiClient.Conne
     // Adapter
     private AroundRVAdapter adapter_rv;
     // Other
-    private List<ReadyMission> list_readmission;
+    private List<ReadyAroundMission> list_readmission;
     private List<Mission> list_missiondata;
     // Google API用戶端物件
     private GoogleApiClient googleApiClient;
@@ -154,12 +154,12 @@ public class Frg_AroundMission extends Fragment implements GoogleApiClient.Conne
     private void LoadingAroundMission(String lon, String lat) {
         if (Net.isNetWork(ctxt)) {
             ProgressingUI();
-            LoadingAroundMissionID task = new LoadingAroundMissionID(new LoadingAroundMissionID.OnLoadingAroundMissionIDListener() {
-                public void finish(Integer result, List<ReadyMission> readyMissions, List<Integer> ids) {
+            LoadingAround task = new LoadingAround(new LoadingAround.OnLoadingAroundMissionIDListener() {
+                public void finish(Integer result, List<ReadyAroundMission> readyMissions) {
                     FinishUI();
                     switch (result) {
                         case TaskCode.Success:
-                            LoadingMission(ids);
+                            LoadingMission(readyMissions);
                             break;
                         case TaskCode.Empty:
                             Toast.makeText(ctxt, getResources().getString(R.string.msg_warning_around_empty), Toast.LENGTH_SHORT).show();
@@ -181,7 +181,7 @@ public class Frg_AroundMission extends Fragment implements GoogleApiClient.Conne
     }
 
     ///
-    private void LoadingMission(List<Integer> datas) {
+    private void LoadingMission(List<ReadyAroundMission> datas) {
         if (Net.isNetWork(ctxt)) {
             LoadMissions task = new LoadMissions(new LoadMissions.OnLoadMissionsListener() {
                 public void finish(Integer result, List<Mission> list) {
@@ -201,7 +201,11 @@ public class Frg_AroundMission extends Fragment implements GoogleApiClient.Conne
                     }
                 }
             });
-            task.execute(datas);
+            List<Integer> ids = new ArrayList<>();
+            for (ReadyAroundMission m : datas) {
+                ids.add(m.getMissionid());
+            }
+            task.execute(ids);
         } else {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }

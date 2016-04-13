@@ -316,25 +316,6 @@ public class Act_NewMission extends AppCompatActivity implements GoogleApiClient
         iv_camera.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Hardware.closeKeyBoard(ctxt, v);
-//                final CharSequence[] items = {"相簿", "拍照"};
-//                AlertDialog dlg = new AlertDialog.Builder(ctxt).setTitle("選擇照片").setItems(items,
-//                        new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                if (which == 0) {
-//                                    Intent iPickPicture = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                                    startActivityForResult(iPickPicture, PICK_PICTURE);
-//                                } else {
-//                                    Intent iTakePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                                    if (Hardware.isIntentAvailable(ctxt, iTakePicture)) {
-//                                        startActivityForResult(iTakePicture, TAKE_PICTURE);
-//                                    } else {
-//                                        Toast.makeText(ctxt, "沒有拍攝裝置", Toast.LENGTH_SHORT).show();
-//                                    }
-//                                }
-//
-//                            }
-//                        }).create();
-//                dlg.show();
                 IntentHelper.chooseFileIntent(activity);
             }
         });

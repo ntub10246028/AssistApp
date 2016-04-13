@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -15,14 +16,17 @@ import android.widget.Toast;
 
 import com.lambda.assist.Adapter.MissionFragmentAdapter;
 import com.lambda.assist.Asyn.AcceptMission;
+import com.lambda.assist.Asyn.CancelMission;
 import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.Asyn.LoadingMessage;
+import com.lambda.assist.Fragment.ChatFragment;
 import com.lambda.assist.Fragment.ContentFragment;
 import com.lambda.assist.Fragment.LimitFragment;
 import com.lambda.assist.Fragment.MessageFragment;
 import com.lambda.assist.Fragment.MissionBaseFragment;
 import com.lambda.assist.Model.MessageItem;
 import com.lambda.assist.Model.Mission;
+import com.lambda.assist.Other.Code;
 import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
@@ -46,6 +50,8 @@ public class Act_Mission extends AppCompatActivity {
     // Adapter
     private MissionFragmentAdapter fragmentAdapter;
     // get Extras
+    private String fromType;
+    private int me;
     private int missionid;
     private String title;
     //
@@ -56,10 +62,11 @@ public class Act_Mission extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mission);
+        getExtras();
         InitialSomething();
         InitialUI();
         InitialAction();
-        getExtrasAndLoadMission();
+        LoadMission();
 
         InitialToolBar();
 
@@ -131,10 +138,42 @@ public class Act_Mission extends AppCompatActivity {
                     pd.dismiss();
                     switch (result) {
                         case TaskCode.Success:
-                            Toast.makeText(ctxt, "Success", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ctxt, "接受成功", Toast.LENGTH_SHORT).show();
                             break;
-                        default:
-                            Toast.makeText(ctxt, result + "", Toast.LENGTH_SHORT).show();
+                        case TaskCode.Accept_fail:
+                            Toast.makeText(ctxt, "接取失敗(" + result + ")", Toast.LENGTH_SHORT).show();
+                            break;
+                        case TaskCode.NoResponse:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                }
+            });
+            task.execute(missionid);
+        } else {
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void CancelMission(final String missionid) {
+        if (Net.isNetWork(ctxt)) {
+            final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
+            CancelMission task = new CancelMission(new CancelMission.OnCancelMissionListener() {
+                public void finish(Integer result) {
+                    Log.d("LAG", "B");
+                    pd.dismiss();
+                    Log.d("CancelMission",result+"**");
+                    switch (result) {
+                        case TaskCode.Success:
+                            Toast.makeText(ctxt, "取消/放棄成功", Toast.LENGTH_SHORT).show();
+                            break;
+                        case TaskCode.GiveUp_fail:
+                            Toast.makeText(ctxt, "取消/放棄失敗(" + result + ")", Toast.LENGTH_SHORT).show();
+                            break;
+                        case TaskCode.NoResponse:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                            break;
+
                     }
                 }
             });
@@ -159,7 +198,7 @@ public class Act_Mission extends AppCompatActivity {
         fragmentAdapter = new MissionFragmentAdapter(getSupportFragmentManager(), fragments);
         // pager
         mViewPager.setAdapter(fragmentAdapter);
-        mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setOffscreenPageLimit(fromProcessing() ? 4 : 3);
         // tabs
         mSlidingTabLayout.setCustomTabColorizer(new MissionSlidingTabLayout.TabColorizer() {
             @Override
@@ -185,6 +224,9 @@ public class Act_Mission extends AppCompatActivity {
         list.add(ContentFragment.newInstance(getResources().getString(R.string.tab_mission_content), indicatorColor, dividerColor));
         list.add(LimitFragment.newInstance(getResources().getString(R.string.tab_mission_limit), indicatorColor, dividerColor));
         list.add(MessageFragment.newInstance(getResources().getString(R.string.tab_mission_message), indicatorColor, dividerColor));
+        if (fromProcessing()) {
+            list.add(ChatFragment.newInstance(getResources().getString(R.string.tab_mission_chat), indicatorColor, dividerColor));
+        }
         return list;
     }
 
@@ -209,21 +251,32 @@ public class Act_Mission extends AppCompatActivity {
                 startActivity(iMissionMap);
             }
         });
+        bt_accept.setText(fromProcessing() ? me != -1 ? me == 1 ? "取消" : "放棄" : "錯誤" : "接受");
         bt_accept.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                AcceptMission(Integer.toString(missionid));
+                if (fromProcessing()) {
+                    CancelMission(Integer.toString(missionid));
+                } else {
+                    AcceptMission(Integer.toString(missionid));
+                }
             }
         });
+
     }
 
-    private void getExtrasAndLoadMission() {
+    private void getExtras() {
         Intent it = getIntent();
+        fromType = it.getStringExtra("fromType");
+        me = fromProcessing() ? it.getIntExtra("me", -1) : -1;
         missionid = it.getIntExtra("missionid", 0);
         title = it.getStringExtra("title");
-        LoadMission();
     }
 
     public Mission getMissionData() {
         return mMission;
+    }
+
+    private boolean fromProcessing() {
+        return fromType.equals(Code.FromType_Processing);
     }
 }

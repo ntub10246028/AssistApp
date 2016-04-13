@@ -7,14 +7,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
 import com.lambda.assist.Activity.Act_Mission;
+import com.lambda.assist.Helper.BitmapHelp;
+import com.lambda.assist.Helper.BitmapTransform;
+import com.lambda.assist.Helper.ImgurHelper;
 import com.lambda.assist.Listener.OnLoadMoreListener;
 import com.lambda.assist.Model.Mission;
+import com.lambda.assist.Other.Code;
 import com.lambda.assist.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -82,9 +88,20 @@ public class ProcessingRVAdapter extends SampleRecyclerViewAdapter {
             final Mission item = list.get(position);
             MissionViewHolder missionViewHolder = (MissionViewHolder) holder;
             missionViewHolder.text.setText(item.getTitle());
+            String url = ImgurHelper.checkUrl(item.getContent());
+            if (url != null) {
+                Picasso.with(getContext())
+                        .load(url)
+                        .transform(new BitmapTransform(BitmapHelp.maxW, BitmapHelp.maxH))
+                        .resize(BitmapHelp.size(), BitmapHelp.size())
+                        .centerInside()
+                        .into(missionViewHolder.image);
+            }
             missionViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent it = new Intent(getContext(), Act_Mission.class);
+                    it.putExtra("fromType", Code.FromType_Processing);
+                    it.putExtra("me", item.getMe());
                     it.putExtra("missionid", item.getMissionid());
                     it.putExtra("title", item.getTitle());
                     getContext().startActivity(it);
@@ -107,19 +124,15 @@ public class ProcessingRVAdapter extends SampleRecyclerViewAdapter {
     }
 
     // inner class to hold a reference to each item of RecyclerView
-    static class MissionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    static class MissionViewHolder extends RecyclerView.ViewHolder {
 
         public TextView text;
+        public ImageView image;
 
         public MissionViewHolder(View itemLayoutView) {
             super(itemLayoutView);
-            itemLayoutView.setOnClickListener(this);
             text = (TextView) itemLayoutView.findViewById(R.id.tv_item_processing_title);
-        }
-
-        @Override
-        public void onClick(View view) {
-            //Toast.makeText(view.getContext(), "position = " + getPosition(), Toast.LENGTH_SHORT).show();
+            image = (ImageView) itemLayoutView.findViewById(R.id.tv_item_processing_image);
         }
     }
 

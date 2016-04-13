@@ -6,5 +6,6 @@ package com.lambda.assist.Other;
 public class Code {
     // settings
     public static final int SETTING = 0 ;
-
+    public static final String FromType_Around = "0";
+    public static final String FromType_Processing = "1";
 }

@@ -27,4 +27,10 @@ public class TaskCode {
      *     Load Image
      */
     public static final int Load_image_NoExist = -28;
+    /**
+     *    In Mission
+     */
+    public static final int GiveUp_fail = -51;
+    public static final int Accept_fail = -41;
+
 }

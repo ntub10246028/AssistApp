@@ -2,9 +2,11 @@ package com.lambda.assist.Helper;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,7 +37,7 @@ public class ImageTextHelp {
             int iEnd = content.indexOf(end, count);
             if (iStart != -1 && iEnd != -1) {
                 ll.addView(getTextView(context, content.substring(count, iStart)));
-                ll.addView(getImageView(context, content.substring(iStart + start.length(), iEnd)));
+                ll.addView(getLoadImageView(context, content.substring(iStart + start.length(), iEnd)));
                 count = iEnd + 1;
             } else {
                 ll.addView(getTextView(context, content.substring(count)));
@@ -53,17 +55,15 @@ public class ImageTextHelp {
         return tv;
     }
 
-    private static ImageView getImageView(final Context context, final String url) {
+    private static LinearLayout getLoadImageView(final Context context, final String url) {
+        LinearLayout layout = new LinearLayout(context);
+        final Button bt = new Button(context);
         final ImageView iv = new ImageView(context);
-        LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        iv.setLayoutParams(params);
-        iv.setImageResource(R.drawable.open_image);
-        iv.setOnClickListener(new View.OnClickListener() {
-            @Override
+        bt.setText("載入圖片");
+        bt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Picasso.with(context)
                         .load(url)
-                        .placeholder(R.drawable.loading_image)
                         .transform(new BitmapTransform(BitmapHelp.maxW, BitmapHelp.maxH))
                         .resize(BitmapHelp.size(), BitmapHelp.size())
                         .centerInside()
@@ -73,22 +73,27 @@ public class ImageTextHelp {
                                 if (bitmap != null) {
                                     iv.setTag(bitmap);
                                     iv.setImageBitmap(bitmap);
+                                    bt.setVisibility(View.GONE);
+                                    iv.setVisibility(View.VISIBLE);
                                 }
                             }
 
                             @Override
                             public void onBitmapFailed(Drawable errorDrawable) {
-
+                                bt.setText("載入失敗:(");
+                                bt.setEnabled(true);
                             }
 
                             @Override
                             public void onPrepareLoad(Drawable placeHolderDrawable) {
-
+                                bt.setText("載入中...");
+                                bt.setEnabled(false);
                             }
                         });
-                iv.setEnabled(false);
             }
         });
-        return iv;
+        layout.addView(bt);
+        layout.addView(iv);
+        return layout;
     }
 }

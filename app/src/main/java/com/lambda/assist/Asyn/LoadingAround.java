@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.Model.ReadyMission;
+import com.lambda.assist.Model.ReadyAroundMission;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
 
@@ -20,19 +20,17 @@ import java.util.List;
 /**
  * Created by asus on 2016/3/8.
  */
-public class LoadingAroundMissionID extends AsyncTask<String, Integer, Integer> {
+public class LoadingAround extends AsyncTask<String, Integer, Integer> {
     public interface OnLoadingAroundMissionIDListener {
-        void finish(Integer result, List<ReadyMission> readyMissions, List<Integer> ids);
+        void finish(Integer result, List<ReadyAroundMission> readyMissionss);
     }
 
     private final OnLoadingAroundMissionIDListener mListener;
-    private List<ReadyMission> list_readymissions;
-    private List<Integer> list_readymissionids;
+    private List<ReadyAroundMission> list_readymissions;
 
-    public LoadingAroundMissionID(OnLoadingAroundMissionIDListener mListener) {
+    public LoadingAround(OnLoadingAroundMissionIDListener mListener) {
         this.mListener = mListener;
         list_readymissions = new ArrayList<>();
-        list_readymissionids = new ArrayList<>();
     }
 
     @Override
@@ -52,12 +50,11 @@ public class LoadingAroundMissionID extends AsyncTask<String, Integer, Integer> 
                 JSONArray jarray = jobj.getJSONArray("around");
                 for (int i = 0; i < jarray.length(); i++) {
                     JSONObject item = jarray.getJSONObject(i);
-                    ReadyMission aitem = new ReadyMission();
-                    aitem.setMission(item.getInt("missionid"));
+                    ReadyAroundMission aitem = new ReadyAroundMission();
+                    aitem.setMissionid(item.getInt("missionid"));
                     aitem.setLocationx(item.getDouble("locationx"));
                     aitem.setLocationy(item.getDouble("locationy"));
                     list_readymissions.add(aitem);
-                    list_readymissionids.add(aitem.getMission());
                 }
             }
         } catch (Exception e) {
@@ -70,6 +67,6 @@ public class LoadingAroundMissionID extends AsyncTask<String, Integer, Integer> 
     @Override
     protected void onPostExecute(Integer integer) {
         super.onPostExecute(integer);
-        mListener.finish(integer, list_readymissions, list_readymissionids);
+        mListener.finish(integer, list_readymissions);
     }
 }

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.lambda.assist.Activity.Act_Mission;
 import com.lambda.assist.Model.HistoryMission;
 import com.lambda.assist.Model.Mission;
+import com.lambda.assist.Other.MyTime;
 import com.lambda.assist.R;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public class HistoryRVAdapter extends SampleRecyclerViewAdapter {
         final Mission item = list.get(position);
         // set value
         mHolder.title.setText(item.getTitle());
-        mHolder.datetime.setText(item.getPosttime());
+        mHolder.datetime.setText(item.getPosttime() != null ? MyTime.convertTime_History(item.getPosttime()) : "");
         mHolder.status.setImageDrawable(getContext().getResources().getDrawable(item.getIsdone() == Mission.DO ? R.drawable.m_history_completed : R.drawable.m_history_iscancel));
 
 

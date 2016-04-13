@@ -17,6 +17,7 @@ import com.lambda.assist.Helper.BitmapTransform;
 import com.lambda.assist.Helper.GPSHelper;
 import com.lambda.assist.Helper.ImgurHelper;
 import com.lambda.assist.Model.Mission;
+import com.lambda.assist.Other.Code;
 import com.lambda.assist.R;
 import com.squareup.picasso.Picasso;
 
@@ -26,6 +27,7 @@ import java.util.List;
  * Created by v on 2015/12/19.
  */
 public class AroundRVAdapter extends SampleRecyclerViewAdapter {
+
     private List<Mission> list;
     private double my_lon;
     private double my_lat;
@@ -66,10 +68,11 @@ public class AroundRVAdapter extends SampleRecyclerViewAdapter {
                     .centerInside()
                     .into(holder.image);
         }
-        
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent it = new Intent(getContext(), Act_Mission.class);
+                it.putExtra("fromType", Code.FromType_Around);
                 it.putExtra("missionid", item.getMissionid());
                 it.putExtra("title", item.getTitle());
                 getContext().startActivity(it);

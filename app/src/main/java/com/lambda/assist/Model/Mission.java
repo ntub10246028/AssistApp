@@ -24,6 +24,7 @@ public class Mission implements Serializable {
     private int isdone;
     private int iscancel;
     private int locked;
+    private int me;
 
 
     private List<MessageItem> messages;
@@ -154,5 +155,13 @@ public class Mission implements Serializable {
 
     public void setLocked(int locked) {
         this.locked = locked;
+    }
+
+    public int getMe() {
+        return me;
+    }
+
+    public void setMe(int me) {
+        this.me = me;
     }
 }

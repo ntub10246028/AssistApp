@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
+import com.lambda.assist.Model.ReadyProcessingMission;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
 
@@ -20,11 +21,11 @@ import java.util.List;
  */
 public class LoadRunning extends AsyncTask<String, Integer, Integer> {
     public interface OnLoadRunningListener {
-        void finish(Integer result, List<Integer> ids);
+        void finish(Integer result, List<ReadyProcessingMission> datas);
     }
 
     private final OnLoadRunningListener mListener;
-    private List<Integer> list;
+    private List<ReadyProcessingMission> list;
 
     public LoadRunning(OnLoadRunningListener mListener) {
         this.mListener = mListener;
@@ -45,7 +46,10 @@ public class LoadRunning extends AsyncTask<String, Integer, Integer> {
                     if (array != null) {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject ajobj = array.getJSONObject(i);
-                            list.add(ajobj.getInt("missionid"));
+                            ReadyProcessingMission rpm = new ReadyProcessingMission();
+                            rpm.setMission(ajobj.getInt("missionid"));
+                            rpm.setMe(ajobj.getInt("me"));
+                            list.add(rpm);
                         }
                     } else {
                         Log.d("LoadRunning", "Array null");

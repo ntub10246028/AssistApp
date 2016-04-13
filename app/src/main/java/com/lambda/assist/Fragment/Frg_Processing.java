@@ -27,6 +27,8 @@ import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.Asyn.LoadRunning;
 import com.lambda.assist.Listener.OnLoadMoreListener;
 import com.lambda.assist.Model.Mission;
+import com.lambda.assist.Model.ReadyAroundMission;
+import com.lambda.assist.Model.ReadyProcessingMission;
 import com.lambda.assist.Other.ActivityCode;
 import com.lambda.assist.Other.ListUtil;
 import com.lambda.assist.Other.Net;
@@ -53,7 +55,7 @@ public class Frg_Processing extends Fragment {
     //
     // Other
     private List<Mission> list_missiondata;
-    private List<Integer> allIds;
+    private List<ReadyProcessingMission> allRPM;
     private int lastMissionPosition, totalMissionPosition, countOfOnceLoad = 2;
 
     public static Frg_Processing newInstance() {
@@ -89,21 +91,21 @@ public class Frg_Processing extends Fragment {
         if (Net.isNetWork(ctxt)) {
             ProgressingUI();
             LoadRunning task = new LoadRunning(new LoadRunning.OnLoadRunningListener() {
-                public void finish(Integer result, List<Integer> ids) {
+                public void finish(Integer result, List<ReadyProcessingMission> datas) {
                     FinishUI();
                     switch (result) {
                         case TaskCode.Success:
-                            allIds.clear();
-                            allIds.addAll(ids);
+                            allRPM.clear();
+                            allRPM.addAll(datas);
                             list_missiondata.clear();
                             lastMissionPosition = 0;
-                            totalMissionPosition = allIds.size() - 1;
+                            totalMissionPosition = allRPM.size() - 1;
                             if (stillCanLoading()) {
                                 LoadingMission(canLoadMissionIds());
                             }
                             break;
                         case TaskCode.Empty:
-                            Toast.makeText(ctxt, getResources().getString(R.string.msg_warning_around_empty), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_warning_processing_empty), Toast.LENGTH_SHORT).show();
                             list_missiondata.clear();
                             RefreshRecyclerView();
                             break;
@@ -121,7 +123,7 @@ public class Frg_Processing extends Fragment {
         }
     }
 
-    private void LoadingMission(List<Integer> datas) {
+    private void LoadingMission(List<ReadyProcessingMission> datas) {
         if (Net.isNetWork(ctxt)) {
             list_missiondata.add(null);
             adapter_rv.notifyItemInserted(list_missiondata.size() - 1);
@@ -135,6 +137,7 @@ public class Frg_Processing extends Fragment {
                             list_missiondata.remove(list_missiondata.size() - 1);
                             adapter_rv.notifyItemRemoved(list_missiondata.size());
                             ListUtil.append(list_missiondata, list);
+                            matchMissionByME();
                             adapter_rv.notifyDataSetChanged();
                             adapter_rv.setLoaded();
                             break;
@@ -144,9 +147,24 @@ public class Frg_Processing extends Fragment {
                     }
                 }
             });
-            task.execute(datas);
+            List<Integer> ids = new ArrayList<>();
+            for (ReadyProcessingMission m : datas) {
+                ids.add(m.getMission());
+            }
+            task.execute(ids);
         } else {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void matchMissionByME() {
+        for (Mission m : list_missiondata) {
+            for (ReadyProcessingMission rpm : allRPM) {
+                if (m.getMissionid() == rpm.getMission()) {
+                    m.setMe(rpm.getMe());
+                    break;
+                }
+            }
         }
     }
 
@@ -213,7 +231,7 @@ public class Frg_Processing extends Fragment {
 
     private void InitialSomething() {
         list_missiondata = new ArrayList<>();
-        allIds = new ArrayList<>();
+        allRPM = new ArrayList<>();
     }
 
     private SwipeRefreshLayout.OnRefreshListener onSwipeToRefresh = new SwipeRefreshLayout.OnRefreshListener() {
@@ -235,17 +253,17 @@ public class Frg_Processing extends Fragment {
 
     private boolean stillCanLoading() {
         Log.d("LLL", "T " + lastMissionPosition + " " + totalMissionPosition);
-        return lastMissionPosition < totalMissionPosition;
+        return lastMissionPosition <= totalMissionPosition;
     }
 
-    private List<Integer> canLoadMissionIds() {
-        List<Integer> result = new ArrayList<>();
+    private List<ReadyProcessingMission> canLoadMissionIds() {
+        List<ReadyProcessingMission> result = new ArrayList<>();
         int start = lastMissionPosition;
         int end = start + countOfOnceLoad > totalMissionPosition ? totalMissionPosition : start + countOfOnceLoad;
         lastMissionPosition = end + 1;
         Log.d("LLL", "R " + start + " " + end);
         for (int i = start; i <= end; i++) {
-            result.add(allIds.get(i));
+            result.add(allRPM.get(i));
         }
         return result;
     }

@@ -3,17 +3,17 @@ package com.lambda.assist.Model;
 /**
  * Created by asus on 2016/1/31.
  */
-public class ReadyMission {
-    private int mission;
+public class ReadyAroundMission {
+    private int missionid;
     private double locationx;
     private double locationy;
 
-    public int getMission() {
-        return mission;
+    public int getMissionid() {
+        return missionid;
     }
 
-    public void setMission(int mission) {
-        this.mission = mission;
+    public void setMissionid(int missionid) {
+        this.missionid = missionid;
     }
 
     public double getLocationx() {
