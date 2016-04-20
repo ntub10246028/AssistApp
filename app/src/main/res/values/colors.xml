@@ -32,4 +32,10 @@
     <!-- In Mission-Message -->
     <color name="text_isMe">#FBC02D</color>
     <color name="text_notMe">@color/black</color>
+    <!-- In Mission-Chat -->
+    <color name="bg_chat">#9C9C9D</color>
+    <color name="text_chat_me">#221814</color>
+    <color name="text_chat_other">#FEFEFE</color>
+    <color name="bg_chat_me">#FEFEFE</color>
+    <color name="bg_chat_other">#414141</color>
 </resources>

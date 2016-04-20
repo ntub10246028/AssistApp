@@ -20,15 +20,15 @@ import java.util.List;
 /**
  * Created by asus on 2016/3/8.
  */
-public class LoadingAround extends AsyncTask<String, Integer, Integer> {
-    public interface OnLoadingAroundMissionIDListener {
+public class LoadAround extends AsyncTask<String, Integer, Integer> {
+    public interface OnLoadAroundMissionIDListener {
         void finish(Integer result, List<ReadyAroundMission> readyMissionss);
     }
 
-    private final OnLoadingAroundMissionIDListener mListener;
+    private final OnLoadAroundMissionIDListener mListener;
     private List<ReadyAroundMission> list_readymissions;
 
-    public LoadingAround(OnLoadingAroundMissionIDListener mListener) {
+    public LoadAround(OnLoadAroundMissionIDListener mListener) {
         this.mListener = mListener;
         list_readymissions = new ArrayList<>();
     }

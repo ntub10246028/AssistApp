@@ -1,5 +1,5 @@
 <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/srfl_message"
+    android:id="@+id/srfl_chat"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -8,10 +8,11 @@
         android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_message"
+            android:id="@+id/rv_chat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/linearLayout" />
+            android:layout_above="@+id/linearLayout"
+            android:background="@color/bg_chat"/>
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -23,13 +24,13 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/et_message_message"
+                android:id="@+id/et_chat_message"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/edittext_message"/>
             <ImageView
-                android:id="@+id/iv_message_send"
+                android:id="@+id/iv_chat_send"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_margin="5dp"

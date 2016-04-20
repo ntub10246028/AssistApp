@@ -25,6 +25,7 @@ public class AuthenticatePhone extends AsyncTask<String, String, Integer> {
     private final OnAuthenticatePhoneListener mListener;
     private String imei;
     private String phone;
+
     public AuthenticatePhone(MyHttpClient client, OnAuthenticatePhoneListener mListener) {
         this.client = client;
         this.mListener = mListener;
@@ -56,6 +57,7 @@ public class AuthenticatePhone extends AsyncTask<String, String, Integer> {
     @Override
     protected void onPostExecute(Integer integer) {
         super.onPostExecute(integer);
+        Log.d("AuthenticatePhone", "Result : " + integer);
         mListener.finish(integer);
 
     }

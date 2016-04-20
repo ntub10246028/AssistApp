@@ -10,14 +10,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.lambda.assist.Activity.Act_Mission;
+import com.lambda.assist.Adapter.ChatMessageRVAdapter;
 import com.lambda.assist.Adapter.MessageRVAdapter;
 import com.lambda.assist.Asyn.AddMessage;
-import com.lambda.assist.Asyn.LoadingMessage;
+import com.lambda.assist.Asyn.LoadChatMessage;
+import com.lambda.assist.Asyn.LoadMessage;
+import com.lambda.assist.Model.ChatMessage;
 import com.lambda.assist.Model.MessageItem;
 import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Other.IsVaild;
@@ -25,6 +28,7 @@ import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,11 +41,11 @@ public class ChatFragment extends MissionBaseFragment {
     private SwipeRefreshLayout mSwipeLayout;
     private RecyclerView mRecycleview;
     private EditText et_message;
-    private Button bt_send;
+    private ImageView iv_send;
     //
-    private MessageRVAdapter msg_adapter;
+    private ChatMessageRVAdapter msg_adapter;
     //
-    private List<MessageItem> list_messages;//
+    private List<ChatMessage> list_chatmessages;//
     private Mission mMission;
 
     public static ChatFragment newInstance(String title, int indicatorColor, int dividerColor) {
@@ -66,7 +70,7 @@ public class ChatFragment extends MissionBaseFragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_message, container, false);
+        return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 
     @Override
@@ -76,24 +80,23 @@ public class ChatFragment extends MissionBaseFragment {
         InitialAction();
     }
 
-    private void LoadMessage(String missionid) {
+    private void LoadChatMessage(String missionid) {
         if (Net.isNetWork(ctxt)) {
-            LoadingMessage task = new LoadingMessage(new LoadingMessage.OnLoadingMessageListener() {
-                public void finish(Integer result, List<MessageItem> list) {
+            LoadChatMessage task = new LoadChatMessage(new LoadChatMessage.OnLoadChatMessageListener() {
+                public void finish(Integer result, List<ChatMessage> list) {
                     switch (result) {
                         case TaskCode.Success:
-                            list_messages.clear();
-                            list_messages.addAll(list);
+                            list_chatmessages.clear();
+                            list_chatmessages.addAll(list);
                             refreshMessages();
                             break;
                         case TaskCode.Empty:
-                            list_messages.clear();
+                            list_chatmessages.clear();
                             refreshMessages();
                             break;
                         case TaskCode.NoResponse:
                             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
                             break;
-
                     }
                 }
             });
@@ -103,14 +106,14 @@ public class ChatFragment extends MissionBaseFragment {
         }
     }
 
-    private void AddMessage(String message) {
+    private void AddChatMessage(String message) {
         if (Net.isNetWork(ctxt)) {
             AddMessage task = new AddMessage(new AddMessage.OnAddMessageListener() {
                 public void finish(Integer result) {
                     switch (result) {
                         case TaskCode.Success:
                             et_message.setText("");
-                            LoadMessage(mMission.getMissionid() + "");
+                            LoadChatMessage(mMission.getMissionid() + "");
                             break;
                         case TaskCode.NoResponse:
                             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
@@ -120,22 +123,22 @@ public class ChatFragment extends MissionBaseFragment {
             });
             task.execute(mMission.getMissionid() + "", message);
         } else {
-
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void refreshMessages() {
         if (msg_adapter != null) {
             msg_adapter.notifyDataSetChanged();
-            mRecycleview.scrollToPosition(list_messages.size() - 1);
+            mRecycleview.scrollToPosition(list_chatmessages.size() - 1);
         }
     }
 
     private void InitialUI(View v) {
-        mSwipeLayout = (SwipeRefreshLayout) v.findViewById(R.id.srfl_message);
-        mRecycleview = (RecyclerView) v.findViewById(R.id.rv_message);
-        et_message = (EditText) v.findViewById(R.id.et_message_message);
-        bt_send = (Button) v.findViewById(R.id.bt_message_send);
+        mSwipeLayout = (SwipeRefreshLayout) v.findViewById(R.id.srfl_chat);
+        mRecycleview = (RecyclerView) v.findViewById(R.id.rv_chat);
+        et_message = (EditText) v.findViewById(R.id.et_chat_message);
+        iv_send = (ImageView) v.findViewById(R.id.iv_chat_send);
     }
 
     private void InitialAction() {
@@ -143,13 +146,13 @@ public class ChatFragment extends MissionBaseFragment {
         mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             public void onRefresh() {
                 //Loading
-                LoadMessage(mMission.getMissionid() + "");
+                LoadChatMessage(mMission.getMissionid() + "");
                 mSwipeLayout.setRefreshing(false);
             }
         });
         mSwipeLayout.setColorSchemeResources(android.R.color.black);
         //  RecyclerView Setting
-        mRecycleview.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRecycleview.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -170,25 +173,35 @@ public class ChatFragment extends MissionBaseFragment {
 //        ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(10);
 //        mRecycleview.addItemDecoration(itemDecoration);
         // 3. create an adapter
-        msg_adapter = new MessageRVAdapter(ctxt, list_messages);
+        msg_adapter = new ChatMessageRVAdapter(ctxt, list_chatmessages);
         // 4. set adapter
         mRecycleview.setAdapter(msg_adapter);
-        mRecycleview.scrollToPosition(list_messages.size() - 1);
+        mRecycleview.scrollToPosition(list_chatmessages.size() - 1);
         // 5. set item animator to DefaultAnimator
         mRecycleview.setItemAnimator(new DefaultItemAnimator());
         // button setting
-        bt_send.setOnClickListener(new View.OnClickListener() {
+        iv_send.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 String message = et_message.getText().toString();
                 if (IsVaild.isVaild_Message(message)) {
-                    AddMessage(message);
+                    AddChatMessage(message);
                 }
             }
         });
     }
 
     private void InitialSomething() {
-        list_messages = mMission.getMessages();
+        //list_chatmessages = new ArrayList<>();
+        list_chatmessages = getData();
+    }
+
+    private List<ChatMessage> getData() {
+        List<ChatMessage> result = new ArrayList<>();
+        result.add(new ChatMessage(0, "你好"));
+        result.add(new ChatMessage(1, "你好"));
+        result.add(new ChatMessage(0, "文字文字文字文字文字文字文字文字文字文字文字文字文字文字"));
+        result.add(new ChatMessage(1, "文字文字文字文字文字文字文字文字文字文字文字文字文字文字"));
+        return result;
     }
 
 }

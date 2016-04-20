@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -24,7 +23,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.Marker;
 import com.lambda.assist.Adapter.AroundRVAdapter;
 import com.lambda.assist.Asyn.LoadMissions;
-import com.lambda.assist.Asyn.LoadingAround;
+import com.lambda.assist.Asyn.LoadAround;
 import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Model.ReadyAroundMission;
 import com.lambda.assist.Other.Net;
@@ -36,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Frg_AroundMission extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
+public class AroundFragment extends MainBaseFragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
     //
     private Context ctxt;
     private Activity activity;
@@ -61,8 +60,13 @@ public class Frg_AroundMission extends Fragment implements GoogleApiClient.Conne
     private double final_lng = 0.0;
     private boolean F = true;
 
-    public static Frg_AroundMission newInstance() {
-        return new Frg_AroundMission();
+    public static AroundFragment newInstance(String title, int icon, int indicatorColor, int dividerColor) {
+        AroundFragment fragment = new AroundFragment();
+        fragment.setTitle(title);
+        fragment.setIcon(icon);
+        fragment.setIndicatorColor(indicatorColor);
+        fragment.setDividerColor(dividerColor);
+        return fragment;
     }
 
     @Override
@@ -154,7 +158,7 @@ public class Frg_AroundMission extends Fragment implements GoogleApiClient.Conne
     private void LoadingAroundMission(String lon, String lat) {
         if (Net.isNetWork(ctxt)) {
             ProgressingUI();
-            LoadingAround task = new LoadingAround(new LoadingAround.OnLoadingAroundMissionIDListener() {
+            LoadAround task = new LoadAround(new LoadAround.OnLoadAroundMissionIDListener() {
                 public void finish(Integer result, List<ReadyAroundMission> readyMissions) {
                     FinishUI();
                     switch (result) {
@@ -251,7 +255,7 @@ public class Frg_AroundMission extends Fragment implements GoogleApiClient.Conne
     public void onConnected(Bundle bundle) {
         // Already connect to google service
         LocationServices.FusedLocationApi.requestLocationUpdates(
-                googleApiClient, locationRequest, Frg_AroundMission.this);
+                googleApiClient, locationRequest, AroundFragment.this);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.lambda.assist.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
@@ -36,7 +37,11 @@ import com.lambda.assist.Adapter.SettingsListAdapter;
 import com.lambda.assist.Asyn.LoadHistory;
 import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
+import com.lambda.assist.Fragment.AroundFragment;
+import com.lambda.assist.Fragment.MainBaseFragment;
+import com.lambda.assist.Fragment.ProcessingFragment;
 import com.lambda.assist.Model.Mission;
+import com.lambda.assist.Other.ActivityCode;
 import com.lambda.assist.Other.Code;
 import com.lambda.assist.Other.MyDialog;
 import com.lambda.assist.Other.Net;
@@ -52,12 +57,10 @@ import java.util.List;
 public class Act_Main extends AppCompatActivity {
 
     private Context ctxt = Act_Main.this;
-    private MyHttpClient client;
     private MyFragmentAdapter fragmentAdapter;
-    private List<String> Titles;
-    private List<Integer> Icons;
     private ViewPager mViewPager;
     private SlidingTabLayout mSlidingTabLayout;
+    private List<MainBaseFragment> fragments;
     // window
     private int draweropen_offset_left;
     private int draweropen_offset_right;
@@ -95,13 +98,11 @@ public class Act_Main extends AppCompatActivity {
         InitialWindowInfo();
         InitialDrawerLayout();
         InitialToolBar();
-        InitialTabView();
         InitialUI();
         InitialAction();
     }
 
     private void InitialSomething() {
-        client = MyHttpClient.getMyHttpClient();
         list_historymission = new ArrayList<>();
     }
 
@@ -323,23 +324,15 @@ public class Act_Main extends AppCompatActivity {
         toolbar.addView(v);
     }
 
-    private void InitialTabView() {
-        Titles = new ArrayList<>();
-        Titles.add("附近任務");
-        Titles.add("進行中");
-        Icons = new ArrayList<>();
-        Icons.add(R.drawable.tab_image_neartask_selector);
-        Icons.add(R.drawable.tab_image_processing_selector);
-    }
-
     private void InitialUI() {
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.slidingtab);
     }
 
     private void InitialAction() {
-        fragmentAdapter = new MyFragmentAdapter(getSupportFragmentManager(),
-                Titles, Icons);
+
+        fragments = getFragments();
+        fragmentAdapter = new MyFragmentAdapter(getSupportFragmentManager(), fragments);
         mViewPager.setAdapter(fragmentAdapter);
         mSlidingTabLayout.setCustomTabView(R.layout.tabview, R.id.tv_tab_icon,
                 R.id.tv_tab_title);
@@ -349,9 +342,26 @@ public class Act_Main extends AppCompatActivity {
         mSlidingTabLayout.setSelectedIndicatorColors(trans);
     }
 
+    private List<MainBaseFragment> getFragments() {
+        int indicatorColor = Color.TRANSPARENT;
+        int dividerColor = Color.TRANSPARENT;
+        List<MainBaseFragment> list = new ArrayList<>();
+        list.add(AroundFragment.newInstance("附近任務", R.drawable.tab_image_neartask_selector, indicatorColor, dividerColor));
+        list.add(ProcessingFragment.newInstance("進行中", R.drawable.tab_image_processing_selector, indicatorColor, dividerColor));
+        return list;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == ActivityCode.NewMission) {
+                if(fragments!=null && fragments.size() == 2 ){
+                    ProcessingFragment processingFragment = (ProcessingFragment) fragments.get(1);
+                    processingFragment.refresh();
+                }
+            }
+        }
     }
 
     private static long lastPressTime = 0;

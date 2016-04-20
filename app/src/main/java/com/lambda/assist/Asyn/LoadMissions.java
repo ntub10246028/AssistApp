@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.lambda.assist.ConnectionApp.JsonReaderPost;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
-import com.lambda.assist.Model.AroundMission;
 import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.Other.URLs;
@@ -56,7 +55,7 @@ public class LoadMissions extends AsyncTask<List<Integer>, Integer, Integer> {
                 JSONArray jarray = jobj.getJSONArray("missiondata");
                 for (int i = 0; i < jarray.length(); i++) {
                     JSONObject item = jarray.getJSONObject(i);
-                    AroundMission idata = new AroundMission();
+                    Mission idata = new Mission();
                     idata.setMissionid(item.getInt("missionid"));
                     idata.setPosttime(item.getString("posttime"));
                     idata.setOnlinelimittime(item.getString("onlinelimittime"));

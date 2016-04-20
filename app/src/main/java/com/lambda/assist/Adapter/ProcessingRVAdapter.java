@@ -35,7 +35,7 @@ public class ProcessingRVAdapter extends SampleRecyclerViewAdapter {
     private OnLoadMoreListener mOnLoadMoreListener;
 
     private boolean isLoading;
-    private int visibleThreshold = 2;
+    private int visibleThreshold = 5;
     private int lastVisibleItem, totalItemCount;
 
 

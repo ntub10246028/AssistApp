@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -143,6 +144,7 @@ public class Act_AuthSign extends Activity {
                 case ActivityCode.Sms:
                     boolean isSuccess = data.getBooleanExtra("success", false);
                     String phone = data.getStringExtra("phone");
+                    Log.d("AuthSign", "Success : " + isSuccess + " , Phone : " + phone);
                     if (isSuccess) {
                         AuthenticatePhoneTask(phone);
                     }

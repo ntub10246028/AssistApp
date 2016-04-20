@@ -10,7 +10,6 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,13 +20,13 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.lambda.assist.Activity.Act_Main;
 import com.lambda.assist.Activity.Act_NewMission;
 import com.lambda.assist.Adapter.ProcessingRVAdapter;
 import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.Asyn.LoadRunning;
 import com.lambda.assist.Listener.OnLoadMoreListener;
 import com.lambda.assist.Model.Mission;
-import com.lambda.assist.Model.ReadyAroundMission;
 import com.lambda.assist.Model.ReadyProcessingMission;
 import com.lambda.assist.Other.ActivityCode;
 import com.lambda.assist.Other.ListUtil;
@@ -41,10 +40,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Frg_Processing extends Fragment {
+public class ProcessingFragment extends MainBaseFragment {
 
     private Context ctxt;
-    private Activity activity;
+    private Act_Main activity;
     // UI
     private SwipeRefreshLayout laySwipe;
     private RecyclerView mRecycleview;
@@ -56,16 +55,21 @@ public class Frg_Processing extends Fragment {
     // Other
     private List<Mission> list_missiondata;
     private List<ReadyProcessingMission> allRPM;
-    private int lastMissionPosition, totalMissionPosition, countOfOnceLoad = 2;
+    private int lastMissionPosition, totalMissionPosition, countOfOnceLoad = 10;
 
-    public static Frg_Processing newInstance() {
-        return new Frg_Processing();
+    public static ProcessingFragment newInstance(String title, int icon, int indicatorColor, int dividerColor) {
+        ProcessingFragment fragment = new ProcessingFragment();
+        fragment.setTitle(title);
+        fragment.setIcon(icon);
+        fragment.setIndicatorColor(indicatorColor);
+        fragment.setDividerColor(dividerColor);
+        return fragment;
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        this.activity = activity;
+        this.activity = (Act_Main) activity;
         this.ctxt = activity;
     }
 
@@ -236,8 +240,7 @@ public class Frg_Processing extends Fragment {
 
     private SwipeRefreshLayout.OnRefreshListener onSwipeToRefresh = new SwipeRefreshLayout.OnRefreshListener() {
         public void onRefresh() {
-            LoadRunning();
-            laySwipe.setRefreshing(false);
+            refresh();
         }
     };
 
@@ -268,7 +271,8 @@ public class Frg_Processing extends Fragment {
         return result;
     }
 
-    private void reSetLoading() {
-
+    public void refresh(){
+        LoadRunning();
+        laySwipe.setRefreshing(false);
     }
 }

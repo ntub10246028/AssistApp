@@ -68,17 +68,12 @@ public class Act_NewMission extends AppCompatActivity implements GoogleApiClient
     //
     private Context ctxt = Act_NewMission.this;
     private Activity activity = Act_NewMission.this;
-    private MyHttpClient client;
-    private Resources res;
-    private JsonReaderPost jp;
     private static final int PICK_PICTURE = 0;
     private static final int TAKE_PICTURE = 1;
     private static final int OPEN_MAP = 2;
     // UI
     private ImageView iv_camera, iv_map, iv_time, iv_send;
     private EditText et_title, et_content;
-    // Other
-    private List<String> list_bmp_base64;
     // select time dialog
     private Button bt_onlinetime, bt_runtime;
     // Google API用戶端物件
@@ -88,7 +83,6 @@ public class Act_NewMission extends AppCompatActivity implements GoogleApiClient
     // 記錄目前最新的位置
     private Location currentLocation;
     // 顯示目前與儲存位置的標記物件
-    private Marker currentMarker, itemMarker;
     private double final_lat = 0.0;
     private double final_lng = 0.0;
 
@@ -119,12 +113,9 @@ public class Act_NewMission extends AppCompatActivity implements GoogleApiClient
                     pd.dismiss();
                     switch (result) {
                         case TaskCode.Success:
-                            if (!list_bmp_base64.isEmpty()) {
-                                UpLoadImageTask(missionid);
-                            } else {
-                                Toast.makeText(ctxt, "成功", Toast.LENGTH_SHORT).show();
-                                finishActivity();
-                            }
+                            Toast.makeText(ctxt, "成功", Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_OK);
+                            finishActivity();
                             break;
                         case TaskCode.New_Mission_Fail:
                             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_new_mission_fail), Toast.LENGTH_SHORT).show();
@@ -145,70 +136,6 @@ public class Act_NewMission extends AppCompatActivity implements GoogleApiClient
             task.execute(title, content, lon, lat, onlinetime, runtime);
         } else {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void UpLoadImageTask(int missionid) {
-        if (Net.isNetWork(ctxt)) {
-            new UpLoadImageTask().execute(missionid);
-        } else {
-            Toast.makeText(Act_NewMission.this, res.getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-    class UpLoadImageTask extends AsyncTask<Integer, Integer, Integer> {
-        private int missionid;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Integer doInBackground(Integer... datas) {
-            int result = TaskCode.NoResponse;
-            missionid = datas[0];
-            Log.d("UpLoadImageTask", "Size = " + list_bmp_base64.size());
-            for (String bmp64 : list_bmp_base64) {
-                List<NameValuePair> params = new ArrayList<>();
-                params.add(new BasicNameValuePair("missionID", Integer.toString(missionid)));
-                params.add(new BasicNameValuePair("imageString", bmp64));
-                Log.d("UpLoadImageTask", missionid + "");
-                Log.d("UpLoadImageTask", bmp64);
-                try {
-                    JSONObject jobj = jp.Reader(params, URLs.url_upload_image, client);
-                    if (jobj == null)
-                        return result;
-                    result = jobj.getInt("result");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.d("UpLoadImageTask", e.toString());
-                }
-            }
-
-            return result;
-        }
-
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-            switch (result) {
-                case TaskCode.Success:
-                    Toast.makeText(ctxt, "成功", Toast.LENGTH_SHORT).show();
-                    finish();
-                    break;
-                case TaskCode.Upload_image_NoThisMan:
-                    Toast.makeText(ctxt, getResources().getString(R.string.msg_err_upload_image_nothismane), Toast.LENGTH_SHORT).show();
-                    break;
-                case TaskCode.Upload_image_NoReplaceImage:
-                    Toast.makeText(ctxt, getResources().getString(R.string.msg_err_upload_image_noreplaceimage), Toast.LENGTH_SHORT).show();
-                    break;
-                case TaskCode.NoResponse:
-                    Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-                    Toast.makeText(ctxt, "Error : " + result, Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
@@ -370,10 +297,6 @@ public class Act_NewMission extends AppCompatActivity implements GoogleApiClient
     }
 
     private void InitialSomething() {
-        res = getResources();
-        jp = new JsonReaderPost();
-        client = MyHttpClient.getMyHttpClient();
-        list_bmp_base64 = new ArrayList<>();
     }
 
     private UploadImage upload; // Upload object containging image and meta data
@@ -403,20 +326,6 @@ public class Act_NewMission extends AppCompatActivity implements GoogleApiClient
                     } catch (IOException e) {
                     }
                     break;
-//                case PICK_PICTURE:
-//                    Uri uri = data.getData();
-//                    String[] columns = {MediaStore.Images.Media.DATA};
-//                    Cursor cursor = getContentResolver().query(uri, columns, null, null, null);
-//                    if (cursor.moveToFirst()) {
-//                        String imagePath = cursor.getString(0);
-//                        cursor.close();
-//                        Bitmap mBitmap = BitmapFactory.decodeFile(imagePath);
-//                        et_content.setText(titrans.putBitmapToText(mBitmap, et_content));
-//                    }
-//                    break;
-//                case TAKE_PICTURE:
-//                    Uri uri2 = data.getData();
-//                    break;
                 case OPEN_MAP:
                     double lat = data.getDoubleExtra("lat", 25.042385);
                     double lng = data.getDoubleExtra("lng", 121.525241);
@@ -524,7 +433,7 @@ public class Act_NewMission extends AppCompatActivity implements GoogleApiClient
     protected void onResume() {
         super.onResume();
         // 連線到Google API用戶端
-        if (!googleApiClient.isConnected() && currentMarker != null) {
+        if (!googleApiClient.isConnected()) {
             googleApiClient.connect();
         }
     }

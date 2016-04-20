@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 
 import com.lambda.assist.Activity.Act_Mission;
-import com.lambda.assist.Model.HistoryMission;
 import com.lambda.assist.Model.Mission;
+import com.lambda.assist.Other.Code;
 import com.lambda.assist.Other.MyTime;
 import com.lambda.assist.R;
 
@@ -52,6 +52,7 @@ public class HistoryRVAdapter extends SampleRecyclerViewAdapter {
             @Override
             public void onClick(View view) {
                 Intent it = new Intent(getContext(), Act_Mission.class);
+                it.putExtra("fromType", Code.FromType_History);
                 it.putExtra("missionid", item.getMissionid());
                 it.putExtra("title", item.getTitle());
                 getContext().startActivity(it);

@@ -6,43 +6,40 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 
-import com.lambda.assist.Fragment.Frg_AroundMission;
-import com.lambda.assist.Fragment.Frg_Processing;
+import com.lambda.assist.Fragment.AroundFragment;
+import com.lambda.assist.Fragment.MainBaseFragment;
+import com.lambda.assist.Fragment.ProcessingFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class MyFragmentAdapter extends FragmentPagerAdapter {
 
-    private List<String> Titles;
-    private List<Integer> Icons;
+    private  List<MainBaseFragment> fragments;
 
-    public MyFragmentAdapter(FragmentManager fm, List<String> titles, List<Integer> icons) {
+    public MyFragmentAdapter(FragmentManager fm, List<MainBaseFragment> fragments) {
         super(fm);
-        this.Titles = titles;
-        this.Icons = icons;
-    }
-
-    public int getCount() {
-        return 2;
-    }
-
-    public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return Frg_AroundMission.newInstance();
-            case 1:
-                return Frg_Processing.newInstance();
-            default:
-                return null;
+        if (fragments == null) {
+            this.fragments = new ArrayList<>();
+        }else{
+            this.fragments = fragments;
         }
     }
 
+    public int getCount() {
+        return fragments.size();
+    }
+
+    public Fragment getItem(int position) {
+        return fragments.get(position);
+    }
+
     public CharSequence getPageTitle(int position) {
-        return Titles.get(position);
+        return fragments.get(position).getTitle();
     }
 
     public int getPageIcon(int position) {
-        return Icons.get(position);
+        return fragments.get(position).getIcon();
     }
 }

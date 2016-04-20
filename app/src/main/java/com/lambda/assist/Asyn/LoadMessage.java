@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by asus on 2016/3/8.
  */
-public class LoadingMessage extends AsyncTask<String, Integer, Integer> {
+public class LoadMessage extends AsyncTask<String, Integer, Integer> {
     public interface OnLoadingMessageListener {
         void finish(Integer result, List<MessageItem> list);
     }
@@ -28,7 +28,7 @@ public class LoadingMessage extends AsyncTask<String, Integer, Integer> {
     private final OnLoadingMessageListener mListener;
     private List<MessageItem> list;
 
-    public LoadingMessage(OnLoadingMessageListener mListener) {
+    public LoadMessage(OnLoadingMessageListener mListener) {
         this.mListener = mListener;
         this.list = new ArrayList<>();
     }
@@ -54,13 +54,13 @@ public class LoadingMessage extends AsyncTask<String, Integer, Integer> {
                             list.add(item);
                         }
                     } else {
-                        Log.d("LoadingMessage", "Array null");
+                        Log.d("LoadMessage", "Array null");
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d("LoadingMessage", e.toString());
+            Log.d("LoadMessage", e.toString());
         }
 
         return result;

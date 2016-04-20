@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,13 +19,11 @@ import com.lambda.assist.Adapter.MissionFragmentAdapter;
 import com.lambda.assist.Asyn.AcceptMission;
 import com.lambda.assist.Asyn.CancelMission;
 import com.lambda.assist.Asyn.LoadMissions;
-import com.lambda.assist.Asyn.LoadingMessage;
 import com.lambda.assist.Fragment.ChatFragment;
 import com.lambda.assist.Fragment.ContentFragment;
 import com.lambda.assist.Fragment.LimitFragment;
 import com.lambda.assist.Fragment.MessageFragment;
 import com.lambda.assist.Fragment.MissionBaseFragment;
-import com.lambda.assist.Model.MessageItem;
 import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Other.Code;
 import com.lambda.assist.Other.MyDialog;
@@ -46,6 +45,7 @@ public class Act_Mission extends AppCompatActivity {
     private TextView tv_title;
     private ViewPager mViewPager;
     private MissionSlidingTabLayout mSlidingTabLayout;
+    private LinearLayout ll_bottom_function;
     private Button bt_gps, bt_accept;
     // Adapter
     private MissionFragmentAdapter fragmentAdapter;
@@ -67,10 +67,7 @@ public class Act_Mission extends AppCompatActivity {
         InitialUI();
         InitialAction();
         LoadMission();
-
         InitialToolBar();
-
-        //InitialTabView();
     }
 
     private void LoadMission() {
@@ -87,7 +84,7 @@ public class Act_Mission extends AppCompatActivity {
                             if (list != null && !list.isEmpty()) {
                                 mMission = list.get(0);
                                 if (mMission != null) {
-                                    LoadMessage(mMission.getMissionid() + "");
+                                    InitialTabView();
                                 }
                             }
                             break;
@@ -102,29 +99,6 @@ public class Act_Mission extends AppCompatActivity {
             List<Integer> id = new ArrayList<>();
             id.add(missionid);
             task.execute(id);
-        } else {
-            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void LoadMessage(String missionid) {
-        if (Net.isNetWork(ctxt)) {
-            LoadingMessage task = new LoadingMessage(new LoadingMessage.OnLoadingMessageListener() {
-                public void finish(Integer result, List<MessageItem> list) {
-                    switch (result) {
-                        case TaskCode.Success:
-                        case TaskCode.Empty:
-                            mMission.setMessages(list);
-                            InitialTabView();
-                            break;
-                        case TaskCode.NoResponse:
-                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
-                            break;
-
-                    }
-                }
-            });
-            task.execute(missionid);
         } else {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
@@ -162,7 +136,7 @@ public class Act_Mission extends AppCompatActivity {
                 public void finish(Integer result) {
                     Log.d("LAG", "B");
                     pd.dismiss();
-                    Log.d("CancelMission",result+"**");
+                    Log.d("CancelMission", result + "**");
                     switch (result) {
                         case TaskCode.Success:
                             Toast.makeText(ctxt, "取消/放棄成功", Toast.LENGTH_SHORT).show();
@@ -198,7 +172,7 @@ public class Act_Mission extends AppCompatActivity {
         fragmentAdapter = new MissionFragmentAdapter(getSupportFragmentManager(), fragments);
         // pager
         mViewPager.setAdapter(fragmentAdapter);
-        mViewPager.setOffscreenPageLimit(fromProcessing() ? 4 : 3);
+        mViewPager.setOffscreenPageLimit(fromAround() ? 3 : 4);
         // tabs
         mSlidingTabLayout.setCustomTabColorizer(new MissionSlidingTabLayout.TabColorizer() {
             @Override
@@ -224,7 +198,7 @@ public class Act_Mission extends AppCompatActivity {
         list.add(ContentFragment.newInstance(getResources().getString(R.string.tab_mission_content), indicatorColor, dividerColor));
         list.add(LimitFragment.newInstance(getResources().getString(R.string.tab_mission_limit), indicatorColor, dividerColor));
         list.add(MessageFragment.newInstance(getResources().getString(R.string.tab_mission_message), indicatorColor, dividerColor));
-        if (fromProcessing()) {
+        if (fromProcessing() || fromHistory()) {
             list.add(ChatFragment.newInstance(getResources().getString(R.string.tab_mission_chat), indicatorColor, dividerColor));
         }
         return list;
@@ -238,6 +212,7 @@ public class Act_Mission extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.viewpager_mission);
         mSlidingTabLayout = (MissionSlidingTabLayout) findViewById(R.id.slidingtab_mission);
 
+        ll_bottom_function = (LinearLayout) findViewById(R.id.ll_mission_bottom_function);
         bt_gps = (Button) findViewById(R.id.bt_mission_gps);
         bt_accept = (Button) findViewById(R.id.bt_mission_accept);
     }
@@ -251,17 +226,47 @@ public class Act_Mission extends AppCompatActivity {
                 startActivity(iMissionMap);
             }
         });
-        bt_accept.setText(fromProcessing() ? me != -1 ? me == 1 ? "取消" : "放棄" : "錯誤" : "接受");
+
+        if (fromAround()) {
+            bt_accept.setText("接受");
+        } else if (fromProcessing()) {
+            if (me != -1) {
+                bt_accept.setText(me == 1 ? "取消" : "放棄");
+            } else {
+                bt_accept.setText("錯誤");
+            }
+        } else if (fromHistory()) {
+            bt_accept.setVisibility(View.GONE);
+        }
         bt_accept.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if (fromProcessing()) {
-                    CancelMission(Integer.toString(missionid));
-                } else {
+                if (fromAround()) {
                     AcceptMission(Integer.toString(missionid));
+                } else if (fromProcessing()) {
+                    CancelMission(Integer.toString(missionid));
                 }
             }
         });
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0 || position == 1) {
+                    ll_bottom_function.setVisibility(View.VISIBLE);
+                } else {
+                    ll_bottom_function.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     private void getExtras() {
@@ -276,7 +281,15 @@ public class Act_Mission extends AppCompatActivity {
         return mMission;
     }
 
+    private boolean fromAround() {
+        return fromType.equals(Code.FromType_Around);
+    }
+
     private boolean fromProcessing() {
         return fromType.equals(Code.FromType_Processing);
+    }
+
+    private boolean fromHistory() {
+        return fromType.equals(Code.FromType_History);
     }
 }

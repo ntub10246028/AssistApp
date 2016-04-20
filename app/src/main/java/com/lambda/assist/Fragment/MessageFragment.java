@@ -10,14 +10,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.lambda.assist.Activity.Act_Mission;
 import com.lambda.assist.Adapter.MessageRVAdapter;
 import com.lambda.assist.Asyn.AddMessage;
-import com.lambda.assist.Asyn.LoadingMessage;
+import com.lambda.assist.Asyn.LoadMessage;
 import com.lambda.assist.Model.MessageItem;
 import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Other.IsVaild;
@@ -25,6 +25,7 @@ import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public class MessageFragment extends MissionBaseFragment {
     private SwipeRefreshLayout mSwipeLayout;
     private RecyclerView mRecycleview;
     private EditText et_message;
-    private Button bt_send;
+    private ImageView iv_send;
     //
     private MessageRVAdapter msg_adapter;
     //
@@ -74,11 +75,12 @@ public class MessageFragment extends MissionBaseFragment {
         super.onActivityCreated(savedInstanceState);
         InitialUI(getView());
         InitialAction();
+        LoadMessage(mMission.getMissionid()+"");
     }
 
     private void LoadMessage(String missionid) {
         if (Net.isNetWork(ctxt)) {
-            LoadingMessage task = new LoadingMessage(new LoadingMessage.OnLoadingMessageListener() {
+            LoadMessage task = new LoadMessage(new LoadMessage.OnLoadingMessageListener() {
                 public void finish(Integer result, List<MessageItem> list) {
                     switch (result) {
                         case TaskCode.Success:
@@ -120,7 +122,7 @@ public class MessageFragment extends MissionBaseFragment {
             });
             task.execute(mMission.getMissionid() + "", message);
         } else {
-
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -135,7 +137,7 @@ public class MessageFragment extends MissionBaseFragment {
         mSwipeLayout = (SwipeRefreshLayout) v.findViewById(R.id.srfl_message);
         mRecycleview = (RecyclerView) v.findViewById(R.id.rv_message);
         et_message = (EditText) v.findViewById(R.id.et_message_message);
-        bt_send = (Button) v.findViewById(R.id.bt_message_send);
+        iv_send = (ImageView) v.findViewById(R.id.iv_message_send);
     }
 
     private void InitialAction() {
@@ -149,7 +151,7 @@ public class MessageFragment extends MissionBaseFragment {
         });
         mSwipeLayout.setColorSchemeResources(android.R.color.black);
         //  RecyclerView Setting
-        mRecycleview.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRecycleview.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -177,7 +179,7 @@ public class MessageFragment extends MissionBaseFragment {
         // 5. set item animator to DefaultAnimator
         mRecycleview.setItemAnimator(new DefaultItemAnimator());
         // button setting
-        bt_send.setOnClickListener(new View.OnClickListener() {
+        iv_send.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 String message = et_message.getText().toString();
                 if (IsVaild.isVaild_Message(message)) {
@@ -188,7 +190,7 @@ public class MessageFragment extends MissionBaseFragment {
     }
 
     private void InitialSomething() {
-        list_messages = mMission.getMessages();
+        list_messages = new ArrayList<>();
     }
 
 }

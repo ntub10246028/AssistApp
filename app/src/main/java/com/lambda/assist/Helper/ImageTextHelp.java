@@ -12,8 +12,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.lambda.assist.R;
-import com.lambda.assist.UI.ImageClickableSpan;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
