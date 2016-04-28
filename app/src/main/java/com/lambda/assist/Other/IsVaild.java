@@ -19,6 +19,10 @@ public class IsVaild {
             Toast.makeText(ctxt, ctxt.getResources().getString(R.string.msg_err_new_mission_content), Toast.LENGTH_SHORT).show();
             return false;
         }
+        if(lon.equals("0.0") || lat.equals("0.0")){
+            Toast.makeText(ctxt, ctxt.getResources().getString(R.string.msg_err_new_mission_gps), Toast.LENGTH_SHORT).show();
+            return false;
+        }
         return true;
     }
 

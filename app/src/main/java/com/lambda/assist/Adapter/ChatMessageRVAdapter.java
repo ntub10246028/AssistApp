@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.lambda.assist.Model.ChatMessage;
+import com.lambda.assist.Other.MyTime;
 import com.lambda.assist.R;
 
 import java.util.List;
@@ -48,10 +49,12 @@ public class ChatMessageRVAdapter extends SampleRecyclerViewAdapter {
         final ChatMessage item = list.get(position);
         if (holder instanceof MeViewHolder) {
             MeViewHolder mHolder = (MeViewHolder) holder;
-            mHolder.content.setText(item.getMessage());
+            mHolder.content.setText(item.getReply());
+            mHolder.time.setText(MyTime.convertTime_Chat(item.getReplytime()));
         } else if (holder instanceof OtherViewHolder) {
             OtherViewHolder mHolder = (OtherViewHolder) holder;
-            mHolder.content.setText(item.getMessage());
+            mHolder.content.setText(item.getReply());
+            mHolder.time.setText(MyTime.convertTime_Chat(item.getReplytime()));
         }
     }
 
@@ -63,20 +66,24 @@ public class ChatMessageRVAdapter extends SampleRecyclerViewAdapter {
     public static class MeViewHolder extends RecyclerView.ViewHolder {
 
         public TextView content;
+        public TextView time;
 
         public MeViewHolder(View itemLayoutView) {
             super(itemLayoutView);
             content = (TextView) itemLayoutView.findViewById(R.id.tv_item_chat_me_content);
+            time = (TextView) itemLayoutView.findViewById(R.id.tv_item_chat_me_time);
         }
     }
 
     public static class OtherViewHolder extends RecyclerView.ViewHolder {
 
         public TextView content;
+        public TextView time;
 
         public OtherViewHolder(View itemLayoutView) {
             super(itemLayoutView);
             content = (TextView) itemLayoutView.findViewById(R.id.tv_item_chat_other_content);
+            time = (TextView) itemLayoutView.findViewById(R.id.tv_item_chat_other_time);
         }
     }
 }

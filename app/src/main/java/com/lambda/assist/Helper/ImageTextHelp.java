@@ -55,8 +55,12 @@ public class ImageTextHelp {
 
     private static LinearLayout getLoadImageView(final Context context, final String url) {
         LinearLayout layout = new LinearLayout(context);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT);
         final Button bt = new Button(context);
+        bt.setLayoutParams(params);
         final ImageView iv = new ImageView(context);
+        iv.setLayoutParams(params);
         bt.setText("載入圖片");
         bt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

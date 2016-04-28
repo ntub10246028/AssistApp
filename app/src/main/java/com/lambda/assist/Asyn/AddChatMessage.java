@@ -36,7 +36,7 @@ public class AddChatMessage extends AsyncTask<String, Integer, Integer> {
         message = datas[1];
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("missionID", missionid));
-        params.add(new BasicNameValuePair("message", message));
+        params.add(new BasicNameValuePair("reply", message));
         Log.d("AddChatMessage", missionid + " " + message);
         try {
             JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_sendchatmessage, MyHttpClient.getMyHttpClient());

@@ -37,12 +37,12 @@ public class AddMessage extends AsyncTask<String, Integer, Integer> {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("missionID", missionid));
         params.add(new BasicNameValuePair("message", message));
-        Log.d("AddMessage:Post", missionid + " " + message);
         try {
             JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_sendmessage, MyHttpClient.getMyHttpClient());
-            if (jobj == null)
-                return result;
-            result = jobj.getInt("result");
+            if (jobj != null) {
+                Log.d("AddMessage", jobj.toString());
+                result = jobj.getInt("result");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("AddMessage", e.toString());

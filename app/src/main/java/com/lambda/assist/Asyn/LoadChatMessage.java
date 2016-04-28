@@ -39,19 +39,22 @@ public class LoadChatMessage extends AsyncTask<String, Integer, Integer> {
         int result = TaskCode.NoResponse;
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("missionID", datas[0]));
+        params.add(new BasicNameValuePair("oldtime", datas[1]));
         try {
             JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_loadchatmessage, MyHttpClient.getMyHttpClient());
             if (jobj != null) {
+                Log.d("LoadChatMessage", jobj.toString());
                 result = jobj.getInt("result");
-
                 if (result == TaskCode.Success) {
-                    JSONArray array = jobj.getJSONArray("message");
+                    JSONArray array = jobj.getJSONArray("reply");
                     if (array != null) {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject jItem = array.getJSONObject(i);
                             ChatMessage item = new ChatMessage();
+                            item.setIspostuser(jItem.getInt("ispostuser"));
                             item.setMe(jItem.getInt("me"));
-                            item.setMessage(jItem.getString("message"));
+                            item.setReply(jItem.getString("reply"));
+                            item.setReplytime(jItem.getString("replytime"));
                             list.add(item);
                         }
                     } else {

@@ -30,6 +30,7 @@
     <string name="text_articlecontent">內容</string>
     <string name="msg_err_new_mission_title">標題格式錯誤</string>
     <string name="msg_err_new_mission_content">內容格式錯誤</string>
+    <string name="msg_err_new_mission_gps">尚未取得位置</string>
     <string name="msg_err_new_mission_fail">新增任務失敗</string>
     <string name="msg_err_new_mission_lackdata">缺少必要資料</string>
     <string name="msg_err_upload_image_nothismane">圖片新增者非任務發佈者</string>

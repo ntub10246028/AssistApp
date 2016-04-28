@@ -50,6 +50,7 @@ public class Act_Mission extends AppCompatActivity {
     // Adapter
     private MissionFragmentAdapter fragmentAdapter;
     // get Extras
+    private int msessionid;
     private String fromType;
     private int me;
     private int missionid;
@@ -198,7 +199,7 @@ public class Act_Mission extends AppCompatActivity {
         list.add(ContentFragment.newInstance(getResources().getString(R.string.tab_mission_content), indicatorColor, dividerColor));
         list.add(LimitFragment.newInstance(getResources().getString(R.string.tab_mission_limit), indicatorColor, dividerColor));
         list.add(MessageFragment.newInstance(getResources().getString(R.string.tab_mission_message), indicatorColor, dividerColor));
-        if (fromProcessing() || fromHistory()) {
+        if ((fromProcessing() && msessionid != 0) || fromHistory()) {
             list.add(ChatFragment.newInstance(getResources().getString(R.string.tab_mission_chat), indicatorColor, dividerColor));
         }
         return list;
@@ -275,6 +276,7 @@ public class Act_Mission extends AppCompatActivity {
         me = fromProcessing() ? it.getIntExtra("me", -1) : -1;
         missionid = it.getIntExtra("missionid", 0);
         title = it.getStringExtra("title");
+        msessionid = fromProcessing() ? it.getIntExtra("msessionid", 0) : 0;
     }
 
     public Mission getMissionData() {

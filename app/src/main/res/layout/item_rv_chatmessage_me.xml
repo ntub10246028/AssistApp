@@ -13,7 +13,8 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="5dp"
         app:cardBackgroundColor="@color/bg_chat_me"
-        app:cardCornerRadius="10dp">
+        app:cardCornerRadius="10dp"
+        android:id="@+id/view">
 
         <TextView
             android:id="@+id/tv_item_chat_me_content"
@@ -24,4 +25,15 @@
             android:maxEms="14"
             android:textColor="@color/text_chat_me" />
     </android.support.v7.widget.CardView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="早上10:00"
+        android:layout_marginRight="5dp"
+        android:textColor="@color/white"
+        android:id="@+id/tv_item_chat_me_time"
+        android:layout_alignBottom="@+id/view"
+        android:layout_toStartOf="@+id/view" />
 </RelativeLayout>

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.lambda.assist.Activity.Act_Mission;
 import com.lambda.assist.Adapter.ChatMessageRVAdapter;
 import com.lambda.assist.Adapter.MessageRVAdapter;
+import com.lambda.assist.Asyn.AddChatMessage;
 import com.lambda.assist.Asyn.AddMessage;
 import com.lambda.assist.Asyn.LoadChatMessage;
 import com.lambda.assist.Asyn.LoadMessage;
@@ -28,7 +29,9 @@ import com.lambda.assist.Other.Net;
 import com.lambda.assist.Other.TaskCode;
 import com.lambda.assist.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -78,6 +81,7 @@ public class ChatFragment extends MissionBaseFragment {
         super.onActivityCreated(savedInstanceState);
         InitialUI(getView());
         InitialAction();
+        LoadChatMessage(mMission.getMissionid() + "");
     }
 
     private void LoadChatMessage(String missionid) {
@@ -100,15 +104,19 @@ public class ChatFragment extends MissionBaseFragment {
                     }
                 }
             });
-            task.execute(missionid);
+            task.execute(missionid, getCurrentTime());
         } else {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
     }
 
+    private String getCurrentTime() {
+        return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
+    }
+
     private void AddChatMessage(String message) {
         if (Net.isNetWork(ctxt)) {
-            AddMessage task = new AddMessage(new AddMessage.OnAddMessageListener() {
+            AddChatMessage task = new AddChatMessage(new AddChatMessage.OnAddChatMessageListener() {
                 public void finish(Integer result) {
                     switch (result) {
                         case TaskCode.Success:
@@ -191,17 +199,9 @@ public class ChatFragment extends MissionBaseFragment {
     }
 
     private void InitialSomething() {
-        //list_chatmessages = new ArrayList<>();
-        list_chatmessages = getData();
+        list_chatmessages = new ArrayList<>();
     }
 
-    private List<ChatMessage> getData() {
-        List<ChatMessage> result = new ArrayList<>();
-        result.add(new ChatMessage(0, "你好"));
-        result.add(new ChatMessage(1, "你好"));
-        result.add(new ChatMessage(0, "文字文字文字文字文字文字文字文字文字文字文字文字文字文字"));
-        result.add(new ChatMessage(1, "文字文字文字文字文字文字文字文字文字文字文字文字文字文字"));
-        return result;
-    }
+
 
 }

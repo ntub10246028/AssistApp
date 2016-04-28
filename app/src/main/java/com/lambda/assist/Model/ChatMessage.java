@@ -4,16 +4,30 @@ package com.lambda.assist.Model;
  * Created by asus on 2016/4/18.
  */
 public class ChatMessage {
+    private int ispostuser;
     private int me;
-    private String message;
+    private String reply;
+    private String replytime;
+
 
     public ChatMessage() {
 
     }
 
-    public ChatMessage(int me, String message) {
-        this.me = me;
-        this.message = message;
+    public String getReplytime() {
+        return replytime;
+    }
+
+    public void setReplytime(String replytime) {
+        this.replytime = replytime;
+    }
+
+    public String getReply() {
+        return reply;
+    }
+
+    public void setReply(String reply) {
+        this.reply = reply;
     }
 
     public int getMe() {
@@ -24,11 +38,11 @@ public class ChatMessage {
         this.me = me;
     }
 
-    public String getMessage() {
-        return message;
+    public int getIspostuser() {
+        return ispostuser;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setIspostuser(int ispostuser) {
+        this.ispostuser = ispostuser;
     }
 }

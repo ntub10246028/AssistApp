@@ -17,7 +17,8 @@ public class URLs {
     public static final String url_loadmessage = "get-msg";
     public static final String url_sendmessage = "add-msg";
 
-    public static final String url_loadchatmessage = "get-chatmsg";
-    public static final String url_sendchatmessage = "add-chatmsg";
+    public static final String url_loadchatmessage = "get-reply";
+
+    public static final String url_sendchatmessage = "add-reply";
 
 }

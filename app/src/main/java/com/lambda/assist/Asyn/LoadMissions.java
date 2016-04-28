@@ -60,6 +60,7 @@ public class LoadMissions extends AsyncTask<List<Integer>, Integer, Integer> {
                     idata.setPosttime(item.getString("posttime"));
                     idata.setOnlinelimittime(item.getString("onlinelimittime"));
                     idata.setRunlimittime(item.getString("runlimittime"));
+                    idata.setMsessionid(item.get("msessionid"));
                     idata.setLocationx(item.getDouble("locationx"));
                     idata.setLocationy(item.getDouble("locationy"));
                     idata.setLocationtypeid(item.getInt("locationtypeid"));

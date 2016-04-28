@@ -49,8 +49,16 @@ public class Mission implements Serializable {
         return msessionid;
     }
 
-    public void setMsessionid(int msessionid) {
-        this.msessionid = msessionid;
+    public void setMsessionid(Object msessionid) {
+        if (msessionid != null) {
+            if (msessionid instanceof Integer) {
+                this.msessionid = (Integer) msessionid;
+            } else {
+                this.msessionid = 0;
+            }
+        } else {
+            this.msessionid = 0;
+        }
     }
 
     public String getPosttime() {

@@ -101,6 +101,8 @@ public class ProcessingRVAdapter extends SampleRecyclerViewAdapter {
                 public void onClick(View v) {
                     Intent it = new Intent(getContext(), Act_Mission.class);
                     it.putExtra("fromType", Code.FromType_Processing);
+                    it.putExtra("msessionid", item.getMsessionid());
+
                     it.putExtra("me", item.getMe());
                     it.putExtra("missionid", item.getMissionid());
                     it.putExtra("title", item.getTitle());
