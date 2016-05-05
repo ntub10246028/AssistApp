@@ -1,7 +1,6 @@
 package com.lambda.assist.UI;
 
 //  import com.example.main.MyFragmentAdapter;
-
 import android.content.Context;
 import android.os.Build;
 import android.support.v4.view.ViewPager;

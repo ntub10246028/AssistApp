@@ -21,13 +21,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:hint="Search" />
+                android:hint="搜尋" />
 
             <ImageButton
                 android:id="@+id/imgbt_drawer_search"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
-                android:background="@drawable/m_history_search" />
+                android:background="@drawable/m_history_search"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <android.support.v4.widget.SwipeRefreshLayout

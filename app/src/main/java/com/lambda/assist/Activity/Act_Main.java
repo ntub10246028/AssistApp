@@ -16,6 +16,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -88,6 +90,7 @@ public class Act_Main extends AppCompatActivity {
     private RecyclerView mRecycleview;
     private HistoryRVAdapter historyRVAdapter;
     private List<Mission> list_historymission;
+    private List<Mission> list_historymission_tmp;
     //
 
 
@@ -172,6 +175,30 @@ public class Act_Main extends AppCompatActivity {
         mSwipeLayout = (SwipeRefreshLayout) v.findViewById(R.id.srfl_history);
         mRecycleview = (RecyclerView) v.findViewById(R.id.rv_history);
         //
+        et_drawer_input.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence key, int start, int before, int count) {
+                List<Mission> newlist = new ArrayList<>();
+                for(Mission mission:list_historymission_tmp){
+                    if(mission.getTitle().contains(key))
+                        newlist.add(mission);
+                }
+                list_historymission.clear();
+                list_historymission.addAll(newlist);
+                refreshHistory();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         // SwipeRefreshLayout Setting
         mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             public void onRefresh() {
@@ -211,8 +238,7 @@ public class Act_Main extends AppCompatActivity {
         //
         bt_search.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                String text = et_drawer_input.getText().toString();
-                Toast.makeText(ctxt, text, Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -266,8 +292,15 @@ public class Act_Main extends AppCompatActivity {
                     switch (result) {
                         case TaskCode.Empty:
                         case TaskCode.Success:
+                            if(list_historymission_tmp==null){
+                                list_historymission_tmp = new ArrayList<>();
+                            }else{
+                                list_historymission_tmp.clear();
+                            }
+                            list_historymission_tmp.addAll(list);
+
                             list_historymission.clear();
-                            list_historymission.addAll(list);
+                            list_historymission.addAll(list_historymission_tmp);
                             refreshHistory();
                             break;
                         case TaskCode.NoResponse:
