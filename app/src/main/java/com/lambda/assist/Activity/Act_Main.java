@@ -241,8 +241,6 @@ public class Act_Main extends AppCompatActivity {
 
             }
         });
-
-
         return v;
     }
 

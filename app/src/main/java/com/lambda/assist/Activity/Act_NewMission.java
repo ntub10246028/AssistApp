@@ -347,10 +347,9 @@ public class Act_NewMission extends AppCompatActivity implements GoogleApiClient
                 StringBuilder sb = new StringBuilder(format);
                 sb.insert(format.length() - 1, imageResponse.data.link);
                 SpannableString ss = new SpannableString(sb);
-                ss.setSpan(new ImageSpan(upload.bitmap), 0, sb.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                et_content.getText().insert(et_content.getSelectionStart(), "\n");
+                Bitmap b = BitmapHelp.resizeBig(upload.bitmap);
+                ss.setSpan(new ImageSpan(b), 0, sb.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 et_content.getText().insert(et_content.getSelectionStart(), ss);
-                et_content.getText().insert(et_content.getSelectionStart(), "\n");
             } else {
                 Toast.makeText(ctxt, "error", Toast.LENGTH_SHORT).show();
             }

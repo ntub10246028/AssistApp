@@ -141,6 +141,8 @@ public class Act_Mission extends AppCompatActivity {
                     switch (result) {
                         case TaskCode.Success:
                             Toast.makeText(ctxt, "取消/放棄成功", Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_OK);
+                            finishActivity();
                             break;
                         case TaskCode.GiveUp_fail:
                             Toast.makeText(ctxt, "取消/放棄失敗(" + result + ")", Toast.LENGTH_SHORT).show();
@@ -256,6 +258,9 @@ public class Act_Mission extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+                if (fromHistory())
+                    return;
+
                 if (position == 0 || position == 1) {
                     ll_bottom_function.setVisibility(View.VISIBLE);
                 } else {
@@ -293,5 +298,10 @@ public class Act_Mission extends AppCompatActivity {
 
     private boolean fromHistory() {
         return fromType.equals(Code.FromType_History);
+    }
+
+
+    private void finishActivity() {
+        this.finish();
     }
 }
