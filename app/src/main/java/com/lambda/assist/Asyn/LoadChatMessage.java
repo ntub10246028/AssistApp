@@ -38,8 +38,9 @@ public class LoadChatMessage extends AsyncTask<String, Integer, Integer> {
     protected Integer doInBackground(String... datas) {
         int result = TaskCode.NoResponse;
         List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("missionID", datas[0]));
+        params.add(new BasicNameValuePair("sessionID", datas[0]));
         params.add(new BasicNameValuePair("oldtime", datas[1]));
+
         try {
             JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_loadchatmessage, MyHttpClient.getMyHttpClient());
             if (jobj != null) {

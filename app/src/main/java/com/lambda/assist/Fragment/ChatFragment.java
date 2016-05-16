@@ -81,10 +81,10 @@ public class ChatFragment extends MissionBaseFragment {
         super.onActivityCreated(savedInstanceState);
         InitialUI(getView());
         InitialAction();
-        LoadChatMessage(mMission.getMissionid() + "");
+        LoadChatMessage(mMission.getMsessionid() + "");
     }
 
-    private void LoadChatMessage(String missionid) {
+    private void LoadChatMessage(String msessionid) {
         if (Net.isNetWork(ctxt)) {
             LoadChatMessage task = new LoadChatMessage(new LoadChatMessage.OnLoadChatMessageListener() {
                 public void finish(Integer result, List<ChatMessage> list) {
@@ -104,7 +104,7 @@ public class ChatFragment extends MissionBaseFragment {
                     }
                 }
             });
-            task.execute(missionid, getCurrentTime());
+            task.execute(msessionid, getCurrentTime());
         } else {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
@@ -121,7 +121,7 @@ public class ChatFragment extends MissionBaseFragment {
                     switch (result) {
                         case TaskCode.Success:
                             et_message.setText("");
-                            LoadChatMessage(mMission.getMissionid() + "");
+                            LoadChatMessage(mMission.getMsessionid() + "");
                             break;
                         case TaskCode.NoResponse:
                             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
@@ -129,7 +129,7 @@ public class ChatFragment extends MissionBaseFragment {
                     }
                 }
             });
-            task.execute(mMission.getMissionid() + "", message);
+            task.execute(mMission.getMsessionid() + "", message);
         } else {
             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
         }
@@ -154,7 +154,7 @@ public class ChatFragment extends MissionBaseFragment {
         mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             public void onRefresh() {
                 //Loading
-                LoadChatMessage(mMission.getMissionid() + "");
+                LoadChatMessage(mMission.getMsessionid() + "");
                 mSwipeLayout.setRefreshing(false);
             }
         });

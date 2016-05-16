@@ -24,7 +24,7 @@ public class AddChatMessage extends AsyncTask<String, Integer, Integer> {
     }
 
     private final OnAddChatMessageListener mListener;
-    private String missionid, message;
+    private String msessionid, message;
 
     public AddChatMessage(OnAddChatMessageListener mListener) {
         this.mListener = mListener;
@@ -32,12 +32,12 @@ public class AddChatMessage extends AsyncTask<String, Integer, Integer> {
 
     protected Integer doInBackground(String... datas) {
         Integer result = TaskCode.NoResponse;
-        missionid = datas[0];
+        msessionid = datas[0];
         message = datas[1];
         List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("missionID", missionid));
+        params.add(new BasicNameValuePair("sessionID", msessionid));
         params.add(new BasicNameValuePair("reply", message));
-        Log.d("AddChatMessage", missionid + " " + message);
+        Log.d("AddChatMessage", msessionid + " " + message + " " + URLs.url_sendchatmessage.toString()) ;
         try {
             JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_sendchatmessage, MyHttpClient.getMyHttpClient());
             if (jobj == null)
