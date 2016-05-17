@@ -5,29 +5,33 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <EditText
-            android:id="@+id/et_newmission_title"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/text_articletitle" />
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/et_newmission_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="start"
-            android:hint="@string/text_articlecontent" />
+            <EditText
+                android:id="@+id/et_newmission_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/text_articletitle" />
 
-    </LinearLayout>
+            <EditText
+                android:id="@+id/et_newmission_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="start"
+                android:hint="@string/text_articlecontent" />
+
+        </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
