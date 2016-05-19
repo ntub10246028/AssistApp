@@ -42,7 +42,7 @@
         </activity>
         <activity
             android:name=".Activity.Act_Main"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Activity.Act_AuthSMS"
             android:screenOrientation="portrait" />
