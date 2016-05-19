@@ -105,8 +105,7 @@ public class Act_SelectMap extends AppCompatActivity implements OnMapReadyCallba
                         .build();
 
         // 使用動畫的效果移動地圖
-        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        //map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     private void initAction() {
@@ -122,6 +121,7 @@ public class Act_SelectMap extends AppCompatActivity implements OnMapReadyCallba
             }
         });
         bt_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
                 setResult(RESULT_CANCELED);
                 finishActivity();

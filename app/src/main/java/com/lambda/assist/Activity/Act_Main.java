@@ -183,16 +183,14 @@ public class Act_Main extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence key, int start, int before, int count) {
-                if (list_historymission_tmp != null) {
-                    List<Mission> newlist = new ArrayList<>();
-                    for (Mission mission : list_historymission_tmp) {
-                        if (mission.getTitle().contains(key))
-                            newlist.add(mission);
-                    }
-                    list_historymission.clear();
-                    list_historymission.addAll(newlist);
-                    refreshHistory();
+                List<Mission> newlist = new ArrayList<>();
+                for(Mission mission:list_historymission_tmp){
+                    if(mission.getTitle().contains(key))
+                        newlist.add(mission);
                 }
+                list_historymission.clear();
+                list_historymission.addAll(newlist);
+                refreshHistory();
             }
 
             @Override
@@ -292,9 +290,9 @@ public class Act_Main extends AppCompatActivity {
                     switch (result) {
                         case TaskCode.Empty:
                         case TaskCode.Success:
-                            if (list_historymission_tmp == null) {
+                            if(list_historymission_tmp==null){
                                 list_historymission_tmp = new ArrayList<>();
-                            } else {
+                            }else{
                                 list_historymission_tmp.clear();
                             }
                             list_historymission_tmp.addAll(list);
@@ -389,7 +387,7 @@ public class Act_Main extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == ActivityCode.NewMission) {
-                if (fragments != null && fragments.size() == 2) {
+                if(fragments!=null && fragments.size() == 2 ){
                     ProcessingFragment processingFragment = (ProcessingFragment) fragments.get(1);
                     processingFragment.refresh();
                 }
