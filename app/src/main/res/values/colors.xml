@@ -38,4 +38,5 @@
     <color name="text_chat_other">#FEFEFE</color>
     <color name="bg_chat_me">#FEFEFE</color>
     <color name="bg_chat_other">#414141</color>
+    <!-- BG Title-->
 </resources>

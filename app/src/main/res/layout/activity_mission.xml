@@ -30,7 +30,7 @@
             android:id="@+id/ll_mission_bottom_function"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:visibility="visible"
             android:orientation="horizontal">
 
             <Button
@@ -39,7 +39,13 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="位置" />
-
+            <Button
+                android:id="@+id/bt_mission_complete"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:text="完成" />
             <Button
                 android:id="@+id/bt_mission_accept"
                 android:layout_width="0dp"

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.lambda.assist.Adapter.MissionFragmentAdapter;
 import com.lambda.assist.Asyn.AcceptMission;
+import com.lambda.assist.Asyn.AccomplishedMission;
 import com.lambda.assist.Asyn.CancelMission;
 import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.Fragment.ChatFragment;
@@ -46,7 +47,7 @@ public class Act_Mission extends AppCompatActivity {
     private ViewPager mViewPager;
     private MissionSlidingTabLayout mSlidingTabLayout;
     private LinearLayout ll_bottom_function;
-    private Button bt_gps, bt_accept;
+    private Button bt_gps, bt_complete, bt_accept;
     // Adapter
     private MissionFragmentAdapter fragmentAdapter;
     // get Extras
@@ -130,14 +131,12 @@ public class Act_Mission extends AppCompatActivity {
         }
     }
 
-    private void CancelMission(final String missionid) {
+    private void CancelMission(final String missionid, final String msessionid) {
         if (Net.isNetWork(ctxt)) {
             final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
             CancelMission task = new CancelMission(new CancelMission.OnCancelMissionListener() {
                 public void finish(Integer result) {
-                    Log.d("LAG", "B");
                     pd.dismiss();
-                    Log.d("CancelMission", result + "**");
                     switch (result) {
                         case TaskCode.Success:
                             Toast.makeText(ctxt, "取消/放棄成功", Toast.LENGTH_SHORT).show();
@@ -146,6 +145,34 @@ public class Act_Mission extends AppCompatActivity {
                             break;
                         case TaskCode.GiveUp_fail:
                             Toast.makeText(ctxt, "取消/放棄失敗(" + result + ")", Toast.LENGTH_SHORT).show();
+                            break;
+                        case TaskCode.NoResponse:
+                            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
+                            break;
+
+                    }
+                }
+            });
+            task.execute(missionid, msessionid);
+        } else {
+            Toast.makeText(ctxt, getResources().getString(R.string.msg_err_network), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void AccomplishedMission(final String missionid) {
+        if (Net.isNetWork(ctxt)) {
+            final ProgressDialog pd = MyDialog.getProgressDialog(ctxt, "Loading...");
+            AccomplishedMission task = new AccomplishedMission(new AccomplishedMission.OnAccomplishedMissionListener() {
+                public void finish(Integer result) {
+                    pd.dismiss();
+                    switch (result) {
+                        case TaskCode.Success:
+                            Toast.makeText(ctxt, "成功", Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_OK);
+                            finishActivity();
+                            break;
+                        case TaskCode.Accomplished_fail:
+                            Toast.makeText(ctxt, "失敗", Toast.LENGTH_SHORT).show();
                             break;
                         case TaskCode.NoResponse:
                             Toast.makeText(ctxt, getResources().getString(R.string.msg_err_noresponse), Toast.LENGTH_SHORT).show();
@@ -217,10 +244,31 @@ public class Act_Mission extends AppCompatActivity {
 
         ll_bottom_function = (LinearLayout) findViewById(R.id.ll_mission_bottom_function);
         bt_gps = (Button) findViewById(R.id.bt_mission_gps);
+        bt_complete = (Button) findViewById(R.id.bt_mission_complete);
         bt_accept = (Button) findViewById(R.id.bt_mission_accept);
     }
 
     private void InitialAction() {
+        if (fromAround()) {
+            ll_bottom_function.setVisibility(View.VISIBLE);
+            bt_accept.setText("接受");
+        } else if (fromProcessing()) {
+            ll_bottom_function.setVisibility(View.VISIBLE);
+            if (me != -1) {
+                if (me == 1) {
+                    bt_accept.setText("取消");
+                    if (msessionid != 0)
+                        bt_complete.setVisibility(View.VISIBLE);
+                } else {
+                    bt_accept.setText("放棄");
+                }
+            } else {
+                bt_accept.setText("錯誤");
+            }
+        } else if (fromHistory()) {
+            ll_bottom_function.setVisibility(View.GONE);
+        }
+
         bt_gps.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent iMissionMap = new Intent(ctxt, Act_MissionMap.class);
@@ -229,24 +277,17 @@ public class Act_Mission extends AppCompatActivity {
                 startActivity(iMissionMap);
             }
         });
+        bt_complete.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
 
-        if (fromAround()) {
-            bt_accept.setText("接受");
-        } else if (fromProcessing()) {
-            if (me != -1) {
-                bt_accept.setText(me == 1 ? "取消" : "放棄");
-            } else {
-                bt_accept.setText("錯誤");
             }
-        } else if (fromHistory()) {
-            bt_accept.setVisibility(View.GONE);
-        }
+        });
         bt_accept.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (fromAround()) {
                     AcceptMission(Integer.toString(missionid));
                 } else if (fromProcessing()) {
-                    CancelMission(Integer.toString(missionid));
+                    CancelMission(Integer.toString(missionid), Integer.toString(msessionid));
                 }
             }
         });

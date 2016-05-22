@@ -12,12 +12,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
+import com.lambda.assist.Activity.Act_Main;
 import com.lambda.assist.Activity.Act_Mission;
 import com.lambda.assist.Helper.BitmapHelp;
 import com.lambda.assist.Helper.BitmapTransform;
 import com.lambda.assist.Helper.ImgurHelper;
 import com.lambda.assist.Listener.OnLoadMoreListener;
 import com.lambda.assist.Model.Mission;
+import com.lambda.assist.Other.ActivityCode;
 import com.lambda.assist.Other.Code;
 import com.lambda.assist.R;
 import com.squareup.picasso.Picasso;
@@ -28,6 +30,7 @@ import java.util.List;
  * Created by v on 2015/12/19.
  */
 public class ProcessingRVAdapter extends SampleRecyclerViewAdapter {
+    private final Act_Main activity;
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
 
@@ -41,6 +44,7 @@ public class ProcessingRVAdapter extends SampleRecyclerViewAdapter {
 
     public ProcessingRVAdapter(Context context, List<Mission> list, RecyclerView mRecyclerView) {
         super(context);
+        this.activity = (Act_Main) context;
         this.list = list;
         final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -90,11 +94,12 @@ public class ProcessingRVAdapter extends SampleRecyclerViewAdapter {
             missionViewHolder.text.setText(item.getTitle());
             String url = ImgurHelper.checkUrl(item.getContent());
             if (url != null) {
+                Picasso.with(getContext()).cancelRequest(missionViewHolder.image);
+
                 Picasso.with(getContext())
                         .load(url)
-                        .transform(new BitmapTransform(BitmapHelp.maxW, BitmapHelp.maxH))
-                        .resize(BitmapHelp.size(), BitmapHelp.size())
-                        .centerInside()
+                        .fit()
+                        .centerCrop()
                         .into(missionViewHolder.image);
             }
             missionViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -102,11 +107,10 @@ public class ProcessingRVAdapter extends SampleRecyclerViewAdapter {
                     Intent it = new Intent(getContext(), Act_Mission.class);
                     it.putExtra("fromType", Code.FromType_Processing);
                     it.putExtra("msessionid", item.getMsessionid());
-
                     it.putExtra("me", item.getMe());
                     it.putExtra("missionid", item.getMissionid());
                     it.putExtra("title", item.getTitle());
-                    getContext().startActivity(it);
+                    activity.startActivityForResult(it, ActivityCode.Mission);
                 }
             });
         } else if (holder instanceof LoadingViewHolder) {

@@ -210,7 +210,7 @@ public class ProcessingFragment extends MainBaseFragment {
         ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(10);
         mRecycleview.addItemDecoration(itemDecoration);
         // set adapter
-        adapter_rv = new ProcessingRVAdapter(ctxt, list_missiondata, mRecycleview);
+        adapter_rv = new ProcessingRVAdapter(activity, list_missiondata, mRecycleview);
 
         adapter_rv.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override

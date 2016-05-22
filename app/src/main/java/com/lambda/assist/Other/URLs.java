@@ -14,11 +14,12 @@ public class URLs {
     public static final String url_accept_mission = "get-mission";
     public static final String url_giveup_mission = "give-up-mission";
     public static final String url_running = "runing";
+    public static final String url_accomplished = "accomplished-mission";
+    //
     public static final String url_loadmessage = "get-msg";
     public static final String url_sendmessage = "add-msg";
-
+    //
     public static final String url_loadchatmessage = "get-reply";
-
     public static final String url_sendchatmessage = "add-reply";
 
 }

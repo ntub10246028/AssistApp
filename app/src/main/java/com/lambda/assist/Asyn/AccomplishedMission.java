@@ -18,16 +18,16 @@ import java.util.List;
 /**
  * Created by asus on 2016/4/14.
  */
-public class CancelMission extends AsyncTask<String, String, Integer> {
+public class AccomplishedMission extends AsyncTask<String, String, Integer> {
 
-    public interface OnCancelMissionListener {
+    public interface OnAccomplishedMissionListener {
         void finish(Integer result);
     }
 
-    private final OnCancelMissionListener mListener;
+    private final OnAccomplishedMissionListener mListener;
     private String missionid;
 
-    public CancelMission(OnCancelMissionListener mListener) {
+    public AccomplishedMission(OnAccomplishedMissionListener mListener) {
         this.mListener = mListener;
     }
 
@@ -39,14 +39,13 @@ public class CancelMission extends AsyncTask<String, String, Integer> {
 
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("missionID", missionid));
-        params.add(new BasicNameValuePair("msessionID", missionid));
         try {
-            JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_giveup_mission, MyHttpClient.getMyHttpClient());
+            JSONObject jobj = new JsonReaderPost().Reader(params, URLs.url_accomplished, MyHttpClient.getMyHttpClient());
             if (jobj == null)
                 return result;
             result = jobj.getInt("result");
         } catch (Exception e) {
-            Log.d("CancelMission", e.toString());
+            Log.d("AccomplishedMission", e.toString());
         }
         return result;
     }

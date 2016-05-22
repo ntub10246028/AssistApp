@@ -393,7 +393,13 @@ public class Act_Main extends AppCompatActivity {
                     ProcessingFragment processingFragment = (ProcessingFragment) fragments.get(1);
                     processingFragment.refresh();
                 }
+            } else if (requestCode == ActivityCode.Mission) {
+                if (fragments != null && fragments.size() == 2) {
+                    ProcessingFragment processingFragment = (ProcessingFragment) fragments.get(1);
+                    processingFragment.refresh();
+                }
             }
+
         }
     }
 

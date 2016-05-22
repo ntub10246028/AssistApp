@@ -32,5 +32,6 @@ public class TaskCode {
      */
     public static final int GiveUp_fail = -51;
     public static final int Accept_fail = -41;
+    public static final int Accomplished_fail = -80;
 
 }
