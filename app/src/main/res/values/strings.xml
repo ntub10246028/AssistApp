@@ -36,10 +36,10 @@
     <string name="msg_err_upload_image_nothismane">圖片新增者非任務發佈者</string>
     <string name="msg_err_upload_image_noreplaceimage">找不到要取代的圖片</string>
     <!-- Around Mission-->
-    <string name="msg_warning_around_empty">附近沒有任務，新增一個吧 >>></string>
+    <string name="msg_warning_around_empty">附近沒有任務</string>
     <string name="title_activity_act__map">Map</string>
     <!-- Processing Mission -->
-    <string name="msg_warning_processing_empty">目前沒有進行中的任務</string>
+    <string name="msg_warning_processing_empty">沒有進行中的任務</string>
     <!-- In Mission-->
     <string name="tab_mission_content">內文</string>
     <string name="tab_mission_limit">限制</string>

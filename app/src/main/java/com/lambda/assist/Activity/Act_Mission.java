@@ -279,7 +279,7 @@ public class Act_Mission extends AppCompatActivity {
         });
         bt_complete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-
+                AccomplishedMission(Integer.toString(missionid));
             }
         });
         bt_accept.setOnClickListener(new View.OnClickListener() {
