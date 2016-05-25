@@ -1,4 +1,5 @@
 package com.lambda.assist.Fragment;
+import android.util.Log;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,6 +29,9 @@ import com.lambda.assist.R;
 import java.util.ArrayList;
 import java.util.List;
 
+
+import android.os.Handler;
+import android.os.HandlerThread;
 /**
  * Created by asus on 2016/2/27.
  */
@@ -44,6 +48,8 @@ public class MessageFragment extends MissionBaseFragment {
     //
     private List<MessageItem> list_messages;//
     private Mission mMission;
+    //
+    private Handler mThreadHandler=new Handler();
 
     public static MessageFragment newInstance(String title, int indicatorColor, int dividerColor) {
         MessageFragment fragment = new MessageFragment();
@@ -63,6 +69,24 @@ public class MessageFragment extends MissionBaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         InitialSomething();
+
+        HandlerThread mThread;
+        mThread = new HandlerThread("name");
+        mThread.start();
+        mThreadHandler=new Handler(mThread.getLooper());
+        Runnable r1 = new Runnable() {
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(2000);
+                        LoadMessage(mMission.getMissionid() + "");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        mThreadHandler.post(r1);
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,7 +99,7 @@ public class MessageFragment extends MissionBaseFragment {
         super.onActivityCreated(savedInstanceState);
         InitialUI(getView());
         InitialAction();
-        LoadMessage(mMission.getMissionid()+"");
+        LoadMessage(mMission.getMissionid() + "");
     }
 
     private void LoadMessage(String missionid) {
