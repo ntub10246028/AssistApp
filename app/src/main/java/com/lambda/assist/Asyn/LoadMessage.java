@@ -47,11 +47,15 @@ public class LoadMessage extends AsyncTask<String, Integer, Integer> {
                     JSONArray array = jobj.getJSONArray("message");
                     if (array != null) {
                         for (int i = 0; i < array.length(); i++) {
-                            JSONObject jItem = array.getJSONObject(i);
-                            MessageItem item = new MessageItem();
-                            item.setMe(jItem.getInt("me"));
-                            item.setMessage(jItem.getString("message"));
-                            list.add(item);
+                            try {
+                                JSONObject jItem = array.getJSONObject(i);
+                                MessageItem item = new MessageItem();
+                                item.setMe(jItem.getInt("me"));
+                                item.setMessage(jItem.getString("message"));
+                                list.add(item);
+                            }catch (Exception e){
+                                continue;
+                            }
                         }
                     } else {
                         Log.d("LoadMessage", "Array null");
