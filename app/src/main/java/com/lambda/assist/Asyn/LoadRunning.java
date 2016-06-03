@@ -45,11 +45,15 @@ public class LoadRunning extends AsyncTask<String, Integer, Integer> {
                     JSONArray array = jobj.getJSONArray("runing");
                     if (array != null) {
                         for (int i = 0; i < array.length(); i++) {
-                            JSONObject ajobj = array.getJSONObject(i);
-                            ReadyProcessingMission rpm = new ReadyProcessingMission();
-                            rpm.setMission(ajobj.getInt("missionid"));
-                            rpm.setMe(ajobj.getInt("me"));
-                            list.add(rpm);
+                            try {
+                                JSONObject ajobj = array.getJSONObject(i);
+                                ReadyProcessingMission rpm = new ReadyProcessingMission();
+                                rpm.setMission(ajobj.getInt("missionId"));
+                                rpm.setMe(ajobj.getInt("me"));
+                                list.add(rpm);
+                            }catch (Exception e){
+                                continue;
+                            }
                         }
                     } else {
                         Log.d("LoadRunning", "Array null");
