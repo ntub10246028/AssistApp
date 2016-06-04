@@ -49,12 +49,16 @@ public class LoadAround extends AsyncTask<String, Integer, Integer> {
             if (result == TaskCode.Success) {
                 JSONArray jarray = jobj.getJSONArray("around");
                 for (int i = 0; i < jarray.length(); i++) {
-                    JSONObject item = jarray.getJSONObject(i);
-                    ReadyAroundMission aitem = new ReadyAroundMission();
-                    aitem.setMissionid(item.getInt("missionid"));
-                    aitem.setLocationx(item.getDouble("locationx"));
-                    aitem.setLocationy(item.getDouble("locationy"));
-                    list_readymissions.add(aitem);
+                    try {
+                        JSONObject item = jarray.getJSONObject(i);
+                        ReadyAroundMission aitem = new ReadyAroundMission();
+                        aitem.setMissionid(item.getInt("missionId"));
+                        aitem.setLocationx(item.getDouble("locationX"));
+                        aitem.setLocationy(item.getDouble("locationY"));
+                        list_readymissions.add(aitem);
+                    }catch (Exception e){
+                        continue;
+                    }
                 }
             }
         } catch (Exception e) {

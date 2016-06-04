@@ -52,26 +52,30 @@ public class LoadMissions extends AsyncTask<List<Integer>, Integer, Integer> {
             Log.d("LoadMissions", jobj.toString());
             result = jobj.getInt("result");
             if (result == TaskCode.Success) {
-                JSONArray jarray = jobj.getJSONArray("missiondata");
+                JSONArray jarray = jobj.getJSONArray("missionData");
                 for (int i = 0; i < jarray.length(); i++) {
-                    JSONObject item = jarray.getJSONObject(i);
-                    Mission idata = new Mission();
-                    idata.setMissionid(item.getInt("missionid"));
-                    idata.setPosttime(item.getString("posttime"));
-                    idata.setOnlinelimittime(item.getString("onlinelimittime"));
-                    idata.setRunlimittime(item.getString("runlimittime"));
-                    idata.setMsessionid(item.get("msessionid"));
-                    idata.setLocationx(item.getDouble("locationx"));
-                    idata.setLocationy(item.getDouble("locationy"));
-                    idata.setLocationtypeid(item.getInt("locationtypeid"));
-                    idata.setTitle(item.getString("title"));
-                    idata.setContent(item.getString("content"));
-                    idata.setImage(item.getString("image"));
-                    idata.setGettime(item.getString("gettime"));
-                    idata.setIsdone(item.getInt("isdone"));
-                    idata.setIscancel(item.getInt("iscancel"));
-                    idata.setLocked(item.getInt("locked"));
-                    list.add(idata);
+                    try {
+                        JSONObject item = jarray.getJSONObject(i);
+                        Mission idata = new Mission();
+                        idata.setMissionid(item.getInt("missionId"));
+                        idata.setPosttime(item.getString("postTime"));
+                        idata.setOnlinelimittime(item.getString("onlineLimitTime"));
+                        idata.setRunlimittime(item.getString("runLimitTime"));
+                        idata.setMsessionid(item.get("mSessionId"));
+                        idata.setLocationx(item.getDouble("locationX"));
+                        idata.setLocationy(item.getDouble("locationY"));
+                        idata.setLocationtypeid(item.getInt("locationTypeId"));
+                        idata.setTitle(item.getString("title"));
+                        idata.setContent(item.getString("content"));
+                        idata.setImage(item.getString("image"));
+                        idata.setGettime(item.getString("getTime"));
+                        idata.setIsdone(item.getInt("isDone"));
+                        idata.setIscancel(item.getInt("isCancel"));
+                        idata.setLocked(item.getInt("locked"));
+                        list.add(idata);
+                    }catch (Exception e){
+                        continue;
+                    }
                 }
             }
         } catch (Exception e) {
