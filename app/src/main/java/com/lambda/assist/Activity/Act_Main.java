@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.lambda.assist.Adapter.HistoryRVAdapter;
 import com.lambda.assist.Adapter.MyFragmentAdapter;
 import com.lambda.assist.Adapter.SettingsListAdapter;
+import com.lambda.assist.AssistApplication;
 import com.lambda.assist.Asyn.LoadHistory;
 import com.lambda.assist.Asyn.LoadMissions;
 import com.lambda.assist.ConnectionApp.MyHttpClient;
@@ -103,6 +104,15 @@ public class Act_Main extends AppCompatActivity {
         InitialToolBar();
         InitialUI();
         InitialAction();
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread thread, Throwable throwable) {
+                AssistApplication app = (AssistApplication)getApplication();
+                Log.d("error---restart-start","dfdf");
+                app.restartApplication();
+                Log.d("error---restart-over","dfdf");
+            }
+        });
     }
 
     private void InitialSomething() {
@@ -240,7 +250,6 @@ public class Act_Main extends AppCompatActivity {
         //
         bt_search.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-
             }
         });
         return v;
