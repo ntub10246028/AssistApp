@@ -10,7 +10,6 @@ import android.content.Intent;
  * Created by super on 6/4/16.
  */
 public class AssistApplication extends Application {
-    private int intent ;
     @Override
     public void onCreate() {
         super.onCreate();

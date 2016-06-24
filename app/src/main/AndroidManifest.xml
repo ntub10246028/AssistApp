@@ -17,11 +17,10 @@
     <!-- Access NetWork Location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-
     <application
+        android:name=".AssistApplication"
         android:allowBackup="true"
         android:icon="@drawable/icon"
-        android:name="com.lambda.assist.AssistApplication"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -35,15 +34,11 @@
         <activity
             android:name=".Activity.Act_AuthSign"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".Activity.Act_Main"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.Act_AuthSMS"
             android:screenOrientation="portrait" />
@@ -64,6 +59,17 @@
         <activity
             android:name=".Activity.Act_Settings"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".Activity.Act_AlterMission"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <receiver android:name=".Receiver.Br_SMS">
             <intent-filter>

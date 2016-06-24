@@ -18,17 +18,17 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/et_newmission_title"
+                android:id="@+id/et_altermission_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/text_articletitle"
                 android:singleLine="true"
-                android:background="@drawable/cust_myedittext" />
+                android:background="@drawable/cust_myedittext"/>
 
             <EditText
-                android:id="@+id/et_newmission_content"
+                android:id="@+id/et_altermission_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="start"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/cust_myedittext"
@@ -44,28 +44,28 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/iv_newmission_camera"
+            android:id="@+id/iv_altermission_pic"
             android:layout_width="@dimen/new_mission_funtion_side"
             android:layout_height="@dimen/new_mission_funtion_side"
             android:layout_weight="1"
             android:src="@drawable/is_camera" />
 
         <ImageView
-            android:id="@+id/iv_newmission_map"
+            android:id="@+id/iv_altermission_map"
             android:layout_width="@dimen/new_mission_funtion_side"
             android:layout_height="@dimen/new_mission_funtion_side"
             android:layout_weight="1"
             android:src="@drawable/is_map" />
 
         <ImageView
-            android:id="@+id/iv_newmission_time"
+            android:id="@+id/iv_altermission_time"
             android:layout_width="@dimen/new_mission_funtion_side"
             android:layout_height="@dimen/new_mission_funtion_side"
             android:layout_weight="1"
             android:src="@drawable/is_limittime" />
 
         <ImageView
-            android:id="@+id/iv_newmission_send"
+            android:id="@+id/iv_altermission_send"
             android:layout_width="@dimen/new_mission_funtion_side"
             android:layout_height="@dimen/new_mission_funtion_side"
             android:layout_weight="1"
