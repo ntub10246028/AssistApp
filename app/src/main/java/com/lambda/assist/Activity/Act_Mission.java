@@ -216,7 +216,7 @@ public class Act_Mission extends AppCompatActivity {
             }
         });
         mSlidingTabLayout.setCustomTabView(R.layout.tabview_mission, R.id.tv_tabview_title);
-        mSlidingTabLayout.setBackgroundResource(R.color.gray800);
+        mSlidingTabLayout.setBackgroundResource(R.color.white);
         mSlidingTabLayout.setViewPager(mViewPager);
     }
 

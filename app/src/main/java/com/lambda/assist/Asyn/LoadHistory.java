@@ -45,8 +45,12 @@ public class LoadHistory extends AsyncTask<String, Integer, Integer> {
                     JSONArray array = jobj.getJSONArray("history");
                     if (array != null) {
                         for (int i = 0; i < array.length(); i++) {
-                            JSONObject ajobj = array.getJSONObject(i);
-                            list.add(ajobj.getInt("missionId"));
+                            try {
+                                JSONObject ajobj = array.getJSONObject(i);
+                                list.add(ajobj.getInt("missionId"));
+                            }catch (Exception e){
+                                continue;
+                            }
                         }
                     }else{
                         Log.d("LoadHistory", "Array null");
