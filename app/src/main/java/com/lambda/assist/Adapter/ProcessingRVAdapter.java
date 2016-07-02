@@ -22,6 +22,8 @@ import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Other.ActivityCode;
 import com.lambda.assist.Other.Code;
 import com.lambda.assist.R;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -100,6 +102,8 @@ public class ProcessingRVAdapter extends SampleRecyclerViewAdapter {
                         .load(url)
                         .fit()
                         .centerCrop()
+                         .memoryPolicy(MemoryPolicy.NO_CACHE )
+                        .networkPolicy(NetworkPolicy.NO_CACHE)
                         .into(missionViewHolder.image);
             }
             missionViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
