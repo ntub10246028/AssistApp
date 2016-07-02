@@ -40,7 +40,6 @@
             android:textColor="@color/white"
             android:textSize="24sp" />
 
-
     </FrameLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>
