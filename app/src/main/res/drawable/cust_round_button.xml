@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/addbtn_normal" android:state_pressed="false">
+    <item android:drawable="@drawable/add_btn_hard" android:state_pressed="false">
         <shape android:shape="oval">
         </shape>
     </item>
-    <item android:drawable="@drawable/addbtn_select" android:state_pressed="true">
+    <item android:drawable="@drawable/add_btn_norl" android:state_pressed="true">
         <shape android:shape="oval">
         </shape>
     </item>
