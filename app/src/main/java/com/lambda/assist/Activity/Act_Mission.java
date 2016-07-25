@@ -5,10 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -59,6 +60,7 @@ public class Act_Mission extends AppCompatActivity {
     //
     private List<String> list_Titles;
     private Mission mMission;
+    private Handler mThreadHandler=new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +70,24 @@ public class Act_Mission extends AppCompatActivity {
         InitialSomething();
         InitialUI();
         InitialAction();
-        LoadMission();
         InitialToolBar();
+        HandlerThread mThread;
+        mThread = new HandlerThread("name");
+        mThread.start();
+        mThreadHandler=new Handler(mThread.getLooper());
+        Runnable r1 = new Runnable() {
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(2000);
+                        LoadMission();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        mThreadHandler.post(r1);
     }
 
     private void LoadMission() {

@@ -3,6 +3,8 @@ package com.lambda.assist.Fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,13 +18,9 @@ import android.widget.Toast;
 
 import com.lambda.assist.Activity.Act_Mission;
 import com.lambda.assist.Adapter.ChatMessageRVAdapter;
-import com.lambda.assist.Adapter.MessageRVAdapter;
 import com.lambda.assist.Asyn.AddChatMessage;
-import com.lambda.assist.Asyn.AddMessage;
 import com.lambda.assist.Asyn.LoadChatMessage;
-import com.lambda.assist.Asyn.LoadMessage;
 import com.lambda.assist.Model.ChatMessage;
-import com.lambda.assist.Model.MessageItem;
 import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Other.IsVaild;
 import com.lambda.assist.Other.Net;
@@ -50,6 +48,7 @@ public class ChatFragment extends MissionBaseFragment {
     //
     private List<ChatMessage> list_chatmessages;//
     private Mission mMission;
+    private Handler mThreadHandler=new Handler();
 
     public static ChatFragment newInstance(String title, int indicatorColor, int dividerColor) {
         ChatFragment fragment = new ChatFragment();
@@ -81,7 +80,24 @@ public class ChatFragment extends MissionBaseFragment {
         super.onActivityCreated(savedInstanceState);
         InitialUI(getView());
         InitialAction();
-        LoadChatMessage(mMission.getMsessionid() + "");
+
+        HandlerThread mThread;
+        mThread = new HandlerThread("name");
+        mThread.start();
+        mThreadHandler=new Handler(mThread.getLooper());
+        Runnable r1 = new Runnable() {
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(1000);
+                        LoadChatMessage(mMission.getMsessionid() + "");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        mThreadHandler.post(r1);
     }
 
     private void LoadChatMessage(String msessionid) {
