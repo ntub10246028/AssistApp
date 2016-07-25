@@ -19,6 +19,8 @@ import com.lambda.assist.Helper.ImgurHelper;
 import com.lambda.assist.Model.Mission;
 import com.lambda.assist.Other.Code;
 import com.lambda.assist.R;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -66,6 +68,8 @@ public class AroundRVAdapter extends SampleRecyclerViewAdapter {
                     .transform(new BitmapTransform(BitmapHelp.maxW, BitmapHelp.maxH))
                     .resize(BitmapHelp.size(), BitmapHelp.size())
                     .centerInside()
+                    .memoryPolicy(MemoryPolicy.NO_CACHE )
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
                     .into(holder.image);
         }
 

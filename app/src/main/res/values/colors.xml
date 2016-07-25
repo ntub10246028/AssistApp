@@ -5,6 +5,7 @@
     <color name="white">#FFFFFF</color>
     <color name="gray">#ADADAD</color>
     <color name="red">#FF0000</color>
+    <color name="tabgreen">#7db9b2</color>
     <color name="green">#00FF00</color>
     <color name="green2">#43A047</color>
     <!-- Gray -->
@@ -20,15 +21,15 @@
     <color name="colorPrimaryDark_blue">#01579B</color>
     <color name="colorAccent_blue">#01579B</color>
     <!-- Tab Status Color -->
-    <color name="tab_background_normal">#B3B3B4</color>
+    <color name="tab_background_normal">@color/tabgreen</color>
     <color name="tab_background_select">@color/white</color>
 
     <!-- In Main -->
     <color name="tab_text_normal">#FFFFFF</color>
-    <color name="tab_text_select">#221815</color>
+    <color name="tab_text_select">#AAAAAA</color>
     <!-- In Mission -->
     <color name="tab_mission_normal">@color/gray500</color>
-    <color name="tab_mission_select">@color/white</color>
+    <color name="tab_mission_select">@color/tabgreen</color>
     <!-- In Mission-Message -->
     <color name="text_isMe">#FBC02D</color>
     <color name="text_notMe">@color/black</color>

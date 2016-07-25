@@ -17,8 +17,8 @@
     <!-- Access NetWork Location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-
     <application
+        android:name=".AssistApplication"
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
@@ -42,7 +42,7 @@
         </activity>
         <activity
             android:name=".Activity.Act_Main"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.Act_AuthSMS"
             android:screenOrientation="portrait" />
@@ -63,6 +63,13 @@
         <activity
             android:name=".Activity.Act_Settings"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".Activity.Act_AlterMission"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+
+        </activity>
 
         <receiver android:name=".Receiver.Br_SMS">
             <intent-filter>

@@ -36,7 +36,7 @@ public class JsonReaderPost {
         HttpPost httpPost = new HttpPost("https://app.lambda.tw/" + dir);
         httpPost.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
         HttpResponse response;
-        String result = null;
+        String result;
         response = client.execute(httpPost);
         Log.d("LAG", "Success Response");
         HttpEntity entity = response.getEntity();
@@ -46,7 +46,6 @@ public class JsonReaderPost {
         String get_result;
         String Strcookie = null;
         if (!cookies.isEmpty()) {
-            get_result = "get cookie ok...";
             for (int i = 0; i < cookies.size(); i++) {
                 Cookie cookie = cookies.get(i);
                 Log.d(cookie.getName(), cookie.getValue());
